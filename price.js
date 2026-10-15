@@ -2,7 +2,9 @@
 // Day types and the rules for 平日 are explained in README → "Day types".
 
 export const PERIODS = ['朝', '昼', '夜', '深夜'];
-export const PLAN_ORDER = ['30min', 'free_time', 'night_pack'];
+export const PLAN_ORDER = ['30min', 'free_time', 'pack', 'night_pack'];
+// Display name for a slot: "昼 30分", "昼3時間パック", or the site's own name ("夕方フリータイム").
+export const slotName = e => (e.plan === '30min' ? `${e.period} 30分` : e.plan === 'pack' ? `${e.period}${e.name}` : e.name);
 const DAY_MS = 864e5;
 
 const startHour = slot => { const h = +slot.slice(0, 2); return h < 5 ? h + 24 : h; }; // after-midnight starts sort last
@@ -133,7 +135,9 @@ export function estimate(shop, { party, customer, start, mode, blocks = 2, freeK
     else segs.push({ key, from, to: new Date(from.getTime() + HALF_MS), count: 1, cp, yen });
   }
   // A free-time option that covers the whole stay and costs less is worth pointing out.
-  const fits = o => !o.late && o.row.yen != null && into(o.entry.slot, hhmm(jst(start).min)) + blocks * 30 <= slotLength(o.entry.slot);
+  const packMinutes = e => (e.plan === 'pack' ? (+e.name.match(/(\d+)時間/)?.[1] || 0) * 60 : Infinity); // 3時間パック covers 3 hours
+  const fits = o => !o.late && o.row.yen != null && blocks * 30 <= packMinutes(o.entry) &&
+    into(o.entry.slot, hhmm(jst(start).min)) + blocks * 30 <= slotLength(o.entry.slot);
   const cheaperFree = !missing ? options.find(o => fits(o) && o.row.yen < sum) ?? null : null;
   return { mode, segs, perPerson: missing ? null : sum, partial: sum, missing, cheaperFree };
 }

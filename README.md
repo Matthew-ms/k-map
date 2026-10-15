@@ -13,10 +13,16 @@ MVP: Jankara, Osaka Namba/Shinsaibashi.
 - `data/shops.json` is the contract between the two halves.
 
 ## Run it
-    npm run crawl              # fetch + parse + validate → data/shops.json (Jankara area 10, ~45 s)
+    npm run crawl              # fetch + parse + validate → data/shops.json (all Jankara areas, ~12 min)
     npm run crawl -- --offline # re-parse crawler/cache/ without fetching (after a parser fix)
+    npm run crawl -- --areas=10 --offline  # one area only, for parser work (writes only that area!)
     npm test                   # parser + price-rule tests
     npm run serve              # http://localhost:8080
+
+## Weekly update
+`.github/workflows/crawl.yml` runs every Monday 03:00 JST (and from the Actions tab → "Weekly crawl" → "Run workflow"):
+tests → full crawl → commit `data/` if changed → Pages rebuild. If any shop fails to parse or validate, or more than
+10% of shops disappear, the run fails, nothing is committed, and GitHub emails the repo owner.
 
 ## Data rules
 - Missing values are `null`, never a guess.

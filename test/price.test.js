@@ -68,3 +68,13 @@ test('estimate: a saved free-time choice past its last entry falls back to one t
   assert.equal(e.pick.entry.name, '夕方フリータイム');
   assert.equal(e.perPerson, 1390);
 });
+
+test('139 (新瑞橋駅前店): 3時間パック is a free-time option, but only for stays up to 3 hours', () => {
+  const shop = { prices: parseShopPage(readFileSync(new URL('./fixtures/jankara-139.html', import.meta.url), 'utf8'), '8:00-5:00').prices };
+  const pack = shop.prices.find(p => p.plan === 'pack');
+  assert.deepEqual([pack.period, pack.name, pack.slot, pack.last_entry], ['昼', '3時間パック', '10:00-21:00', '18:00']);
+  const opts = estimate(shop, { party: 'group', customer: 'general', start: at('2026-10-15', '12:00'), mode: 'free', holidays }).options;
+  assert.ok(opts.some(o => o.entry.plan === 'pack'));
+  const long = estimate(shop, { party: 'group', customer: 'general', start: at('2026-10-15', '12:00'), mode: 'time', blocks: 8, holidays });
+  assert.notEqual(long.cheaperFree?.entry.plan, 'pack'); // 4 hours don't fit in a 3-hour pack
+});

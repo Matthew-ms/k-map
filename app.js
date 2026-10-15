@@ -1,11 +1,11 @@
-import { slotTable, currentPrice, whichDay, isDayType, jst, bySiteOrder, estimate } from './price.js';
+import { slotTable, currentPrice, whichDay, isDayType, jst, bySiteOrder, estimate, slotName } from './price.js';
 
 const BRAND_COLORS = { jankara: '#e60012' };
 const BRAND_NAMES = { jankara: 'ジャンカラ' };
 const CUSTOMERS = { student_member: '学生会員', student: '学生', member: '会員', senior: 'シニア', general: '一般' };
 const PARTIES = { solo: '1名', group: '2名以上' };
 const DAY = { weekday: '平日', weekend_holiday: '土日祝', sun_holiday: '日祝', fri_sun_hol_eve: '金土日祝祝前', fri_sat_hol_eve: '金土祝前' };
-const PLAN_TABS = { '30min': '30分', free_time: 'フリータイム', night_pack: 'ナイトパック' };
+const PLAN_TABS = { '30min': '30分', free_time: 'フリータイム', pack: 'パック', night_pack: 'ナイトパック' };
 const FALLBACK_NOTE = '＊1名料金の記載なし・2名以上と同額';
 const HALF_MS = 30 * 60e3;
 
@@ -102,6 +102,7 @@ function searchArea() {
   inArea = shops.filter(s => area.contains([s.lat, s.lng]));
   areaBtn.hidden = true;
   setRef();
+  storage.set(VIEW_KEY, { center: map.getCenter(), zoom: map.getZoom() });
   refresh();
 }
 // "Search this area" appears only when the user really changed the view: zoomed, or moved the centre by
@@ -118,7 +119,10 @@ map.on('moveend', () => {
   const shift = map.latLngToContainerPoint(ref.center).distanceTo(size.divideBy(2));
   if (map.getZoom() !== ref.zoom || shift > Math.min(size.x, size.y) * 0.1) areaBtn.hidden = false;
 });
-quietly(() => map.fitBounds(L.featureGroup(shops.map(s => s.pin)).getBounds(), { padding: [30, 30] }));
+// Open where the user last searched; first visit: Namba/Shinsaibashi.
+const VIEW_KEY = 'kmap.view';
+const lastView = storage.get(VIEW_KEY);
+quietly(() => map.setView(lastView?.center ?? [34.6695, 135.5015], lastView?.zoom ?? 15));
 searchArea();
 areaBtn.onclick = searchArea;
 setInterval(refresh, 60_000); // "now" prices move with the clock
@@ -284,10 +288,10 @@ function planResult(s) {
     }
   } else if (e.pick) {
     fallback = !!e.pick.row.fallback;
-    lines.push(`${esc(e.pick.entry.name)} ${slotText(e.pick.entry.slot)}：${cell(e.pick.row)}${e.pick.row.yen != null ? '円' : ''}`);
+    lines.push(`${esc(slotName(e.pick.entry))} ${slotText(e.pick.entry.slot)}：${cell(e.pick.row)}${e.pick.row.yen != null ? '円' : ''}`);
   }
   const hint = e.mode === 'time' && e.cheaperFree
-    ? `<div class="hint">${esc(e.cheaperFree.entry.name)}（〜${slotText(e.cheaperFree.entry.slot).split('–')[1]}）なら1人${yen(e.cheaperFree.row.yen)}で、こちらの方が安くなります。
+    ? `<div class="hint">${esc(slotName(e.cheaperFree.entry))}（〜${slotText(e.cheaperFree.entry.slot).split('–')[1]}）なら1人${yen(e.cheaperFree.row.yen)}で、こちらの方が安くなります。
         <button class="use-free" data-free="${esc(e.cheaperFree.key)}">フリータイムにする</button></div>` : '';
   return `<div class="plan-total">
       <p class="meta">合計の目安（${me.count}名・${CUSTOMERS[me.customer]}）</p>
@@ -326,7 +330,7 @@ function openPlan() {
       <div class="chips-toggle">${[1, 2, 3, 4, 6].map(b => `<button data-set-blocks="${b}" aria-pressed="${plan.blocks === b}">${durationLabel(b)}</button>`).join('')}</div>`
     : s ? (e.options.length ? `<div class="free-options">${e.options.map(o => `
         <button data-free="${esc(o.key)}" aria-pressed="${e.pick?.key === o.key}" ${o.late ? 'class="late" disabled' : ''}>
-          <span><b>${esc(o.entry.name)}</b> ${slotText(o.entry.slot)}<br><span class="meta">${o.last ? `最終受付 ${slotText(o.last)}` : ''}${o.late ? ' · 受付終了' : ''}${o.row.slot_note ? ` · ${esc(o.row.slot_note)}` : ''}</span></span>
+          <span><b>${esc(slotName(o.entry))}</b> ${slotText(o.entry.slot)}<br><span class="meta">${o.last ? `最終受付 ${slotText(o.last)}` : ''}${o.late ? ' · 受付終了' : ''}${o.row.slot_note ? ` · ${esc(o.row.slot_note)}` : ''}</span></span>
           <span class="fo-price">${cell(o.row)}${o.row.yen != null ? '円' : ''}<span class="meta">/人</span></span>
         </button>`).join('')}</div>` : '<p class="warn">この開始時刻に使えるフリータイムの掲載がありません。</p>')
     : '<p class="meta">店舗を選ぶと、使えるフリータイムが表示されます。</p>'}
@@ -373,7 +377,7 @@ function cardTable(shop, p) {
     <tbody>${rows.map(r => {
       const d = nowDay(r);
       return `<tr>
-      <th class="slot"><b>${esc(r.plan === '30min' ? `${r.period} 30分` : r.name)}</b>${d ? ' <span class="now-badge">いま</span>' : ''}<br>${slotText(r.slot)}${r.otherDay && r.otherDay !== 'weekend_holiday' ? `<br><span class="meta">休日=${DAY[r.otherDay]}</span>` : ''}</th>
+      <th class="slot"><b>${esc(slotName(r))}</b>${d ? ' <span class="now-badge">いま</span>' : ''}<br>${slotText(r.slot)}${r.otherDay && r.otherDay !== 'weekend_holiday' ? `<br><span class="meta">休日=${DAY[r.otherDay]}</span>` : ''}</th>
       ${order.map(c => `<td class="${cls(c, 'l')}${d === 'weekday' && c === me.customer ? ' now' : ''}">${cell(r.weekday[c])}</td><td class="${cls(c, 'r')}${d === 'other' && c === me.customer ? ' now' : ''}">${cell(r.other[c])}</td>`).join('')}
     </tr>`;
     }).join('')}</tbody></table></div>
@@ -441,7 +445,7 @@ function openCompare() {
     cols.get(k).times[r.slot] = (cols.get(k).times[r.slot] ?? 0) + 1;
   }
   const colList = [...cols.values()].map(c => ({ ...c, slot: Object.entries(c.times).sort((a, b) => b[1] - a[1])[0][0] })).sort(bySiteOrder);
-  const label = c => (cmp.plan === '30min' ? c.period : cmp.plan === 'night_pack' ? c.name : c.name.replace('フリータイム', '') || c.name);
+  const label = c => (cmp.plan === '30min' ? c.period : cmp.plan === 'pack' ? slotName(c) : cmp.plan === 'night_pack' ? c.name : c.name.replace('フリータイム', '') || c.name);
   const running = c => whichDay({ slot: c.slot }, new Date(), holidays) !== null;
 
   const pick = (slots, c) => {
