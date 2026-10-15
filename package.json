@@ -1,0 +1,13 @@
+{
+  "name": "k-map",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "crawl": "node crawler/run.js",
+    "serve": "npx --yes http-server -p 8080 -c-1 .",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "cheerio": "1.0.0"
+  }
+}
