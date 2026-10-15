@@ -1,12 +1,23 @@
 // Usage: node crawler/run.js [--offline]   (--offline re-parses crawler/cache/ without fetching)
-import { writeFileSync } from 'node:fs';
-import { crawlArea } from './jankara.js';
+import { existsSync, writeFileSync } from 'node:fs';
+import { crawlArea, UA } from './jankara.js';
 
 const AREAS = [10]; // Namba/Shinsaibashi. Phase 4: read every area id from /shop/
 const KNOWN_MACHINES = ['JOYSOUND X1', 'JOYSOUND MAX GO', 'JOYSOUND MAX2', 'JOYSOUND MAX', 'LIVE DAM WAO!', 'LIVE DAM AiR', 'LIVE DAM Ai'];
 const MAX_YEN = { '30min': 5000, free_time: 10000, night_pack: 10000 };
 
 const offline = process.argv.includes('--offline');
+
+// Japanese public holidays (this year, last year, next year) for 土日祝 / 祝前 price rows.
+const HOLIDAYS = new URL('../data/holidays.json', import.meta.url);
+if (!offline || !existsSync(HOLIDAYS)) {
+  const res = await fetch('https://holidays-jp.github.io/api/v1/date.json', { headers: { 'User-Agent': UA } });
+  const days = res.ok ? await res.json() : {};
+  const year = new Date().getFullYear();
+  if (!Object.keys(days).some(d => d.startsWith(year))) throw new Error(`holiday list has no ${year} dates (HTTP ${res.status})`);
+  writeFileSync(HOLIDAYS, JSON.stringify(days, null, 1) + '\n');
+}
+
 const shops = [];
 for (const a of AREAS) shops.push(...await crawlArea(a, { offline }));
 

@@ -7,13 +7,15 @@ MVP: Jankara, Osaka Namba/Shinsaibashi.
 
 ## How it works
 - `crawler/` (Node) fetches each chain's shop data offline and writes `data/shops.json`.
+- `price.js` holds the price rules (which row applies at a given moment) and is shared by the app and the tests.
+- `data/holidays.json` (Japanese public holidays, from holidays-jp.github.io) is refreshed by the crawler.
 - The site (`index.html`, `app.js`) is static: Leaflet + OpenStreetMap, reads `data/shops.json`, filters on the device.
 - `data/shops.json` is the contract between the two halves.
 
 ## Run it
     npm run crawl              # fetch + parse + validate → data/shops.json (Jankara area 10, ~45 s)
     npm run crawl -- --offline # re-parse crawler/cache/ without fetching (after a parser fix)
-    npm test                   # parser tests against test/fixtures/
+    npm test                   # parser + price-rule tests
     npm run serve              # http://localhost:8080
 
 ## Data rules
@@ -37,5 +39,5 @@ MVP: Jankara, Osaka Namba/Shinsaibashi.
 - Night slots belong to the evening they start: 02:00 Saturday uses Friday night's row.
 
 ## Phases
-1. Real-data map (done) · 2. Prices + shop card (done) · 2.5 UI: identity, site-style table, compare, area search, walking time (done) · 3. Filters, near me, pin price ·
+1. Real-data map (done) · 2. Prices + shop card (done) · 2.5 UI: identity, site-style table, compare, area search, walking time (done) · 3. Filters + price now (done) ·
 4. All Jankara · 5. Weekly GitHub Actions + Pages · 6. More brands · 7. Price for my visit
