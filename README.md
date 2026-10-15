@@ -27,6 +27,8 @@ MVP: Jankara, Osaka Namba/Shinsaibashi.
 - Shop pages `/shop/{id}/`: price tables inside `#price-special` are solo (1-person) prices; the rest are group prices.
 - `shopKidsRoom` in the JSON disagrees with the shop page; use the page. Some pages omit the kids-room item entirely → `null`.
 - Slots may say 開店/閉店 (opening/closing); they are filled in from the shop hours.
+- Each price row keeps the site's `period` (table title 朝/昼/夜/深夜) and `name` (row name). A cell with no number keeps the site's text (`yen: null, text: "-"`); never invent a number.
+- 1名 tables list only slots with a solo surcharge. The app shows the 2名以上 price for the other slots, marked ＊.
 
 ## Day types (needed for "price now", phase 3)
 `day` values: `weekday` 平日, `weekend_holiday` 土日祝, `sun_holiday` 日祝, `fri_sun_hol_eve` 金土日祝祝前, `fri_sat_hol_eve` 金土祝前.
@@ -35,5 +37,5 @@ MVP: Jankara, Osaka Namba/Shinsaibashi.
 - Night slots belong to the evening they start: 02:00 Saturday uses Friday night's row.
 
 ## Phases
-1. Real-data map (done) · 2. Prices + shop card (done) · 3. Filters, near me, pin price ·
+1. Real-data map (done) · 2. Prices + shop card (done) · 2.5 UI: identity, site-style table, compare, area search, walking time (done) · 3. Filters, near me, pin price ·
 4. All Jankara · 5. Weekly GitHub Actions + Pages · 6. More brands · 7. Price for my visit

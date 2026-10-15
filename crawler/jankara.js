@@ -50,15 +50,18 @@ export function parseShopPage(html, hours) {
   $('.price_table_area table').each((_, table) => {
     const t = $(table);
     const party = t.closest('#price-special').length ? 'solo' : 'group'; // #price-special = 1人料金表
-    const drinks = text(t.find('.price_title')).includes('ドリンク飲み放題');
+    const title = t.find('.price_title');
+    const drinks = text(title).includes('ドリンク飲み放題');
+    const period = text(title.contents().filter((_, n) => n.type === 'text')); // 朝 / 昼 / 夜 / 深夜
     const cols = t.find('th.attribute').map((_, th) => CUSTOMERS[text($(th))]).get();
     if (cols.length !== 5 || cols.includes(undefined)) throw new Error(`unexpected price columns: ${text(t.find('thead'))}`);
-    let plan, slot;
+    let plan, slot, name;
     t.find('tr').not('.price_name').each((_, tr) => {
       const row = $(tr);
       const time = row.find('td.price_time');
       if (time.length) {
-        plan = parsePlan(text(time.contents().first()));
+        name = text(time.contents().first()); // the site's own row name: 30分, ショートフリータイム, ナイトパック…
+        plan = parsePlan(name);
         slot = parseSlot(text(time.find('p').first()), hours);
       }
       const dayLabel = text(row.find('td.wd, td.hd'));
@@ -68,7 +71,9 @@ export function parseShopPage(html, hours) {
       if (cells.length !== cols.length) throw new Error(`${cells.length} prices for ${cols.length} columns (${plan} ${slot} ${dayLabel})`);
       cells.each((i, td) => {
         const yen = parseInt($(td).find('.fontPrice').text().replace(/,/g, ''), 10);
-        if (!Number.isNaN(yen)) prices.push({ party, plan, slot, day, customer: cols[i], yen, drinks_included: drinks });
+        const row = { party, period, name, plan, slot, day, customer: cols[i], yen: Number.isNaN(yen) ? null : yen, drinks_included: drinks };
+        if (row.yen === null) row.text = text($(td)) || null; // no number on the site: keep its exact words (e.g. "-")
+        prices.push(row);
       });
     });
   });

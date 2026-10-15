@@ -22,3 +22,9 @@ test('45 (アメリカ村店): 開店/閉店 slots resolve from hours', () => {
   const slots = new Set(parseShopPage(fixture(45), '11:00-5:00').prices.filter(p => p.plan === '30min').map(p => p.slot));
   assert.deepEqual([...slots].sort(), ['11:00-19:00', '19:00-05:00']);
 });
+
+test('45: a cell without a number keeps the site text, never a made-up price', () => {
+  const short = parseShopPage(fixture(45), '11:00-5:00').prices.filter(p => p.name === 'ショートフリータイム' && p.yen === null);
+  assert.ok(short.length > 0);
+  assert.ok(short.every(p => p.text === '-' && p.period === '昼'));
+});

@@ -19,7 +19,9 @@ const problems = shops.flatMap(s => {
   if (!s.prices.some(r => r.party === 'group' && r.plan === '30min' && r.customer === 'general')) p.push('no group 30min general price');
   for (const r of s.prices) {
     if (!r.slot) p.push(`unparsed slot in ${r.plan}`);
-    if (!(r.yen >= 50 && r.yen <= MAX_YEN[r.plan])) p.push(`odd price ¥${r.yen} (${r.party} ${r.plan} ${r.slot} ${r.day} ${r.customer})`);
+    if (r.yen === null && !r.text) p.push(`empty price cell (${r.party} ${r.plan} ${r.slot} ${r.day} ${r.customer})`);
+    if (!r.period || !r.name) p.push(`unnamed slot ${r.plan} ${r.slot}`);
+    if (r.yen !== null && !(r.yen >= 50 && r.yen <= MAX_YEN[r.plan])) p.push(`odd price ¥${r.yen} (${r.party} ${r.plan} ${r.slot} ${r.day} ${r.customer})`);
   }
   for (const m of s.machines) if (!KNOWN_MACHINES.includes(m)) p.push(`unknown machine "${m}"`);
   return [...new Set(p)].map(msg => `${s.id} ${s.name}: ${msg}`);

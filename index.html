@@ -9,7 +9,11 @@
 </head>
 <body>
   <div id="map"></div>
-  <aside id="card" hidden aria-live="polite"></aside>
+  <button id="area-btn" class="float" hidden>このエリアで検索</button>
+  <button id="me-btn" class="float" aria-label="人数と区分を変更"></button>
+  <button id="compare-btn" class="float"></button>
+  <aside id="panel" hidden aria-live="polite"></aside>
+  <div id="toast" role="status" hidden></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script type="module" src="app.js"></script>
 </body>
