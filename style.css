@@ -25,7 +25,19 @@ button { font: inherit; color: inherit; }
 #compare-btn { bottom: calc(20px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; font-weight: 600; padding: 12px 22px; }
 #compare-btn:disabled { opacity: .5; }
 body.panel-open #compare-btn { display: none; }
-@media (max-width: 480px) { #area-btn { top: 64px; } } /* below the identity button on narrow phones */
+@media (max-width: 600px) { #area-btn { top: 116px; } } /* below the identity and plan buttons on phones */
+#plan-btn { top: 64px; right: 12px; font-size: 13px; }
+#plan-btn::before { content: "🕒 "; }
+body.has-plan #compare-btn { bottom: calc(96px + env(safe-area-inset-bottom)); }
+#plan-card {
+  left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); margin: 0 auto; max-width: 480px;
+  border-radius: 14px; display: flex; align-items: center; gap: 10px; padding: 10px 8px 10px 16px; text-align: left;
+}
+#plan-card .pc-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+#plan-card .pc-main b, #plan-card .pc-main .meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#plan-card .pc-total { font-size: 18px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+#plan-card .pc-clear { border: 0; background: none; width: 36px; height: 36px; font-size: 18px; color: var(--muted); cursor: pointer; }
+@media (max-width: 767px) { body.panel-open #plan-card, body.panel-open #plan-btn { display: none; } }
 
 .locate-btn {
   width: 34px; height: 34px; display: grid; place-items: center; cursor: pointer;
@@ -62,7 +74,8 @@ body.panel-open #compare-btn { display: none; }
 #panel[hidden] { display: none; }
 @media (min-width: 768px) {
   #panel { left: auto; top: 12px; right: 12px; bottom: 12px; width: 460px; max-height: none; border-radius: 12px; }
-  body.panel-open #topbar, body.panel-open .popover { right: 484px; }
+  body.panel-open #topbar, body.panel-open .popover, body.panel-open #plan-btn { right: 484px; }
+  body.panel-open #plan-card { right: 484px; margin: 0; }
 }
 .panel-head { display: flex; justify-content: space-between; align-items: center; min-height: 40px; }
 .close { margin-left: auto; width: 40px; height: 40px; border: 0; background: none; font-size: 24px; cursor: pointer; }
@@ -105,3 +118,32 @@ body.panel-open #compare-btn { display: none; }
 .now-price { color: var(--accent); font-size: 16px; }
 .now-badge { display: inline-block; background: var(--accent); color: #fff; border-radius: 4px; padding: 0 4px; font-size: 10px; font-weight: 700; vertical-align: 1px; }
 .prices td.now { outline: 2px solid var(--fg); outline-offset: -3px; }
+
+/* Plan editor and shop-card choose row */
+.field-row { display: flex; gap: 12px; margin: 8px 0 12px; }
+.field-row label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 13px; }
+.field-row input, .field-row select { font: inherit; padding: 8px; min-height: 40px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); }
+.stepper { display: inline-flex; align-items: center; gap: 4px; margin: 4px 8px 8px 0; vertical-align: middle; }
+.stepper button { width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 999px; background: none; font-size: 18px; cursor: pointer; }
+.stepper button:disabled { opacity: .35; cursor: default; }
+.stepper b { min-width: 4.5em; text-align: center; font-size: 16px; }
+.free-options { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 8px; }
+.free-options button { display: flex; justify-content: space-between; align-items: center; gap: 8px; text-align: left; border: 1px solid var(--line); border-radius: 10px; background: none; padding: 8px 12px; cursor: pointer; }
+.free-options button[aria-pressed="true"] { border: 2px solid var(--accent); background: var(--hl); }
+.free-options button.late { opacity: .55; }
+.fo-price { font-weight: 700; white-space: nowrap; }
+.plan-shop { margin: 4px 0 8px; }
+.plan-shop .shop-link { font-size: 17px; }
+.plan-total { margin: 14px 0 6px; padding: 12px 14px; border-radius: 12px; background: var(--hl); }
+.plan-total .total { font-size: 28px; font-weight: 800; color: var(--accent); margin: 2px 0; }
+.breakdown { margin: 8px 0 0; padding-left: 18px; font-size: 13px; }
+.warn { color: #b45309; font-size: 13px; }
+.hint { margin-top: 10px; padding: 8px 10px; border-radius: 8px; background: var(--bg); font-size: 13px; }
+.hint button, .use-free { margin-top: 6px; border: 1px solid var(--accent); color: var(--accent); background: none; border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+.choose-row { display: flex; gap: 8px; align-items: stretch; margin: 10px 0 4px; }
+.choose { border: 0; border-radius: 10px; background: var(--accent); color: #fff; font-weight: 700; padding: 10px 16px; cursor: pointer; white-space: nowrap; }
+.choose[aria-pressed="true"] { background: var(--hl); color: var(--accent); border: 2px solid var(--accent); }
+.plan-peek { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px; background: none; padding: 6px 10px; text-align: left; cursor: pointer; line-height: 1.35; }
+.plan-peek b { color: var(--accent); font-size: 16px; }
+body.has-plan .leaflet-bottom { bottom: calc(82px + env(safe-area-inset-bottom)); }
+@media (min-width: 768px) { body.panel-open .leaflet-right { right: 472px; } } /* keep the OSM credit visible above the plan card */

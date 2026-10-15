@@ -37,6 +37,19 @@ function parseSlot(s, hours) {
   return t.length === 2 ? `${t[0]}-${t[1]}` : null;
 }
 
+// "最終受付16時※土日祝 15:30" → { last_entry: "16:00", last_entry_alt: { day: "weekend_holiday", time: "15:30" } }
+function parseLastEntry(s) {
+  const m = s.match(/最終受付\s*(\d{1,2})(?:時|:(\d{2}))/);
+  if (!m) return {};
+  const out = { last_entry: `${m[1].padStart(2, '0')}:${m[2] ?? '00'}` };
+  const alt = s.match(/※\s*(\S+?)\s*(\d{1,2})(?:時|:(\d{2}))/);
+  if (alt) {
+    if (!DAYS[alt[1]]) throw new Error(`unknown day type "${alt[1]}" in last entry "${s}"`);
+    out.last_entry_alt = { day: DAYS[alt[1]], time: `${alt[2].padStart(2, '0')}:${alt[3] ?? '00'}` };
+  }
+  return out;
+}
+
 function parsePlan(label) {
   if (label.startsWith('30分')) return '30min';
   if (label.includes('フリータイム')) return 'free_time';
@@ -55,7 +68,7 @@ export function parseShopPage(html, hours) {
     const period = text(title.contents().filter((_, n) => n.type === 'text')); // 朝 / 昼 / 夜 / 深夜
     const cols = t.find('th.attribute').map((_, th) => CUSTOMERS[text($(th))]).get();
     if (cols.length !== 5 || cols.includes(undefined)) throw new Error(`unexpected price columns: ${text(t.find('thead'))}`);
-    let plan, slot, name;
+    let plan, slot, name, extra;
     t.find('tr').not('.price_name').each((_, tr) => {
       const row = $(tr);
       const time = row.find('td.price_time');
@@ -63,6 +76,9 @@ export function parseShopPage(html, hours) {
         name = text(time.contents().first()); // the site's own row name: 30分, ショートフリータイム, ナイトパック…
         plan = parsePlan(name);
         slot = parseSlot(text(time.find('p').first()), hours);
+        const ps = time.find('p').slice(1).map((_, p) => text($(p))).get();
+        const note = ps.find(p => p.startsWith('※') && !p.includes('最終受付')); // e.g. ※金土祝前は23時～5時
+        extra = { ...parseLastEntry(ps.find(p => p.includes('最終受付')) ?? ''), ...(note ? { slot_note: note } : {}) };
       }
       const dayLabel = text(row.find('td.wd, td.hd'));
       const day = DAYS[dayLabel];
@@ -71,7 +87,7 @@ export function parseShopPage(html, hours) {
       if (cells.length !== cols.length) throw new Error(`${cells.length} prices for ${cols.length} columns (${plan} ${slot} ${dayLabel})`);
       cells.each((i, td) => {
         const yen = parseInt($(td).find('.fontPrice').text().replace(/,/g, ''), 10);
-        const row = { party, period, name, plan, slot, day, customer: cols[i], yen: Number.isNaN(yen) ? null : yen, drinks_included: drinks };
+        const row = { party, period, name, plan, slot, day, customer: cols[i], yen: Number.isNaN(yen) ? null : yen, drinks_included: drinks, ...extra };
         if (row.yen === null) row.text = text($(td)) || null; // no number on the site: keep its exact words (e.g. "-")
         prices.push(row);
       });

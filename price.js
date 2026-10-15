@@ -84,3 +84,56 @@ export function currentPrice(shop, { plan = '30min', party, customer, now = new 
   }
   return null;
 }
+
+// ---- Visit estimate (per person) ----
+const HALF_MS = 30 * 60e3;
+const hhmm = min => `${String(Math.floor(min / 60) % 24).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`;
+const into = (slot, t) => (toMin(t) - toMin(slot.slice(0, 5)) + 1440) % 1440; // minutes since the slot began
+const slotLength = slot => into(slot, slot.slice(6)) || 1440;
+
+// Free-time / night-pack options that can be started at `start`, usable ones first, cheapest first.
+// `late` = past 最終受付 (last entry), using the 土日祝 / 金土祝前 variant when it applies.
+export function freeOptions(shop, { party, customer, start, holidays }) {
+  const t = jst(start), now = hhmm(t.min);
+  const out = [];
+  for (const entry of slotTable(shop, party)) {
+    if (entry.plan === '30min') continue;
+    const day = whichDay(entry, start, holidays);
+    const row = day && entry[day][customer];
+    if (!row) continue;
+    const startDay = shiftDay(t.ymd, slotStart(entry.slot, t.min));
+    const alt = row.last_entry_alt && isDayType(row.last_entry_alt.day, startDay, holidays) ? row.last_entry_alt.time : null;
+    const last = alt ?? row.last_entry ?? null;
+    out.push({ key: `${entry.period}|${entry.name}|${entry.slot}`, entry, day, row, last, late: last != null && into(entry.slot, now) > into(entry.slot, last) });
+  }
+  return out.sort((a, b) => a.late - b.late || (a.row.yen ?? Infinity) - (b.row.yen ?? Infinity));
+}
+
+// mode 'time': `blocks` × 30分, each block priced by the 30分 slot running when it starts.
+//   → { segs: [{ from, to, count, cp, yen }], perPerson (null if any block has no price), missing, cheaperFree }
+// mode 'free': → { options, pick, perPerson }
+// ponytail: a block that straddles a slot boundary takes the starting slot's price; the shop may round differently.
+export function estimate(shop, { party, customer, start, mode, blocks = 2, freeKey, holidays }) {
+  const options = freeOptions(shop, { party, customer, start, holidays });
+  if (mode === 'free') {
+    // The saved choice wins only while it can still be started; otherwise the cheapest one that can.
+    const pick = options.find(o => o.key === freeKey && !o.late) ?? options.find(o => !o.late && o.row.yen != null) ?? null;
+    return { mode, options, pick, perPerson: pick?.row.yen ?? null };
+  }
+  const segs = [];
+  let sum = 0, missing = 0;
+  for (let i = 0; i < blocks; i++) {
+    const from = new Date(start.getTime() + i * HALF_MS);
+    const cp = currentPrice(shop, { plan: '30min', party, customer, now: from, holidays });
+    const yen = cp?.row.yen ?? null;
+    yen == null ? missing++ : (sum += yen);
+    const key = cp ? `${cp.entry.period}|${cp.entry.slot}|${cp.day}|${yen}` : 'none';
+    const last = segs.at(-1);
+    if (last?.key === key) { last.count++; last.to = new Date(from.getTime() + HALF_MS); }
+    else segs.push({ key, from, to: new Date(from.getTime() + HALF_MS), count: 1, cp, yen });
+  }
+  // A free-time option that covers the whole stay and costs less is worth pointing out.
+  const fits = o => !o.late && o.row.yen != null && into(o.entry.slot, hhmm(jst(start).min)) + blocks * 30 <= slotLength(o.entry.slot);
+  const cheaperFree = !missing ? options.find(o => fits(o) && o.row.yen < sum) ?? null : null;
+  return { mode, segs, perPerson: missing ? null : sum, partial: sum, missing, cheaperFree };
+}

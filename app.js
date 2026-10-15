@@ -1,4 +1,4 @@
-import { slotTable, currentPrice, whichDay, isDayType, jst, bySiteOrder } from './price.js';
+import { slotTable, currentPrice, whichDay, isDayType, jst, bySiteOrder, estimate } from './price.js';
 
 const BRAND_COLORS = { jankara: '#e60012' };
 const BRAND_NAMES = { jankara: 'ジャンカラ' };
@@ -7,17 +7,47 @@ const PARTIES = { solo: '1名', group: '2名以上' };
 const DAY = { weekday: '平日', weekend_holiday: '土日祝', sun_holiday: '日祝', fri_sun_hol_eve: '金土日祝祝前', fri_sat_hol_eve: '金土祝前' };
 const PLAN_TABS = { '30min': '30分', free_time: 'フリータイム', night_pack: 'ナイトパック' };
 const FALLBACK_NOTE = '＊1名料金の記載なし・2名以上と同額';
+const HALF_MS = 30 * 60e3;
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => `&#${c.charCodeAt(0)};`);
 const slotText = s => s.replace(/(^|-)0/g, '$1').replace('-', '–');
 const cell = r => !r ? '' : r.yen == null ? esc(r.text) : r.yen.toLocaleString() + (r.fallback ? '＊' : '');
+const yen = n => `${n.toLocaleString()}円`;
+const hm = d => { const m = jst(d).min; return `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`; };
+const dateLabel = ymd => { const d = new Date(ymd); return `${d.getUTCMonth() + 1}/${d.getUTCDate()}(${'日月火水木金土'[d.getUTCDay()]})`; };
+const storage = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
 
-// ---- My identity: who is going (saved on this device only) ----
+// ---- My identity: how many people and which price type (saved on this device) ----
 const ID_KEY = 'kmap.identity';
-let me = { party: 'solo', customer: 'student_member' };
-try { Object.assign(me, JSON.parse(localStorage.getItem(ID_KEY)) ?? {}); } catch {}
-const saveMe = () => { try { localStorage.setItem(ID_KEY, JSON.stringify(me)); } catch {} };
-const meLabel = () => `${PARTIES[me.party]}・${CUSTOMERS[me.customer]}`;
+const me = { count: 1, customer: 'student_member' };
+{
+  const saved = storage.get(ID_KEY) ?? {};
+  if (saved.party && !saved.count) saved.count = saved.party === 'group' ? 2 : 1; // older saved format
+  if (saved.count >= 1) me.count = saved.count;
+  if (CUSTOMERS[saved.customer]) me.customer = saved.customer;
+}
+const party = () => (me.count > 1 ? 'group' : 'solo'); // 1 person pays 1名 prices
+const saveMe = () => storage.set(ID_KEY, me);
+const meLabel = () => `${me.count}名・${CUSTOMERS[me.customer]}`;
+
+// ---- My plan: when, how long, which shop (saved on this device) ----
+const PLAN_KEY = 'kmap.plan';
+const nextHalfHour = () => jst(new Date(Math.ceil((Date.now() + 1) / HALF_MS) * HALF_MS));
+const plan = { date: null, start: null, mode: 'time', blocks: 4, freeKey: null, shopId: null, ...storage.get(PLAN_KEY) };
+if (!plan.date || plan.date < jst(new Date()).ymd) { // stale or first visit: start at the next half hour
+  const t = nextHalfHour();
+  Object.assign(plan, { date: t.ymd, start: `${String(Math.floor(t.min / 60)).padStart(2, '0')}:${String(t.min % 60).padStart(2, '0')}` });
+}
+const savePlan = () => storage.set(PLAN_KEY, plan);
+const planStart = () => new Date(`${plan.date}T${plan.start}:00+09:00`);
+const durationLabel = b => (b === 1 ? '30分' : `${b / 2}時間`);
+const planSummary = () => {
+  const s = planStart();
+  return `${dateLabel(plan.date)} ${hm(s)}〜${plan.mode === 'free' ? ' フリータイム' : `${hm(new Date(s.getTime() + plan.blocks * HALF_MS))}（${durationLabel(plan.blocks)}）`}`;
+};
 
 // ---- Map ----
 const map = L.map('map');
@@ -27,12 +57,10 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 const [shops, holidays] = await Promise.all(['data/shops.json', 'data/holidays.json'].map(u => fetch(u).then(r => r.json())));
-const panel = document.getElementById('panel');
-const compareBtn = document.getElementById('compare-btn');
-const areaBtn = document.getElementById('area-btn');
-const meBtn = document.getElementById('me-btn');
-const filterBtn = document.getElementById('filter-btn');
-const toast = document.getElementById('toast');
+const byId = id => shops.find(s => s.id === id);
+const $ = id => document.getElementById(id);
+const panel = $('panel'), compareBtn = $('compare-btn'), areaBtn = $('area-btn'), meBtn = $('me-btn'),
+  filterBtn = $('filter-btn'), planBtn = $('plan-btn'), planCard = $('plan-card'), toast = $('toast');
 
 for (const s of shops) {
   s.pin = L.circleMarker([s.lat, s.lng], { radius: 10, color: '#fff', weight: 2, fillColor: BRAND_COLORS[s.brand] ?? '#666', fillOpacity: 1, bubblingMouseEvents: false })
@@ -40,7 +68,8 @@ for (const s of shops) {
 }
 
 // 30分 price for my identity at this moment (null when no 30分 slot is running, e.g. closed)
-const nowPrice = s => currentPrice(s, { party: me.party, customer: me.customer, holidays });
+const nowPrice = s => currentPrice(s, { party: party(), customer: me.customer, holidays });
+const estimateFor = s => estimate(s, { party: party(), customer: me.customer, start: planStart(), mode: plan.mode, blocks: plan.blocks, freeKey: plan.freeKey, holidays });
 
 // ---- Filters (this visit only) ----
 const filters = { brands: new Set(), machines: new Set(), maxYen: null };
@@ -56,7 +85,7 @@ function passes(s) {
 }
 
 // The shop set = what was on screen at the last "search this area", narrowed by the filters.
-let area, inArea = [], shown = [], userPos = null, view = null, quietMoves = 0;
+let area, inArea = [], shown = [], userPos = null, view = null, quietUntil = 0;
 function refresh() {
   shown = inArea.filter(passes);
   for (const s of shops) shown.includes(s) ? s.pin.addTo(map) : s.pin.remove();
@@ -65,16 +94,30 @@ function refresh() {
   const active = filters.brands.size + filters.machines.size + (filters.maxYen != null);
   filterBtn.textContent = active ? `絞り込み（${active}）` : '絞り込み';
   filterBtn.classList.toggle('on', !!active);
+  renderPlanBar();
   if (view?.type === 'compare') openCompare();
 }
 function searchArea() {
   area = map.getBounds();
   inArea = shops.filter(s => area.contains([s.lat, s.lng]));
   areaBtn.hidden = true;
+  setRef();
   refresh();
 }
-const quietly = fn => { quietMoves++; fn(); }; // programmatic moves shouldn't offer "search this area"
-map.on('moveend', () => { if (quietMoves) quietMoves--; else if (area) areaBtn.hidden = false; });
+// "Search this area" appears only when the user really changed the view: zoomed, or moved the centre by
+// more than 10% of the screen. Programmatic moves reset the reference; a resize (e.g. a phone's address
+// bar sliding away) keeps the centre and zoom, so it doesn't count.
+let ref;
+const setRef = () => (ref = { center: map.getCenter(), zoom: map.getZoom() });
+// A time window, not a counter: an interrupted or zero-length pan never fires moveend, which would leave a counter stuck.
+const quietly = fn => { quietUntil = Date.now() + 700; fn(); };
+map.on('moveend', () => {
+  if (Date.now() < quietUntil) { setRef(); return; }
+  if (!ref) return;
+  const size = map.getSize();
+  const shift = map.latLngToContainerPoint(ref.center).distanceTo(size.divideBy(2));
+  if (map.getZoom() !== ref.zoom || shift > Math.min(size.x, size.y) * 0.1) areaBtn.hidden = false;
+});
 quietly(() => map.fitBounds(L.featureGroup(shops.map(s => s.pin)).getBounds(), { padding: [30, 30] }));
 searchArea();
 areaBtn.onclick = searchArea;
@@ -121,11 +164,15 @@ function showToast(msg) {
   showToast.t = setTimeout(() => (toast.hidden = true), 4000);
 }
 
-const rerender = () => { if (view) view.type === 'card' ? openCard(view.shop, view.from) : openCompare(); };
+const rerender = () => {
+  if (view?.type === 'card') openCard(view.shop, view.from);
+  else if (view?.type === 'compare') openCompare();
+  else if (view?.type === 'plan') openPlan();
+};
 
 // ---- Small popovers under the top-right buttons ----
 function popover(id, render, onClick) {
-  const open = document.getElementById(id);
+  const open = $(id);
   document.querySelectorAll('.popover').forEach(p => p.remove());
   if (open) return;
   const p = document.createElement('div');
@@ -137,21 +184,25 @@ function popover(id, render, onClick) {
   return p;
 }
 
-// Identity picker
-const renderMeBtn = () => (meBtn.textContent = meLabel());
-renderMeBtn();
-meBtn.onclick = () => popover('me-panel', () => `
-    <p class="label">人数</p><div class="toggle">${Object.entries(PARTIES).map(([k, v]) => `<button data-party="${k}" aria-pressed="${me.party === k}">${v}</button>`).join('')}</div>
-    <p class="label">区分</p><div class="toggle wrap">${Object.entries(CUSTOMERS).map(([k, v]) => `<button data-customer="${k}" aria-pressed="${me.customer === k}">${v}</button>`).join('')}</div>
-    <p class="meta">この端末に保存されます</p>`, (e, p) => {
-  const b = e.target.closest('button');
-  if (!b) return;
-  Object.assign(me, b.dataset.party ? { party: b.dataset.party } : { customer: b.dataset.customer });
+// Identity: 人数 stepper + 区分. Shared by the popover and the plan editor.
+const countStepper = () => `<div class="stepper"><button data-count="-1" aria-label="1人減らす" ${me.count <= 1 ? 'disabled' : ''}>−</button><b>${me.count}名</b><button data-count="1" aria-label="1人増やす" ${me.count >= 20 ? 'disabled' : ''}>＋</button></div>`;
+const customerChips = () => `<div class="chips-toggle">${Object.entries(CUSTOMERS).map(([k, v]) => `<button data-customer="${k}" aria-pressed="${me.customer === k}">${v}</button>`).join('')}</div>`;
+function applyIdentity(b) {
+  if (b.dataset.count) me.count = Math.min(20, Math.max(1, me.count + +b.dataset.count));
+  else if (b.dataset.customer) me.customer = b.dataset.customer;
+  else return false;
   saveMe();
   renderMeBtn();
-  p.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.party ? me.party === x.dataset.party : me.customer === x.dataset.customer));
-  refresh(); // the max-price filter depends on who is going
-  rerender();
+  refresh(); // the max-price filter and the plan total depend on who is going
+  return true;
+}
+const renderMeBtn = () => (meBtn.textContent = meLabel());
+renderMeBtn();
+const renderMePanel = () => `<p class="label">人数</p>${countStepper()}<p class="meta">1名は1名料金、2名以上はグループ料金で計算</p>
+  <p class="label">区分</p>${customerChips()}<p class="meta">この端末に保存されます</p>`;
+meBtn.onclick = () => popover('me-panel', renderMePanel, (e, p) => {
+  const b = e.target.closest('button');
+  if (b && applyIdentity(b)) { p.innerHTML = renderMePanel(); rerender(); }
 });
 
 // Filter panel
@@ -194,14 +245,123 @@ filterBtn.onclick = () => {
   p?.addEventListener('change', () => (p.innerHTML = renderFilters())); // redraw the exclusion note once the slider is let go
 };
 
+// ---- Plan: top-right button + card at the bottom ----
+// Total for the chosen plan at a shop: { e, total } — total is null when some part has no listed price.
+function planTotal(s) {
+  const e = estimateFor(s);
+  return { e, total: e.perPerson != null ? e.perPerson * me.count : null };
+}
+function renderPlanBar() {
+  planBtn.textContent = planSummary();
+  const s = plan.shopId && byId(plan.shopId);
+  planCard.hidden = !s;
+  document.body.classList.toggle('has-plan', !!s);
+  if (!s) return;
+  const { total } = planTotal(s);
+  planCard.innerHTML = `
+    <span class="pc-main"><b>${esc(s.name)}</b><span class="meta">${esc(planSummary())} · ${esc(meLabel())}</span></span>
+    <span class="pc-total">${total != null ? `約${yen(total)}` : '料金を確認'}</span>
+    <button class="pc-clear" aria-label="店舗の選択を解除">×</button>`;
+}
+planBtn.onclick = () => (view?.type === 'plan' ? closePanel() : openPlan());
+planCard.onclick = e => {
+  if (e.target.closest('.pc-clear')) { plan.shopId = null; savePlan(); renderPlanBar(); rerender(); return; }
+  openPlan();
+};
+planCard.onkeydown = e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), openPlan());
+
+function planResult(s) {
+  const { e, total } = planTotal(s);
+  const per = e.perPerson;
+  const lines = [];
+  let fallback = false;
+  if (e.mode === 'time') {
+    for (const g of e.segs) {
+      fallback ||= !!g.cp?.row.fallback;
+      lines.push(g.cp
+        ? `${hm(g.from)}–${hm(g.to)} ${esc(g.cp.entry.period)} 30分 ${g.cp.day === 'weekday' ? '平日' : DAY[g.cp.entry.otherDay]}：${cell(g.cp.row)}${g.yen != null ? '円' : ''} × ${g.count}`
+        : `${hm(g.from)}–${hm(g.to)}：料金の掲載なし（営業時間外の可能性）`);
+    }
+  } else if (e.pick) {
+    fallback = !!e.pick.row.fallback;
+    lines.push(`${esc(e.pick.entry.name)} ${slotText(e.pick.entry.slot)}：${cell(e.pick.row)}${e.pick.row.yen != null ? '円' : ''}`);
+  }
+  const hint = e.mode === 'time' && e.cheaperFree
+    ? `<div class="hint">${esc(e.cheaperFree.entry.name)}（〜${slotText(e.cheaperFree.entry.slot).split('–')[1]}）なら1人${yen(e.cheaperFree.row.yen)}で、こちらの方が安くなります。
+        <button class="use-free" data-free="${esc(e.cheaperFree.key)}">フリータイムにする</button></div>` : '';
+  return `<div class="plan-total">
+      <p class="meta">合計の目安（${me.count}名・${CUSTOMERS[me.customer]}）</p>
+      <p class="total">${total != null ? `約${yen(total)}` : '計算できません'}</p>
+      ${per != null ? `<p class="meta">1人 ${yen(per)} × ${me.count}名</p>` : ''}
+      ${e.mode === 'time' && e.missing ? `<p class="warn">一部の時間帯に料金の掲載がありません。掲載分のみ：1人 ${yen(e.partial)}</p>` : ''}
+      ${e.mode === 'free' && !e.pick ? `<p class="warn">この開始時刻から使えるフリータイムがありません${e.options.length ? '（最終受付を過ぎています）' : ''}。</p>` : ''}
+      ${lines.length ? `<ul class="breakdown">${lines.map(l => `<li>${l}</li>`).join('')}</ul>` : ''}
+      ${hint}
+    </div>
+    <ul class="notes">
+      <li>目安です。部屋の追加料金・有料ドリンクコース・時間帯をまたぐ際の扱いなどで実際の金額は変わります。</li>
+      ${fallback ? `<li>${FALLBACK_NOTE}</li>` : ''}
+      <li>全員が「${CUSTOMERS[me.customer]}」として計算。料金は${esc(s.prices_as_of)}時点</li>
+    </ul>`;
+}
+
+function openPlan() {
+  view = { type: 'plan' };
+  const s = plan.shopId && byId(plan.shopId);
+  const times = Array.from({ length: 48 }, (_, i) => `${String(Math.floor(i / 2)).padStart(2, '0')}:${i % 2 ? '30' : '00'}`);
+  const e = s && plan.mode === 'free' ? estimateFor(s) : null;
+  panel.innerHTML = `
+    <div class="panel-head"><button class="close" aria-label="閉じる">×</button></div>
+    <h2>プラン</h2>
+    <div class="plan-shop">${s
+      ? `<p class="meta">行く店舗</p><button class="shop-link" data-id="${esc(s.id)}">${esc(s.name)}</button>${walk(s) ? ` <span class="meta">${walk(s)}</span>` : ''}`
+      : '<p class="warn">店舗が未選択です。地図のピンから店舗を開き「この店にする」を押してください。</p>'}</div>
+    <div class="field-row">
+      <label>日付<input type="date" id="plan-date" value="${plan.date}" min="${jst(new Date()).ymd}"></label>
+      <label>開始<select id="plan-start">${times.map(t => `<option ${t === plan.start ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
+    </div>
+    <div class="toggle" role="group" aria-label="利用方法">${[['time', '時間で指定'], ['free', 'フリータイム']].map(([k, v]) => `<button data-mode="${k}" aria-pressed="${plan.mode === k}">${v}</button>`).join('')}</div>
+    ${plan.mode === 'time' ? `
+      <div class="stepper"><button data-blocks="-1" aria-label="30分減らす" ${plan.blocks <= 1 ? 'disabled' : ''}>−</button><b>${durationLabel(plan.blocks)}</b><button data-blocks="1" aria-label="30分増やす" ${plan.blocks >= 24 ? 'disabled' : ''}>＋</button></div>
+      <div class="chips-toggle">${[1, 2, 3, 4, 6].map(b => `<button data-set-blocks="${b}" aria-pressed="${plan.blocks === b}">${durationLabel(b)}</button>`).join('')}</div>`
+    : s ? (e.options.length ? `<div class="free-options">${e.options.map(o => `
+        <button data-free="${esc(o.key)}" aria-pressed="${e.pick?.key === o.key}" ${o.late ? 'class="late" disabled' : ''}>
+          <span><b>${esc(o.entry.name)}</b> ${slotText(o.entry.slot)}<br><span class="meta">${o.last ? `最終受付 ${slotText(o.last)}` : ''}${o.late ? ' · 受付終了' : ''}${o.row.slot_note ? ` · ${esc(o.row.slot_note)}` : ''}</span></span>
+          <span class="fo-price">${cell(o.row)}${o.row.yen != null ? '円' : ''}<span class="meta">/人</span></span>
+        </button>`).join('')}</div>` : '<p class="warn">この開始時刻に使えるフリータイムの掲載がありません。</p>')
+    : '<p class="meta">店舗を選ぶと、使えるフリータイムが表示されます。</p>'}
+    <p class="label">人数・区分</p>${countStepper()}${customerChips()}
+    ${s ? planResult(s) : ''}`;
+  panel.querySelector('#plan-date').onchange = ev => { if (ev.target.value) { plan.date = ev.target.value; planChanged(); } };
+  panel.querySelector('#plan-start').onchange = ev => { plan.start = ev.target.value; planChanged(); };
+  panel.querySelector('.shop-link')?.addEventListener('click', () => openCard(s));
+  panel.onclick = ev => {
+    const b = ev.target.closest('button');
+    if (!b || b.classList.contains('close') || b.classList.contains('shop-link')) return;
+    if (applyIdentity(b)) return openPlan();
+    if (b.dataset.mode) plan.mode = b.dataset.mode;
+    else if (b.dataset.blocks) plan.blocks = Math.min(24, Math.max(1, plan.blocks + +b.dataset.blocks));
+    else if (b.dataset.setBlocks) plan.blocks = +b.dataset.setBlocks;
+    else if (b.dataset.free) Object.assign(plan, { mode: 'free', freeKey: b.dataset.free });
+    else return;
+    planChanged();
+  };
+  wirePanel();
+}
+function planChanged() {
+  savePlan();
+  renderPlanBar();
+  openPlan();
+}
+
 // ---- Shop card ----
-function cardTable(shop, party) {
+function cardTable(shop, p) {
   const order = [me.customer, ...Object.keys(CUSTOMERS).filter(c => c !== me.customer)];
   const cls = (c, side) => (c === me.customer ? `me me-${side}` : '');
-  const rows = slotTable(shop, party);
+  const rows = slotTable(shop, p);
   const nowDay = r => (r.plan === '30min' ? whichDay(r, new Date(), holidays) : null); // only 30分: free time also depends on last entry
-  const hasFallback = rows.some(r => [...Object.values(r.weekday), ...Object.values(r.other)].some(p => p.fallback));
-  const now = currentPrice(shop, { party, customer: me.customer, holidays });
+  const hasFallback = rows.some(r => [...Object.values(r.weekday), ...Object.values(r.other)].some(x => x.fallback));
+  const now = currentPrice(shop, { party: p, customer: me.customer, holidays });
   return `<p class="now-line">${now
       ? `いま <b>${esc(now.entry.period)} 30分 ${now.day === 'weekday' ? '平日' : DAY[now.entry.otherDay]}</b>：<b class="now-price">${cell(now.row)}${now.row.yen != null ? '円' : ''}</b>`
       : 'いまの時間帯の30分料金は掲載されていません'}</p>
@@ -223,8 +383,10 @@ function cardTable(shop, party) {
 function openCard(s, from = view?.type === 'compare' ? 'compare' : null) {
   view = { type: 'card', shop: s, from };
   const hasSolo = s.prices.some(p => p.party === 'solo');
-  let party = hasSolo ? me.party : 'group';
+  let p = hasSolo ? party() : 'group';
   const w = walk(s);
+  const chosen = plan.shopId === s.id;
+  const { total } = planTotal(s);
   panel.innerHTML = `
     <div class="panel-head">${from ? '<button class="back">← 比較に戻る</button>' : ''}<button class="close" aria-label="閉じる">×</button></div>
     <p class="brand" style="--brand:${BRAND_COLORS[s.brand]}">${esc(BRAND_NAMES[s.brand] ?? s.brand)}</p>
@@ -232,16 +394,28 @@ function openCard(s, from = view?.type === 'compare' ? 'compare' : null) {
     <p><a class="official" href="${esc(s.source_url)}" target="_blank" rel="noopener">公式ページで店舗情報を見る ↗</a></p>
     <p class="meta">${s.hours === '24h' ? '24時間営業' : `営業 ${esc(s.hours)}`}${w ? ` · ${w}` : ''}</p>
     <ul class="chips">${s.machines.map(m => `<li>${esc(m)}</li>`).join('')}</ul>
+    <div class="choose-row">
+      <button class="choose" aria-pressed="${chosen}">${chosen ? '✓ この店を選択中' : 'この店にする'}</button>
+      <button class="plan-peek"><span class="meta">${esc(planSummary())}・${esc(meLabel())}</span><br><b>${total != null ? `約${yen(total)}` : '料金を確認'}</b></button>
+    </div>
     <h3>料金（円・税込・ドリンク飲み放題）</h3>
-    ${hasSolo ? `<div class="toggle" role="group" aria-label="人数">${Object.entries(PARTIES).map(([k, v]) => `<button data-party="${k}" aria-pressed="${party === k}">${v}</button>`).join('')}</div>` : ''}
-    <div class="price-area">${cardTable(s, party)}</div>
+    ${hasSolo ? `<div class="toggle party-toggle" role="group" aria-label="料金表の人数">${Object.entries(PARTIES).map(([k, v]) => `<button data-party="${k}" aria-pressed="${p === k}">${v}</button>`).join('')}</div>` : ''}
+    <div class="price-area">${cardTable(s, p)}</div>
     ${s.notes.length ? `<ul class="notes">${s.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
     <p class="meta source">料金は${esc(s.prices_as_of)}時点 · 最終確認 ${esc(s.fetched_at)}</p>`;
-  panel.querySelectorAll('.toggle button').forEach(b => b.onclick = () => {
-    party = b.dataset.party;
-    panel.querySelectorAll('.toggle button').forEach(x => x.setAttribute('aria-pressed', x === b));
-    panel.querySelector('.price-area').innerHTML = cardTable(s, party);
+  panel.querySelectorAll('.party-toggle button').forEach(b => b.onclick = () => {
+    p = b.dataset.party;
+    panel.querySelectorAll('.party-toggle button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    panel.querySelector('.price-area').innerHTML = cardTable(s, p);
   });
+  panel.querySelector('.choose').onclick = () => {
+    plan.shopId = chosen ? null : s.id;
+    savePlan();
+    renderPlanBar();
+    openCard(s, from);
+    if (!chosen) showToast(`「${s.name}」をプランに設定しました`);
+  };
+  panel.querySelector('.plan-peek').onclick = () => { if (!chosen) { plan.shopId = s.id; savePlan(); renderPlanBar(); } openPlan(); };
   wirePanel();
   // Keep the tapped pin visible beside (desktop) or above (phone) the panel.
   const size = map.getSize(), pt = map.latLngToContainerPoint([s.lat, s.lng]);
@@ -255,7 +429,7 @@ function openCard(s, from = view?.type === 'compare' ? 'compare' : null) {
 const cmp = { plan: '30min', day: isDayType('weekend_holiday', jst(new Date()).ymd, holidays) ? 'other' : 'weekday' };
 function openCompare() {
   view = { type: 'compare' };
-  const list = shown.map(s => ({ s, w: walk(s), slots: slotTable(s, me.party).filter(r => r.plan === cmp.plan) }));
+  const list = shown.map(s => ({ s, w: walk(s), slots: slotTable(s, party()).filter(r => r.plan === cmp.plan) }));
   if (userPos) list.sort((a, b) => userPos.distanceTo([a.s.lat, a.s.lng]) - userPos.distanceTo([b.s.lat, b.s.lng]));
   else list.sort((a, b) => a.s.name.localeCompare(b.s.name, 'ja'));
 
@@ -281,13 +455,13 @@ function openCompare() {
   panel.innerHTML = `
     <div class="panel-head"><button class="close" aria-label="閉じる">×</button></div>
     <h2>料金比較</h2>
-    <p class="meta">${shown.length}店${filtered ? `（絞り込み中・エリア内${inArea.length}店）` : ''} · <b>${esc(meLabel())}</b> の料金（円・税込）${userPos ? ' · 近い順' : ''}</p>
+    <p class="meta">${shown.length}店${filtered ? `（絞り込み中・エリア内${inArea.length}店）` : ''} · <b>${esc(meLabel())}</b> の1人あたり料金（円・税込）${userPos ? ' · 近い順' : ''}</p>
     <div class="toggle" role="group" aria-label="プラン">${Object.entries(PLAN_TABS).map(([k, v]) => `<button data-plan="${k}" aria-pressed="${cmp.plan === k}">${v}</button>`).join('')}</div>
     <div class="toggle" role="group" aria-label="曜日">${[['weekday', '平日'], ['other', '休日・前日']].map(([k, v]) => `<button data-day="${k}" aria-pressed="${cmp.day === k}">${v}</button>`).join('')}</div>
     ${colList.length ? `<div class="table-scroll"><table class="prices compare">
       <thead><tr><th class="slot">店舗</th>${colList.map(c => `<th>${esc(label(c))}${running(c) ? ' <span class="now-badge">いま</span>' : ''}<br><span class="meta">${slotText(c.slot)}</span></th>`).join('')}</tr></thead>
       <tbody>${list.map(({ s, w, slots }) => `<tr>
-        <th class="slot"><button class="shop-link" data-id="${esc(s.id)}">${esc(s.name)}</button>${w ? `<br><span class="meta">${w}</span>` : ''}</th>
+        <th class="slot"><button class="shop-link" data-id="${esc(s.id)}">${esc(s.name)}</button>${plan.shopId === s.id ? ' <span class="now-badge">選択中</span>' : ''}${w ? `<br><span class="meta">${w}</span>` : ''}</th>
         ${colList.map((c, i) => {
           const hit = pick(slots, c);
           if (!hit?.p) return '<td></td>';
@@ -305,23 +479,28 @@ function openCompare() {
     Object.assign(cmp, b.dataset.plan ? { plan: b.dataset.plan } : { day: b.dataset.day });
     openCompare();
   });
-  panel.querySelectorAll('.shop-link').forEach(b => b.onclick = () => openCard(shops.find(s => s.id === b.dataset.id), 'compare'));
+  panel.querySelectorAll('.shop-link').forEach(b => b.onclick = () => openCard(byId(b.dataset.id), 'compare'));
   wirePanel();
 }
 compareBtn.onclick = openCompare;
 
 // ---- Panel plumbing ----
 function wirePanel() {
+  if (view.type !== 'plan') panel.onclick = null; // the plan editor uses one delegated handler
   panel.querySelector('.close').onclick = closePanel;
   const back = panel.querySelector('.back');
   if (back) back.onclick = openCompare;
+  const key = view.type + (view.shop?.id ?? '');
+  if (panel.dataset.view !== key || panel.hidden) panel.scrollTop = 0; // redrawing the same view keeps its scroll position
+  panel.dataset.view = key;
   panel.hidden = false;
-  panel.scrollTop = 0;
   document.body.classList.add('panel-open');
+  document.querySelectorAll('.popover').forEach(p => p.remove());
 }
 function closePanel() {
   view = null;
   panel.hidden = true;
+  panel.onclick = null;
   document.body.classList.remove('panel-open');
 }
 map.on('click', () => { closePanel(); document.querySelectorAll('.popover').forEach(p => p.remove()); });
