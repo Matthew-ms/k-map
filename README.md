@@ -3,6 +3,8 @@
 Phone-friendly map for comparing karaoke shops by brand, price, room type and machine.
 MVP: Jankara, Osaka Namba/Shinsaibashi.
 
+**Live:** https://matthew-ms.github.io/k-map/ (GitHub Pages, deploys on every push to `main`)
+
 ## How it works
 - `crawler/` (Node) fetches each chain's shop data offline and writes `data/shops.json`.
 - The site (`index.html`, `app.js`) is static: Leaflet + OpenStreetMap, reads `data/shops.json`, filters on the device.
