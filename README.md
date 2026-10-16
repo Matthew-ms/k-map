@@ -46,7 +46,9 @@ tests → full crawl → commit `data/` if changed → Pages rebuild. If any sho
 - Night slots belong to the evening they start: 02:00 Saturday uses Friday night's row.
 
 ## Phases
-1. Real-data map (done) · 2. Prices + shop card (done) · 2.5 UI: identity, site-style table, compare, area search, walking time (done) · 3. Filters + price now (done) ·
-Plan (price for my visit, done early): pick a shop with この店にする, set date / start / 30分 steps or free time; the plan card shows the estimated total for the party. 30分 stays are priced block by block by the slot running at each block's start.
+Done: 1. real-data map · 2. prices + shop card · 2.5 identity, site-style table, compare, area search, walking time ·
+3. filters + price now · 4. all Jankara (212 shops) · 5. weekly GitHub Actions update · 7. plan (price for my visit):
+pick a shop with この店にする, set date / start / 30分 steps or free time; the plan card shows the estimated total.
+30分 stays are priced block by block by the slot running at each block's start.
 
-4. All Jankara · 5. Weekly GitHub Actions + Pages · 6. More brands · 7. Price for my visit
+Next: 6. more brands (one parser per chain, same validator; OpenStreetMap fallback for location-only shops).
