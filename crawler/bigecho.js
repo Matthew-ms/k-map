@@ -3,6 +3,7 @@
 // not exact spellings: the time range is found anywhere in a table's heading, day columns are read as sets of days,
 // and a table it can't place is skipped and reported, never guessed.
 import * as cheerio from 'cheerio';
+import { existsSync, readFileSync } from 'node:fs';
 import { get, text as rawText, today, periodOf, parseSlot, normalizeMachine, isMachine } from './common.js';
 
 // NFKC: half-width katakana ("ﾌﾘｰﾀｲﾑ") and full-width digits ("３０分", "１８：００") become ordinary characters.
@@ -135,11 +136,14 @@ export async function crawl({ offline = false } = {}) {
   // One request returns every shop inside a rectangle; this one covers Japan.
   const list = JSON.parse(await get('https://shop.big-echo.jp/api/point?b=24,122,46,154', 'bigecho-points.json', { offline })).items
     .filter(s => /ビッグエコー|BIG ECHO/i.test(s.name) && !/閉店/.test(s.name)); // names like "…店（2026/10/13閉店）" are closed
+  // Last run's page addresses: one request per known shop instead of guess + store record + page.
+  const DATA = new URL('../data/shops.json', import.meta.url);
+  const known = new Map(existsSync(DATA) ? JSON.parse(readFileSync(DATA, 'utf8')).filter(x => x.brand === 'bigecho').map(x => [x.id, x.source_url]) : []);
   const shops = [], errors = [], warnings = [];
   for (const s of list) {
     // Usually the shop page's address is its name with spaces as hyphens. A wrong guess doesn't 404: the site
     // serves its home page, so "is this a shop page?" decides, and the shop's own record gives the real link.
-    let url = `https://big-echo.jp/shop_info/${encodeURIComponent(s.name.trim().replace(/\s+/g, '-'))}`;
+    let url = known.get(`bigecho-${s.key}`) ?? `https://big-echo.jp/shop_info/${encodeURIComponent(s.name.trim().replace(/\s+/g, '-'))}`;
     try {
       let html = await get(url, `bigecho-${s.key}.html`, { offline }).catch(e => (/HTTP 404/.test(e.message) ? '' : Promise.reject(e)));
       if (!html.includes('shop-detail')) {
