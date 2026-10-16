@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { whichDay, currentPrice, estimate } from '../price.js';
 import { parseShopPage } from '../crawler/jankara.js';
+import { parseShopPage as parseBigEcho } from '../crawler/bigecho.js';
 
 // 2026-10-15 is a Thursday. 2026-11-03 (Tue) is 文化の日, so Mon 11-02 is a 祝前 (holiday eve).
 const holidays = { '2026-11-03': '文化の日' };
@@ -77,4 +78,17 @@ test('139 (新瑞橋駅前店): 3時間パック is a free-time option, but only
   assert.ok(opts.some(o => o.entry.plan === 'pack'));
   const long = estimate(shop, { party: 'group', customer: 'general', start: at('2026-10-15', '12:00'), mode: 'time', blocks: 8, holidays });
   assert.notEqual(long.cheaperFree?.entry.plan, 'pack'); // 4 hours don't fit in a 3-hour pack
+});
+
+test('Big Echo なんば戎橋店: 学生会員 falls back to 学割 (marked), 会員 pays a separate drink', () => {
+  const shop = { prices: parseBigEcho(readFileSync(new URL('./fixtures/bigecho-1303.html', import.meta.url), 'utf8'), '10:00-5:00').prices };
+  const now = at('2026-10-15', '12:00'); // Thursday daytime
+  const student = currentPrice(shop, { party: 'group', customer: 'student_member', now, holidays }).row;
+  assert.deepEqual([student.yen, student.substitute, student.drinks_included], [150, 'student', true]);
+  const member = currentPrice(shop, { party: 'group', customer: 'member', now, holidays }).row;
+  assert.deepEqual([member.yen, member.drinks_included], [250, false]);
+  const solo = currentPrice(shop, { party: 'solo', customer: 'member', now, holidays }).row; // ひとりカラオケ(会員の場合)
+  assert.equal(solo.yen, 290);
+  const night = currentPrice(shop, { party: 'group', customer: 'general', now: at('2026-10-16', '20:00'), holidays }).row; // Fri evening
+  assert.equal(night.yen, 800); // 金～日・祝前日・祝日 column
 });

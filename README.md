@@ -13,11 +13,23 @@ MVP: Jankara, Osaka Namba/Shinsaibashi.
 - `data/shops.json` is the contract between the two halves.
 
 ## Run it
-    npm run crawl              # fetch + parse + validate → data/shops.json (all Jankara areas, ~12 min)
+    npm run crawl              # fetch + parse + validate all chains → data/shops.json (~30 min, chains side by side)
     npm run crawl -- --offline # re-parse crawler/cache/ without fetching (after a parser fix)
-    npm run crawl -- --areas=10 --offline  # one area only, for parser work (writes only that area!)
+    npm run crawl -- --brands=bigecho --offline  # one chain; the others keep their shops from the last run
+    npm run crawl -- --brands=jankara --areas=10 --offline  # parser work on one Jankara area (writes only that area!)
     npm test                   # parser + price-rule tests
     npm run serve              # http://localhost:8080
+
+## Chains
+| Chain | Shop list | Prices |
+|---|---|---|
+| Jankara (212) | `jankara.ne.jp/shop/ajax/?a={area}` JSON | shop page tables, incl. Super Jankara grid |
+| Big Echo | `shop.big-echo.jp/api/point?b=24,122,46,154` (all shops, with coordinates) | shop page tables; 学割→student; ひとりカラオケ(会員の場合) = 1名 member price; 1ドリンクオーダー制 → `drinks_included: false` (+1D) except 学生/シニア (drink bar) |
+| Manekineko | admin-ajax `loc_load_more` per prefecture (nonce from /locations/) | **not read**: per-shop PDF under /wp-content/uploads/, which robots.txt disallows → pin + link |
+| Karaoke-kan | sitemap `/shop/detail/{id}` | **not read**: price images → pin + link |
+
+Machine names are normalised across chains (`LIVEDAM Ai` → `LIVE DAM Ai`). A customer type a chain lacks falls back to the closest
+(学生会員 → student), marked † in the app.
 
 ## Weekly update
 `.github/workflows/crawl.yml` runs every Monday 03:00 JST (and from the Actions tab → "Weekly crawl" → "Run workflow"):

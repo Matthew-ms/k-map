@@ -1,47 +1,12 @@
 // Jankara: the area shop list is a JSON endpoint (the /shop/result/ HTML only holds a stale image map).
 // Prices, rooms and some amenities come from each shop page /shop/{id}/.
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import * as cheerio from 'cheerio';
+import { get, text, stripMachine, today, periodOf, parseSlot, PREFS } from './common.js';
 
-export const UA = 'K-map/0.1 (+https://github.com/Matthew-ms/k-map)';
-const CACHE = new URL('./cache/', import.meta.url);
-const DELAY_MS = 3000;
-
-const PREFS = ',北海道,青森県,岩手県,宮城県,秋田県,山形県,福島県,茨城県,栃木県,群馬県,埼玉県,千葉県,東京都,神奈川県,新潟県,富山県,石川県,福井県,山梨県,長野県,岐阜県,静岡県,愛知県,三重県,滋賀県,京都府,大阪府,兵庫県,奈良県,和歌山県,鳥取県,島根県,岡山県,広島県,山口県,徳島県,香川県,愛媛県,高知県,福岡県,佐賀県,長崎県,熊本県,大分県,宮崎県,鹿児島県,沖縄県'.split(',');
 const CUSTOMERS = { 学生会員: 'student_member', 学生: 'student', 会員: 'member', シニア: 'senior', 一般: 'general' };
 const DAYS = { 平日: 'weekday', 土日祝: 'weekend_holiday', 金土日祝祝前: 'fri_sun_hol_eve', 金土祝前: 'fri_sat_hol_eve', 日祝: 'sun_holiday' };
 
 const PERIODS_ONLY = ['朝', '昼', '夜', '深夜'];
-const stripMachine = name => name.replace(/（.*?）/g, '').trim();
-const text = el => el.text().replace(/\s+/g, ' ').trim();
-
-// Fetch with a raw cache so parser fixes can re-run without hitting the site (offline = cache only).
-let lastFetch = 0;
-async function get(url, file, { offline, headers = {} }) {
-  const path = new URL(file, CACHE);
-  if (offline) return readFileSync(path, 'utf8');
-  await new Promise(r => setTimeout(r, Math.max(0, lastFetch + DELAY_MS - Date.now())));
-  lastFetch = Date.now();
-  let res;
-  for (let attempt = 1; ; attempt++) { // one retry after a network blip or a server error
-    try { res = await fetch(url, { headers: { 'User-Agent': UA, ...headers } }); } catch (e) { if (attempt > 1) throw e; }
-    if (res?.ok || attempt > 1) break;
-    await new Promise(r => setTimeout(r, DELAY_MS * 3));
-  }
-  if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
-  const body = await res.text();
-  if (!existsSync(CACHE)) mkdirSync(CACHE);
-  writeFileSync(path, body);
-  return body;
-}
-
-// "8時～10時" / "6:30～10時" → "08:00-10:00"; 開店/閉店 (open/close) come from the shop hours, e.g. "11:00-5:00"
-function parseSlot(s, hours) {
-  const [open, close] = /^\d/.test(hours) ? hours.split('-') : [];
-  s = s.replace('開店', open ?? '?').replace('閉店', close ?? '?');
-  const t = [...s.matchAll(/(\d{1,2})(?:時|:(\d{2}))/g)].map(m => `${m[1].padStart(2, '0')}:${m[2] ?? '00'}`);
-  return t.length === 2 ? `${t[0]}-${t[1]}` : null;
-}
 
 // "最終受付16時※土日祝 15:30" → { last_entry: "16:00", last_entry_alt: { day: "weekend_holiday", time: "15:30" } }
 function parseLastEntry(s) {
@@ -55,9 +20,6 @@ function parseLastEntry(s) {
   }
   return out;
 }
-
-// Period for a table whose title doesn't name one, from the slot's start hour.
-const periodOf = slot => { const h = +slot?.slice(0, 2); return h >= 5 && h < 10 ? '朝' : h >= 10 && h < 19 ? '昼' : h >= 19 && h < 22 ? '夜' : '深夜'; };
 
 function parsePlan(label) {
   if (label.startsWith('30分')) return '30min';
@@ -189,17 +151,11 @@ export async function listAreas({ offline = false } = {}) {
   return ids;
 }
 
-// Jankara's own list of machine models, suffixes stripped. Used to tell a new model from a parse error.
-export async function knownMachines({ offline = false } = {}) {
-  return JSON.parse(await get('https://jankara.ne.jp/api/machine/', 'jankara-machines.json', { offline })).map(m => stripMachine(m.machineName));
-}
-
 // Returns { shops, errors }: one shop's surprise doesn't hide the others.
 export async function crawlArea(area, { offline = false } = {}) {
   const list = JSON.parse(await get(`https://jankara.ne.jp/shop/ajax/?a=${area}`, `jankara-area-${area}.json`, {
     offline, headers: { 'X-Requested-With': 'XMLHttpRequest' }, // without this the URL serves an HTML page
   }));
-  const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' }); // YYYY-MM-DD, Japan date
   const shops = [], errors = [];
   for (const s of list.filter(s => s.closeShopFlag === '0' && s.is_published !== 'FALSE')) {
     const url = `https://jankara.ne.jp/shop/${s.shopId}/`;
@@ -229,8 +185,19 @@ export async function crawlArea(area, { offline = false } = {}) {
       notes: page.notes,
       source_url: url,
       prices_as_of: page.prices_as_of,
-      fetched_at: today,
+      fetched_at: today(),
     });
+  }
+  return { shops, errors };
+}
+
+// All Jankara shops (or only some areas, for parser work).
+export async function crawl({ offline = false, areas } = {}) {
+  const shops = [], errors = [];
+  for (const a of areas ?? await listAreas({ offline })) {
+    const r = await crawlArea(a, { offline });
+    shops.push(...r.shops);
+    errors.push(...r.errors);
   }
   return { shops, errors };
 }

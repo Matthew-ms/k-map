@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>カラオケ ビッグエコー なんば戎橋店 - 大阪府大阪市 | カラオケ　ビッグエコー</title>
+    <meta charset="UTF-8"></meta>
+    <meta name="thumbnail" content="https://big-echo.jp/img/logo/tumbnail.jpg">
+    <script async src="https://ai-translate.com/translate.js?id=24t6t8RyY4N9JGjVGeFY"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.js?ver=1.11.2"></script>
+    <script type="text/javascript" src="/js/jquery-migrate.min.js?ver=1.2.1"></script>
+    <script type="text/javascript" src="/js/swiper.min.js"></script>
+    <script type="text/javascript" src="/js/remodal.min.js"></script>
+    <script type="text/javascript" src="/js/script.js"></script>
+    <script type="text/javascript" src="/js/common.js"></script>
+    <script type="text/javascript" src="/js/jquery.mousewheel.min.js?ver=3.1.13"></script>
+    <script type="text/javascript" src="/js/jquery.fancybox.min.js?ver=1.3.24"></script>
+    <script type="text/javascript" src="/js/jquery.easing.min.js?ver=1.4.1"></script>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"></link>
+    <link rel="stylesheet" type="text/css" href="/css/layout.css"></link>
+    <link rel="stylesheet" id="fancybox-css" href="/css/jquery.fancybox.min.css?ver=1.3.24" type="text/css" media="screen"></link>
+    <link rel="stylesheet" type="text/css" href="/css/index.css" />
+    <link rel="stylesheet" type="text/css" href="/css/page.css" />
+    <link rel="stylesheet" type="text/css" href="/css/spacial-page.css" />
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome-animation/0.2.1/font-awesome-animation.css" type="text/css" media="all" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css "rel="stylesheet">
+    <script type="text/javascript">
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','__gaTracker');
+
+    __gaTracker('create', 'UA-26853600-1', 'auto');
+    __gaTracker('set', 'forceSSL', true);
+    __gaTracker('send','pageview');
+    </script>
+	<script type="text/javascript">
+	   function changeLang(lang){
+			var searchParams = window.location.search;
+			var url = location.pathname;
+			if (searchParams.length > 0){
+				var arr = searchParams.substr(1).split('&');
+				arr = arr.filter(Boolean);
+				arr.forEach((item, index) => {
+					if(item.split('=')[0].toLowerCase() == 'lang') {
+						arr.splice(index, 1);
+					}
+				});
+				if (arr.length>0){
+					url += '?' + arr.join('&') + '&lang=' + lang;
+				}else{
+					url += '?lang=' + lang;
+				}
+			}else{
+				url += '?lang=' + lang;
+			}
+			location.href=url;
+		}
+	</script>
+    
+    
+	<script>
+	//<![CDATA[
+$(window).load(function(){
+	// タブ切り替え
+	var handler = $('ul#nav li a');
+	var url = document.URL;
+	var urlId = url.substr(url.lastIndexOf('#'));
+	var urlIdJudgment = urlId.lastIndexOf('#');
+	$('ul#nav').each(function(){
+		$('#tab-box > div:first').show();
+		var imgSrc = $('ul#nav li:first img').attr('src');
+		var imgDot = imgSrc.lastIndexOf('.');
+		var onSrc = imgSrc.substr(0, imgDot) + '_o' + imgSrc.substr(imgDot, 4);
+		$('ul#nav li:first img').attr('src',onSrc).addClass('tab-on');
+	});
+	// クリック時の動作
+	handler.click(function() {
+		// クリックしたタブ画像をオンの状態に
+		var imgSrc = $(this).children('img').attr('src').replace(/_o/g, "");
+		var imgDot = imgSrc.lastIndexOf('.');
+		var onSrc = imgSrc.substr(0, imgDot) + '_o' + imgSrc.substr(imgDot, 4);
+		$(this).children('img').attr('src',onSrc);
+		// タブ画像の切り替え
+		var imgOff = $('ul#nav li img.tab-on').attr('src').replace(/_o/g, "");
+		$('ul#nav li img.tab-on').attr('src',imgOff);
+		$('ul#nav li img').removeClass('tab-on');
+		$(this).children('img').addClass('tab-on');
+		// コンテンツの切り替え
+		var clickAttr = $(this).attr('href');
+		var showAttr = '#' + $('#tab-box > div:visible').attr('id');
+		if(clickAttr !== showAttr) {
+			$('#tab-box > div:visible').hide();
+			var showDiv = '#tab-box div' + clickAttr;
+			$(showDiv).show();
+			return false;
+		} else {
+			// 何度もクリックした場合もタブ画像をオンの状態に
+			var imgSrc = $(this).children('img').attr('src').replace(/_o/g, "");
+			var imgDot = imgSrc.lastIndexOf('.');
+			var onSrc = imgSrc.substr(0, imgDot) + '_o' + imgSrc.substr(imgDot, 4);
+			$(this).children('img').attr('src',onSrc);
+			return false;
+		}
+	});
+	// ロールオーバー
+	handler.hover(function() {
+		var classJudgment = $(this).children('img').attr('class');
+		if(classJudgment != 'tab-on') {
+			var imgSrc = $(this).children('img').attr('src');
+			var imgDot = imgSrc.lastIndexOf('.');
+			var onSrc = imgSrc.substr(0, imgDot) + '_o' + imgSrc.substr(imgDot, 4);
+			$(this).children('img').attr('src',onSrc);
+		}
+	}, function() {
+		var classJudgment = $(this).children('img').attr('class');
+		if(classJudgment != 'tab-on') {
+			var imgOff = $(this).children('img').attr('src').replace(/_o/g, "");
+			$(this).children('img').attr('src',imgOff);
+		}
+	});
+
+	// tooltip
+	tippy('[data-tippy-content]', {
+		theme: 'tooltip',
+		placement: 'top-start',
+		offset: [0, 5],
+		arrow: false
+	});
+});
+		//]]>
+	</script>
+	
+    <!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-4PFED80308"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'G-4PFED80308');
+	</script>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+</meta>
+<meta name="viewport" content="width=device-width,user-scalable=no,maximum-scale=1" />
+<link rel="author" href="https://plus.google.com/u/1/b/114747533331642151768/114747533331642151768/posts">
+</link>
+<script src="/js/jquery-1.10.2.min.js"></script>
+<script src="/js/jquery.easing.1.3.min.js"></script>
+<script src="/js/jquery.modal.js"></script>
+<script src="/js/jquery.mousewheel.min.js"></script>
+<script src="/js/jquery.sliderkit.1.9.2.pack.js"></script>
+<script src="/js/wp-emoji-release.min.js"></script>
+<script src="/js/site.js"></script>
+<script type="text/javascript" src="/js/slider.js"></script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://unpkg.com/tippy.js@6"></script>
+<link rel="stylesheet" type="text/css" href="/css/swiper.css" />
+<link rel="stylesheet" type="text/css" href="/css/shopinfo.css" />
+<link rel="stylesheet" type="text/css" href="/css/shopinfo_ex.css" />
+<link rel="stylesheet" type="text/css" href="/css/sliderkit-core.css" />
+<link rel="stylesheet" type="text/css" href="/css/tooltip.css" />
+<!-- SEO -->
+<meta name="description" itemprop="description" content="カラオケ ビッグエコーなんば戎橋店は、「御堂筋なんば駅」から徒歩1分！
+DAM直営店なので、全室DAMを完備！Blu-ray/DVDプレイヤー無料貸出（要予約）も実施中！飲み放題やドリンクバーもございます。フードやドリンクの持ち込み可能！
+プロジェクターが2面のデュアルプロジェクタールームもあり、大迫力のカラオケをお楽しみいただけます。
+ひとりカラオケや打ち上げや宴会の二次会、歓送迎会やママ会などのパーティーにもご利用いただけます。
+また、「学割」があるので「安いカラオケを利用したい」というニーズにもお応えできます。
+フリーWi-Fi完備でスマホ充電もできるので、打ち合わせや会議など、テレワークスペースとしてもご利用可能！
+なんば戎橋でカラオケをお探しの場合は、ぜひカラオケ ビッグエコーなんば戎橋店へお越しください。"/>
+<meta name="keywords" itemprop="keywords" content="大阪府,大阪市,なんば戎橋店,難波中央区,御堂筋線,なんばえびすばしてん,ナンバエビスバシテン," />
+<link rel="canonical" href="https://big-echo.jp/shop_info/カラオケ-ビッグエコー-なんば戎橋店" />
+<meta property="og:title" content="カラオケ ビッグエコー なんば戎橋店" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://big-echo.jp/shop_info/カラオケ-ビッグエコー-なんば戎橋店" />
+<meta property="og:site_name" content="カラオケ ビッグエコー" />
+<meta property="og:description" content ="カラオケ ビッグエコーなんば戎橋店は、「御堂筋なんば駅」から徒歩1分！
+DAM直営店なので、全室DAMを完備！Blu-ray/DVDプレイヤー無料貸出（要予約）も実施中！飲み放題やドリンクバーもございます。フードやドリンクの持ち込み可能！
+プロジェクターが2面のデュアルプロジェクタールームもあり、大迫力のカラオケをお楽しみいただけます。
+ひとりカラオケや打ち上げや宴会の二次会、歓送迎会やママ会などのパーティーにもご利用いただけます。
+また、「学割」があるので「安いカラオケを利用したい」というニーズにもお応えできます。
+フリーWi-Fi完備でスマホ充電もできるので、打ち合わせや会議など、テレワークスペースとしてもご利用可能！
+なんば戎橋でカラオケをお探しの場合は、ぜひカラオケ ビッグエコーなんば戎橋店へお越しください。" />
+<meta property="article:published_time" content="2026-09-23 00:51:25.0" />
+<meta property="article:modified_time" content ="2026-09-24 07:00:02.0" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@bigecho_jp" />
+<meta name="twitter:domain" content="big-echo.jp" />
+<meta name="twitter:description" content ="カラオケ ビッグエコーなんば戎橋店は、「御堂筋なんば駅」から徒歩1分！
+DAM直営店なので、全室DAMを完備！Blu-ray/DVDプレイヤー無料貸出（要予約）も実施中！飲み放題やドリンクバーもございます。フードやドリンクの持ち込み可能！
+プロジェクターが2面のデュアルプロジェクタールームもあり、大迫力のカラオケをお楽しみいただけます。
+ひとりカラオケや打ち上げや宴会の二次会、歓送迎会やママ会などのパーティーにもご利用いただけます。
+また、「学割」があるので「安いカラオケを利用したい」というニーズにもお応えできます。
+フリーWi-Fi完備でスマホ充電もできるので、打ち合わせや会議など、テレワークスペースとしてもご利用可能！
+なんば戎橋でカラオケをお探しの場合は、ぜひカラオケ ビッグエコーなんば戎橋店へお越しください。" />
+<!-- /SEO -->
+
+<script type="application/ld+json">{
+  "@context" : "https://schema.org",
+  "@type" : "LocalBusiness",
+  "name" : "カラオケ ビッグエコー なんば戎橋店",
+  "brand" : {
+    "@type" : "Brand",
+    "name" : "カラオケ ビッグエコー"
+  },
+  "description" : "カラオケ ビッグエコーなんば戎橋店は、「御堂筋なんば駅」から徒歩1分！\r\nDAM直営店なので、全室DAMを完備！Blu-ray/DVDプレイヤー無料貸出（要予約）も実施中！飲み放題やドリンクバーもございます。フードやドリンクの持ち込み可能！\r\nプロジェクターが2面のデュアルプロジェクタールームもあり、大迫力のカラオケをお楽しみいただけます。\r\nひとりカラオケや打ち上げや宴会の二次会、歓送迎会やママ会などのパーティーにもご利用いただけます。\r\nまた、「学割」があるので「安いカラオケを利用したい」というニーズにもお応えできます。\r\nフリーWi-Fi完備でスマホ充電もできるので、打ち合わせや会議など、テレワークスペースとしてもご利用可能！\r\nなんば戎橋でカラオケをお探しの場合は、ぜひカラオケ ビッグエコーなんば戎橋店へお越しください。",
+  "image" : [
+    "https://big-echo.jp/logo_1x1.jpg",
+    "https://big-echo.jp/logo_4x3.jpg",
+    "https://big-echo.jp/logo_16x9.jpg",
+    {
+      "@type" : "ImageObject",
+      "url" : "https://big-echo.jp/shop_images/room/1303/202506_1303_1_71823.jpg",
+      "caption" : "なんば戎橋店　デュアルプロジェクタールーム"
+    },
+    {
+      "@type" : "ImageObject",
+      "url" : "https://big-echo.jp/shop_images/room/1303/202504_1303_2_69130.jpg",
+      "caption" : "なんば戎橋店　デュアルプロジェクタールーム"
+    },
+    {
+      "@type" : "ImageObject",
+      "url" : "https://big-echo.jp/shop_images/room/1303/202504_1303_3_69130.jpg",
+      "caption" : "なんば戎橋店　ルーム"
+    },
+    {
+      "@type" : "ImageObject",
+      "url" : "https://big-echo.jp/shop_images/room/1303/202504_1303_4_69130.jpg",
+      "caption" : "なんば戎橋店　ルーム"
+    },
+    {
+      "@type" : "ImageObject",
+      "url" : "https://big-echo.jp/shop_images/room/1303/202504_1303_5_69130.jpg",
+      "caption" : "なんば戎橋店　ルーム"
+    },
+    {
+      "@type" : "ImageObject",
+      "url" : "https://big-echo.jp/shop_images/room/1303/202504_1303_6_70443.jpg",
+      "caption" : "なんば戎橋店　デュアルプロジェクタールーム"
+    }
+  ],
+  "address" : {
+    "@type" : "PostalAddress",
+    "streetAddress" : "中央区難波 3-5-1　ナンバ一番ビルB1F",
+    "addressLocality" : "大阪市",
+    "addressRegion" : "大阪府",
+    "postalCode" : "5420076",
+    "addressCountry" : "JP"
+  },
+  "geo" : {
+    "@type" : "GeoCoordinates",
+    "latitude" : 34.666738,
+    "longitude" : 135.501151
+  },
+  "url" : "https://big-echo.jp/?p=21039",
+  "telephone" : "+81666308851",
+  "potentialAction" : {
+    "@type" : "ReserveAction",
+    "target" : {
+      "@type" : "EntryPoint",
+      "urlTemplate" : "https://big-echo.tottokun.com/ownedmedia/ownedmedia_immediately_be/ZzFGGRGtCMcKH1o",
+      "inLanguage" : "ja-JP",
+      "actionPlatform" : [
+        "http://schema.org/DesktopWebPlatform",
+        "http://schema.org/IOSPlatform",
+        "http://schema.org/AndroidPlatform"
+      ]
+    },
+    "result" : {
+      "@type" : "Reservation",
+      "name" : "カンタンWeb予約"
+    }
+  },
+  "paymentAccepted" : "バーコード決済（d払い、楽天ペイ、PayPay、メルペイ、auPAY、Alipay、WeChat Pay）、電子マネー（iD、楽天Edy、QUICPay）、交通系電子マネー（Kitaca、Suica、PASMO、TOICA、manaca、ICOCA、SUGOCA、nimoca、はやかけん）、クレジットカード（VISA、MASTER、JCB、Diners Club、American Express）、お食事券（ジェフグルメカード）",
+  "menityFeature" : [
+    {
+      "@type" : "LocationFeatureSpecification",
+      "name" : "駐車場",
+      "value" : "なし"
+    },
+    {
+      "@type" : "LocationFeatureSpecification",
+      "name" : "取り扱い機種",
+      "value" : [
+        "LIVE DAM WAO!",
+        "LIVE DAM AiR"
+      ]
+    }
+  ],
+  "additionalProperty" : [
+    {
+      "@type" : "PropertyValue",
+      "name" : "店舗からのお知らせ",
+      "value" : "<style>\r\n.example3{\r\n  background: linear-gradient(to right,#e60000,#f39800,#fff100,#009944,#0068b7,#1d2088,#920783);\r\n  -webkit-background-clip: text;\r\n  -webkit-text-fill-color: transparent;\r\n  display: inline-block;\r\n}\r\n</style>\r\n\r\n<div style=\"text-align: center;\">\r\n\r\n最新機種<br>\r\n\r\n<div class=\"example3\">LIVEDAM WAO!</div>多数稼働中！<br>\r\n＼おはカラフリータイム／<br>\r\n♪期間限定990円で全日実施中♪<br>\r\n学生は800円でドリンクバー付き！！<br>\r\nポテト食べ放題（400円/人）も実施中！！<br>\r\n♬金・土・祝前日は24時間営業中♬<br>\r\n</div>"
+    },
+    {
+      "@type" : "PropertyValue",
+      "name" : "お店からのメッセージ",
+      "value" : "カラオケ ビッグエコーなんば戎橋店は、「御堂筋なんば駅」から徒歩1分！\r\nDAM直営店なので、全室DAMを完備！Blu-ray/DVDプレイヤー無料貸出（要予約）も実施中！飲み放題やドリンクバーもございます。フードやドリンクの持ち込み可能！\r\nプロジェクターが2面のデュアルプロジェクタールームもあり、大迫力のカラオケをお楽しみいただけます。\r\nひとりカラオケや打ち上げや宴会の二次会、歓送迎会やママ会などのパーティーにもご利用いただけます。\r\nまた、「学割」があるので「安いカラオケを利用したい」というニーズにもお応えできます。\r\nフリーWi-Fi完備でスマホ充電もできるので、打ち合わせや会議など、テレワークスペースとしてもご利用可能！\r\nなんば戎橋でカラオケをお探しの場合は、ぜひカラオケ ビッグエコーなんば戎橋店へお越しください。"
+    },
+    {
+      "@type" : "PropertyValue",
+      "name" : "関連情報",
+      "value" : [
+        {
+          "@type" : "WebPage",
+          "name" : "大阪市プレミアム付商品券参加",
+          "url" : "https://osaka-city-premium2026.jp/"
+        }
+      ]
+    },
+    {
+      "@type" : "PropertyValue",
+      "name" : "採用情報",
+      "value" : [
+        {
+          "@type" : "WebPage",
+          "name" : "ビッグエコーなんば戎橋店　アルバイト募集中！",
+          "url" : "https://karaoke-bigecho-job.net/jobfind-pc/job/All/1911"
+        }
+      ]
+    },
+    {
+      "@type" : "PropertyValue",
+      "name" : "周辺の店舗",
+      "value" : [
+        {
+          "@type" : "WebPage",
+          "name" : "カラオケ ビッグエコーなんば千日前店",
+          "url" : "https://big-echo.jp/shop_info/ビッグエコー千日前店"
+        },
+        {
+          "@type" : "WebPage",
+          "name" : "カラオケ ビッグエコーなんばアムザ店",
+          "url" : "https://big-echo.jp/shop_info/ビッグエコーなんばアムザ店"
+        },
+        {
+          "@type" : "WebPage",
+          "name" : "カラオケ ビッグエコー本町つるやビル店",
+          "url" : "https://big-echo.jp/shop_info/カラオケ-ビッグエコー本町つるやビル店"
+        },
+        {
+          "@type" : "WebPage",
+          "name" : "カラオケ ビッグエコー堺筋本町店",
+          "url" : "https://big-echo.jp/shop_info/カラオケ　ビッグエコー堺筋本町"
+        },
+        {
+          "@type" : "WebPage",
+          "name" : "カラオケ ビッグエコー堺筋本町安土町店",
+          "url" : "https://big-echo.jp/shop_info/堺筋本町安土町店"
+        }
+      ]
+    },
+    {
+      "@type" : "PropertyValue",
+      "name" : "備考・注意事項",
+      "value" : "カラオケ ビッグエコーはDAM直営店だから、全室DAM完備！<br>きれいで清潔、快適な空間でカラオケが楽しめます！<br>歓送迎会、女子会、推し活、誕生日会でのご利用大歓迎！<br>全店フリーWi-Fi完備で、テレワークやリモート会議にもご利用いただけます！<br><br>※料金は予告なく変更になる場合がございます。<br>\r\n※ゴールデンウィーク・お盆・年末年始などの特別期間は料金が異なる場合がございます。<br>※学割ご利用の際は、学生証のご提示をお願いする場合がございます。<br>※混雑時には、ご利用時間を制限させていただく場合がございます。（フリータイムを含む）<br>※未成年者のご利用は、各都道府県の条例または自主規制に基づき運営しております。<a href=\"https://big-echo.jp/faq/qa-046/\">詳細はこちら</a>。<br>※20歳未満への酒類提供および喫煙は固くお断りさせていただきます。"
+    }
+  ],
+  "hasOfferCatalog" : {
+    "@type" : "OfferCatalog",
+    "name" : "料金表",
+    "itemListElement" : [
+      {
+        "@type" : "OfferCatalog",
+        "name" : "30分料金（税込）",
+        "itemListElement" : [
+          {
+            "@type" : "Offer",
+            "name" : "OPEN〜18:00",
+            "description" : "1ドリンクオーダー制",
+            "businessFunction" : "http://purl.org/goodrelations/v1#ProvideService",
+            "priceSpecification" : {
+              "@type" : "PriceSpecification",
+              "minPrice" : 150,
+              "maxPrice" : 430,
+              "priceCurrency" : "JPY"
+            }
+          },
+          {
+            "@type" : "Offer",
+            "name" : "18:00〜CLOSE",
+            "description" : "1ドリンクオーダー制",
+            "businessFunction" : "http://purl.org/goodrelations/v1#ProvideService",
+            "priceSpecification" : {
+              "@type" : "PriceSpecification",
+              "minPrice" : 350,
+              "maxPrice" : 800,
+              "priceCurrency" : "JPY"
+            }
+          }
+        ]
+      },
+      {
+        "@type" : "OfferCatalog",
+        "name" : "フリータイム・パック料金（税込）",
+        "itemListElement" : [
+          {
+            "@type" : "Offer",
+            "name" : "フリータイム※OPEN〜19:00",
+            "description" : "1ドリンクオーダー制",
+            "businessFunction" : "http://purl.org/goodrelations/v1#ProvideService",
+            "priceSpecification" : {
+              "@type" : "PriceSpecification",
+              "minPrice" : 960,
+              "maxPrice" : 2100,
+              "priceCurrency" : "JPY"
+            }
+          },
+          {
+            "@type" : "Offer",
+            "name" : "おはカラ フリータイム※OPEN～15：00",
+            "description" : "1ドリンクオーダー制",
+            "businessFunction" : "http://purl.org/goodrelations/v1#ProvideService",
+            "priceSpecification" : {
+              "@type" : "PriceSpecification",
+              "minPrice" : 800,
+              "maxPrice" : 1240,
+              "priceCurrency" : "JPY"
+            }
+          },
+          {
+            "@type" : "Offer",
+            "name" : "昼3時間パック※OPEN～18：00",
+            "description" : "1ドリンクオーダー制",
+            "businessFunction" : "http://purl.org/goodrelations/v1#ProvideService",
+            "priceSpecification" : {
+              "@type" : "PriceSpecification",
+              "minPrice" : 1300,
+              "maxPrice" : 2290,
+              "priceCurrency" : "JPY"
+            }
+          },
+          {
+            "@type" : "Offer",
+            "name" : "夕方フリータイム※15:00〜21:00",
+            "description" : "1ドリンクオーダー制",
+            "businessFunction" : "http://purl.org/goodrelations/v1#ProvideService",
+            "priceSpecification" : {
+              "@type" : "PriceSpecification",
+              "minPrice" : 1320,
+              "maxPrice" : 2920,
+              "priceCurrency" : "JPY"
+            }
+          },
+          {
+            "@type" : "Offer",
+            "name" : "ロングフリータイム※18:00～翌5:00",
+            "description" : "1ドリンクオーダー制",
+            "businessFunction" : "http://purl.org/goodrelations/v1#ProvideService",
+            "priceSpecification" : {
+              "@type" : "PriceSpecification",
+              "minPrice" : 1450,
+              "maxPrice" : 3650,
+              "priceCurrency" : "JPY"
+            }
+          },
+          {
+            "@type" : "Offer",
+            "name" : "深夜フリータイム※22:00～翌5:00",
+            "description" : "1ドリンクオーダー制",
+            "businessFunction" : "http://purl.org/goodrelations/v1#ProvideService",
+            "priceSpecification" : {
+              "@type" : "PriceSpecification",
+              "minPrice" : 1100,
+              "maxPrice" : 3150,
+              "priceCurrency" : "JPY"
+            }
+          },
+          {
+            "@type" : "Offer",
+            "name" : "夜3時間パック※18:00～CLOSE",
+            "description" : "1ドリンクオーダー制",
+            "businessFunction" : "http://purl.org/goodrelations/v1#ProvideService",
+            "priceSpecification" : {
+              "@type" : "PriceSpecification",
+              "minPrice" : 1930,
+              "maxPrice" : 3440,
+              "priceCurrency" : "JPY"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "keywords" : [
+    "ドリンクバー（昼のみ）",
+    "ドリンクバー（終日）",
+    "飲み放題プランあり",
+    "喫煙所あり",
+    "オフィスボックス(テレワーク)利用可",
+    "バリアフリー",
+    "プロジェクタールームあり",
+    "デュアルプロジェクタールームあり",
+    "Blu-ray/DVDプレイヤー無料貸出(要予約)",
+    "無料Wi-Fiあり",
+    "スマホ充電器無料貸出",
+    "荷物預かりサービスあり",
+    "スマホ接続キット無料貸出(要予約)",
+    "LIVE DAM AiR",
+    "持ち込みOK",
+    "LIVE DAM WAO!",
+    "だれでもトイレ",
+    "4本マイク",
+    "大阪府",
+    "大阪市",
+    "なんば戎橋店",
+    "難波中央区",
+    "御堂筋線",
+    "なんばえびすばしてん",
+    "ナンバエビスバシテン"
+  ],
+  "openingHoursSpecification" : [
+    {
+      "@type" : "OpeningHoursSpecification",
+      "dayOfWeek" : "Monday",
+      "opens" : "10:00",
+      "closes" : "05:00"
+    },
+    {
+      "@type" : "OpeningHoursSpecification",
+      "dayOfWeek" : "Tuesday",
+      "opens" : "10:00",
+      "closes" : "05:00"
+    },
+    {
+      "@type" : "OpeningHoursSpecification",
+      "dayOfWeek" : "Wednesday",
+      "opens" : "10:00",
+      "closes" : "05:00"
+    },
+    {
+      "@type" : "OpeningHoursSpecification",
+      "dayOfWeek" : "Thursday",
+      "opens" : "10:00",
+      "closes" : "05:00"
+    },
+    {
+      "@type" : "OpeningHoursSpecification",
+      "dayOfWeek" : "Friday",
+      "opens" : "10:00",
+      "closes" : "08:00"
+    },
+    {
+      "@type" : "OpeningHoursSpecification",
+      "dayOfWeek" : "Saturday",
+      "opens" : "08:00",
+      "closes" : "08:00"
+    },
+    {
+      "@type" : "OpeningHoursSpecification",
+      "dayOfWeek" : [
+        "Sunday",
+        "PublicHolidays"
+      ],
+      "opens" : "08:00",
+      "closes" : "05:00"
+    }
+  ]
+}</script>
+</head>
+
+<body>
+    <div id="container">
+        <a name="top" id="top"></a>
+        <header class="header">
+            <div class="flex">
+                <h1 class="logo"><a href ="/" title="カラオケ BIG ECHO"><img src="/img/be_dam_weblogo.png" alt="カラオケ BIG ECHO"/></a></h1>
+                <div class="navi-area">
+                    <div class="navi-top">
+						<div class="lang dropdown">
+							<ul>
+								<li>
+									<a href="javascript:vold(0)" title=""><img src="https://big-echo.jp/wordpress/wp-content/themes/bigecho/img/icon/lang-icon.svg" alt="言語選択"><span class="lang_text">Language</span></a>
+<!--
+							<ul>
+								<li><a href="javascript:vold(0)" title=""><img
+										src="/img/icon/lang-icon.svg"
+										alt="言語選択"><span class="lang_text">JAPANESE</span></a>
+									<ul class="sub"
+										style="opacity: 0; visibility: hidden; transform: translateY(10px);">
+										<li><a href="/" title="">JAPANESE</a></li>
+										<li><a href="/en/"
+											title="">ENGLISH</a></li>
+									</ul></li>
+							</ul>
+ -->
+									<ul class="sub" style="opacity: 0; visibility: hidden; transform: translateY(10px);">
+										<a href="javascript:void(0)" onclick="changeLang('ja')"><span data-ignore-translate="true">JAPANESE</span></a>
+										<a href="javascript:void(0)" onclick="changeLang('en')"><span data-ignore-translate="true">ENGLISH</span></a>
+										<a href="javascript:void(0)" onclick="changeLang('ko')"><span data-ignore-translate="true">한국어</span></a>
+										<a href="javascript:void(0)" onclick="changeLang('zh')"><span data-ignore-translate="true">简体</span></a>
+										<a href="javascript:void(0)" onclick="changeLang('zh-tw')"><span data-ignore-translate="true">繁體</span></a>
+										<a href="javascript:void(0)" onclick="changeLang('fr')"><span data-ignore-translate="true">Français</span></a>
+										<a href="javascript:void(0)" onclick="changeLang('es')"><span data-ignore-translate="true">Español</span></a>
+										<a href="javascript:void(0)" onclick="changeLang('de')"><span data-ignore-translate="true">Deutsch</span></a>
+										<a href="javascript:void(0)" onclick="changeLang('it')"><span data-ignore-translate="true">Italiano</span></a>
+									</ul>
+								</li>
+							</ul>
+						</div>
+<!--
+						<dl class="font-size">
+                            <dt>文字サイズ</dt>
+                            <dd id="fsM" class="active"><a href="javascript:void(0);" title="標準">標準</a></dd>
+                            <dd id="fsL"><a href="javascript:void(0);" title="拡大">拡大</a></dd>
+                        </dl>
+-->
+                        <a class="pick-menu" href="https://karaoke-bigecho-job.net/jobfind-pc/" title="採用情報" target="_blank"><i class="icon-mic"></i>採用情報</a>
+                        <div id="nav-toggle">
+                            <div>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <nav class="main-navi">
+                        <ul>
+                            <li><a href="/" title="ホーム"><i class="icon-home"></i>ホーム</a></li>
+                            <li class="has-children">
+                                <a href="https://big-echo.jp/room_facilities" title="ルーム"><i class="icon-room"></i>ルーム・設備</a>
+                            </li>
+                            <li><a href="https://big-echo.jp/food_and_drink" title="フード＆ドリンク"><i class="icon-cutlery"></i>フード＆ドリンク</a></li>
+                            <!--<li><a href="https://big-echo.jp/bigecho_takeout/?gnavi" title="テイクアウト注文"><i class="material-icons">phone_iphone</i>テイクアウト注文</a></li>-->
+                        	<li class="has-children">
+                                <a href="https://big-echo.jp/collaboration" title="コラボキャンペーン"><i class="icon-note"></i>コラボキャンペーン</a>
+								<div class="sub-navi" style="opacity: 0; visibility: hidden; transform: translateY(10px);">
+                                </div>
+                           </li>
+                           <li><a href="https://big-echo.jp/campaign/giftee/?gnavi" title="カラオケギフト"><i class="material-icons">card_giftcard</i>カラオケギフト</a></li>
+                           <li><a href="https://big-echo.jp/project/oshigototaiken/" title="職場体験学習"><i class="icon-mic"></i>職場体験学習</a></li>
+						                              <li><a href="https://big-echo.jp/sustainability/" title="サステナビリティ"><i class="icon-sustain"></i>サステナビリティ</a></li>
+													                             <li><a href="https://karaoke-bigecho-job.net/jobfind-pc/" title="採用情報" target="_blank"><i class="fas fa-user"></i>採用情報</a></li>
+                        </ul>
+                        <ul class="pc-navi">
+                            <li><a href="/shop_search" title="店舗検索・予約" class="radius-btn"><i class="icon-glass"></i>店舗検索・予約</a></li>
+<!--
+                            <li><a href="https://big-echo.jp/coupon-2" title="クーポン" class="radius-btn"><i class="icon-card"></i>クーポン</a></li>
+                            <li>
+                                <a class="app-btn googleplay" target="_blank" href="https://play.google.com/store/apps/details?id=jp.co.dkkaraoke.app.bigecho&hl=ja"><img src="/img/bnr/batch_play_store.png" alt="Google Playでカラオケ ビッグエコーの公式アプリをダウンロード" /></a>
+                            </li>
+                            <li>
+                                <a class="app-btn appstore" target="_blank" href="https://itunes.apple.com/jp/app/id1289531868"><img src="/img/bnr/batch_app_store.svg" alt="AppStoreでカラオケ ビッグエコーの公式アプリをダウンロード" /></a>
+                            </li>
+-->
+                        </ul>
+                        <ul class="simple-navi">
+                            <li><a href="https://big-echo.jp/member" title="">会員募集</a></li>
+                            <li><a href="https://big-echo.jp/studio/" title="">撮影・収録募集</a></li>
+                            <li><a href="https://big-echo.jp/news_info" title="">ニュース</a></li>
+                            <li><a href="https://big-echo.jp/faq" title="">よくあるご質問</a></li>
+                            <li><a href="https://www.dkkaraoke.co.jp/business/karaoke_box/property.html" title="物件情報募集" target="_blank">物件情報募集</a></li>
+                        </ul>
+                        <ul class="col-navi">
+                            <li><a href="https://www.clubdam.com/app/inquiry/register.html?inquiryMstId=86" title="お問い合わせ" target="_blank">お問い合わせ</a></li>
+                            <li><a href="https://www.dkkaraoke.co.jp/use/" title="サイトのご利用について">サイトのご利用について</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <div class="contactalign">
+            
+<body >
+<div id="wrapper">
+<div class="breadcrumbs">
+	<ul class="wrap">
+		<li><a href="/" title="トップ">トップ</a></li>
+		<li>店舗詳細</li>
+	</ul>
+</div>
+<section class="shop-page">
+	<div class="wrap">
+	<h1 class="grad-h pc-only" id="grad-h" >
+	<img src="/images/contents/brand_logo1.png"  alt="">カラオケ ビッグエコー なんば戎橋店</img></h1>
+	<h1 class="grad-h sp-only" id="grad-h"><img src="/images/contents/brand_logo1.png"  alt="">カラオケ ビッグエコー なんば戎橋店</img></h1>
+	<div class="shop-detail">
+			<div class="left">
+				<article class="reserve">
+					
+					<a class="booking-btn" href="https://big-echo.tottokun.com/ownedmedia/ownedmedia_immediately_be/ZzFGGRGtCMcKH1o" target="_blank" >
+					<span><i class="icon-booking3"></i>カンタンWeb予約</span></a>
+				</article>
+				<div class="map" id="map">
+					<iframe src="https://maps.google.co.jp/maps?output=embed&amp;q=大阪市,中央区難波 3-5-1,カラオケ ビッグエコー なんば戎橋店&amp;ll=34.666738,135.501151&amp;z=15"></iframe>
+				</div>
+				<div class="message" data-tab-content="detail">
+					
+						<!-- 店舗紹介文 -->
+						<div>
+							<div>
+								<p>カラオケ ビッグエコーなんば戎橋店は、「御堂筋なんば駅」から徒歩1分！<br />
+DAM直営店なので、全室DAMを完備！Blu-ray/DVDプレイヤー無料貸出（要予約）も実施中！飲み放題やドリンクバーもございます。フードやドリンクの持ち込み可能！<br />
+プロジェクターが2面のデュアルプロジェクタールームもあり、大迫力のカラオケをお楽しみいただけます。<br />
+ひとりカラオケや打ち上げや宴会の二次会、歓送迎会やママ会などのパーティーにもご利用いただけます。<br />
+また、「学割」があるので「安いカラオケを利用したい」というニーズにもお応えできます。<br />
+フリーWi-Fi完備でスマホ充電もできるので、打ち合わせや会議など、テレワークスペースとしてもご利用可能！<br />
+なんば戎橋でカラオケをお探しの場合は、ぜひカラオケ ビッグエコーなんば戎橋店へお越しください。</p>
+							</div>
+						</div>
+					
+				</div>
+
+				<!-- 店舗外観・ルーム写真 -->
+				<div class="gallery" data-tab-content="detail">
+					<div >
+						<div class="slider">
+							<div class="swiper-container">
+								<div class="swiper-wrapper">
+									
+										<div class="swiper-slide">
+											<figure>
+												<img src="/shop_images/room/1303/202506_1303_1_71823.jpg"  alt="" ></img>
+												<figcaption>なんば戎橋店　デュアルプロジェクタールーム</figcaption>
+											</figure>
+										</div>
+									
+									
+										<div class="swiper-slide">
+											<figure>
+												<img src="/shop_images/room/1303/202504_1303_2_69130.jpg"   alt="" ></img>
+												<figcaption>なんば戎橋店　デュアルプロジェクタールーム</figcaption>
+											</figure>
+										</div>
+									
+									
+										<div class="swiper-slide">
+											<figure>
+												<img src="/shop_images/room/1303/202504_1303_3_69130.jpg"  alt="" ></img>
+												<figcaption>なんば戎橋店　ルーム</figcaption>
+											</figure>
+										</div>
+									
+									
+										<div class="swiper-slide">
+											<figure>
+												<img src="/shop_images/room/1303/202504_1303_4_69130.jpg"  alt="" ></img>
+												<figcaption>なんば戎橋店　ルーム</figcaption>
+											</figure>
+										</div>
+									
+									
+										<div class="swiper-slide">
+											<figure>
+												<img src="/shop_images/room/1303/202504_1303_5_69130.jpg"  alt="" ></img>
+												<figcaption>なんば戎橋店　ルーム</figcaption>
+											</figure>
+										</div>
+									
+									
+										<div class="swiper-slide">
+											<figure>
+												<img src="/shop_images/room/1303/202504_1303_6_70443.jpg"  alt="" ></img>
+												<figcaption>なんば戎橋店　デュアルプロジェクタールーム</figcaption>
+											</figure>
+										</div>
+									
+									
+									
+									
+									
+									</div>
+								</div>
+								<div class="swiper-button-gallery">
+									<div class="swiper-button-prev-gallery"></div>
+									<div class="swiper-button-next-gallery"></div>
+								</div>
+								<div class="swiper-pagination-gallery"></div>
+							</div>
+							<script>
+								(function() {
+									var swiper;
+									$(window).load(function() {
+										swiper = new Swiper('.gallery .swiper-container', {
+											direction: 'horizontal',
+											loop: true,
+											pagination: {
+												el: '.gallery .swiper-pagination-gallery',
+												clickable: true,
+											},
+											navigation: {
+												nextEl: '.gallery .swiper-button-next-gallery',
+												prevEl: '.gallery .swiper-button-prev-gallery',
+											}
+										});
+									});
+								})();
+							</script>
+						</div>
+					</div>
+					<div class="subinfo" data-tab-content="detail">
+						<div class="detail">
+							<dl>
+								<dt>周辺の店舗</dt>
+								<dd>
+									<ul class="store-list">
+										
+											<li><a href="https://big-echo.jp/shop_info/ビッグエコー千日前店" target="_blank">なんば千日前店</a></li>
+										
+											<li><a href="https://big-echo.jp/shop_info/ビッグエコーなんばアムザ店" target="_blank">なんばアムザ店</a></li>
+										
+											<li><a href="https://big-echo.jp/shop_info/カラオケ-ビッグエコー本町つるやビル店" target="_blank">本町つるやビル店</a></li>
+										
+											<li><a href="https://big-echo.jp/shop_info/カラオケ　ビッグエコー堺筋本町" target="_blank">堺筋本町店</a></li>
+										
+											<li><a href="https://big-echo.jp/shop_info/堺筋本町安土町店" target="_blank">堺筋本町安土町店</a></li>
+										
+										
+									</ul>
+								</dd>
+							</dl>
+							
+							<dl class="html_comment">
+								<dt>
+									備考・<br>注意事項
+								</dt>
+								<dd>カラオケ ビッグエコーはDAM直営店だから、全室DAM完備！<br>きれいで清潔、快適な空間でカラオケが楽しめます！<br>歓送迎会、女子会、推し活、誕生日会でのご利用大歓迎！<br>全店フリーWi-Fi完備で、テレワークやリモート会議にもご利用いただけます！<br><br>※料金は予告なく変更になる場合がございます。<br>
+※ゴールデンウィーク・お盆・年末年始などの特別期間は料金が異なる場合がございます。<br>※学割ご利用の際は、学生証のご提示をお願いする場合がございます。<br>※混雑時には、ご利用時間を制限させていただく場合がございます。（フリータイムを含む）<br>※未成年者のご利用は、各都道府県の条例または自主規制に基づき運営しております。<a href="https://big-echo.jp/faq/qa-046/">詳細はこちら</a>。<br>※20歳未満への酒類提供および喫煙は固くお断りさせていただきます。</dd>
+							</dl>
+							
+						</div>
+					</div>
+			</div>
+			<div class="right">
+				
+					<div class="information html_comment">
+						<dl>
+							<dt>店舗からのお知らせ</dt>
+							<dd><style>
+.example3{
+  background: linear-gradient(to right,#e60000,#f39800,#fff100,#009944,#0068b7,#1d2088,#920783);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+</style>
+
+<div style="text-align: center;">
+
+最新機種<br>
+
+<div class="example3">LIVEDAM WAO!</div>多数稼働中！<br>
+＼おはカラフリータイム／<br>
+♪期間限定990円で全日実施中♪<br>
+学生は800円でドリンクバー付き！！<br>
+ポテト食べ放題（400円/人）も実施中！！<br>
+♬金・土・祝前日は24時間営業中♬<br>
+</div></dd>
+						</dl>
+					</div>
+				
+				<ul class="tab-navi">
+					<li><a title="詳細情報" class="active"  data-tab="detail" >詳細情報</a></li>
+					<li><a title="料金表"   data-tab="price" >料金表</a></li>
+					<!--<li><a title="クーポン" data-tab="coupon" >クーポン</a></li>-->
+				</ul>
+				<div class="outline" data-tab-content="detail">
+					<div class="detail">
+						<dl>
+						<dt>営業時間</dt>
+						<dd >
+							<div>月曜日  10:00～5:00</div>
+							<div>火曜日  10:00～5:00</div>
+      					    <div>水曜日  10:00～5:00</div>
+							<div>木曜日  10:00～5:00</div>
+							<div>金曜日  10:00～8:00</div>
+							<div>土曜日  8:00～8:00</div>
+							<div>祝前日  10:00～8:00</div>
+							<div>日曜・祝祭日  8:00～5:00</div>
+ 						</dd>
+					</dl>
+					<dl>
+							<dt>定休日</dt><dd>年中無休<br />
+※荷物預かり（Bounce、ecbo cloak）は、予約が必要になります。<br />
+</dd>
+						</dl>
+						<dl>
+						<dt>アクセス</dt><dd>【電車】御堂筋なんば駅からなんばウォークB13出口すぐ</dd>
+					</dl>
+					<dl>
+							<dt>住所</dt>
+							<dd>〒542-0076
+								<br>
+								大阪府大阪市中央区難波 3-5-1　ナンバ一番ビルB1F
+							</dd>
+						</dl>
+						<dl>
+							<dt>TEL</dt><dd>06-6630-8851</dd>
+						</dl>
+						<dl>
+							<dt>最大収容人数</dt>
+						<dd>20人</dd>
+					</dl>
+					<ul class="icon-list" id="iconList">
+						<li >
+						
+						</img>
+						<img class="shop_search_list_icon_g" data-tippy-content="ドリンクバー（終日）" src="/img/icon/shop_icon4.svg" ></img>
+						<img class="shop_search_list_icon_g" data-tippy-content="飲み放題プランあり" src="/img/icon/shop_icon45.svg" ></img>
+						<img class="shop_search_list_icon_g" data-tippy-content="4本マイクあり" src="/img/icon/shop_icon51.svg" ></img>
+						</img>
+						<img class="shop_search_list_icon_g" data-tippy-content="LIVE DAM WAO! あり" src="/img/icon/shop_icon49.svg" ></img>
+						<img class="shop_search_list_icon_g" data-tippy-content="LIVE DAM AiR あり" src="/img/icon/shop_icon47.svg" ></img>
+						</img>
+						</img>
+ 						</img>
+ 						<img class="shop_search_list_icon_g" data-tippy-content="喫煙所あり" src="/img/icon/shop_icon38.svg" ></img>
+						<img class="shop_search_list_icon_g" data-tippy-content="オフィスボックス(テレワーク)利用可" src="/img/icon/shop_icon34.svg" ></img>
+						<img class="shop_search_list_icon_g" data-tippy-content="バリアフリー" src="/img/icon/shop_icon13.svg" ></img>
+						<img class="shop_search_list_icon_g" data-tippy-content="バリアフリー対応 だれでもトイレあり" src="/img/icon/shop_icon50.svg" ></img>
+						</img>
+						<img class="shop_search_list_icon_g" data-tippy-content="プロジェクタールームあり" src="/img/icon/shop_icon35.svg" ></img>
+						<img class="shop_search_list_icon_g" data-tippy-content="デュアルプロジェクタールームあり" src="/img/icon/shop_icon44.svg" ></img>
+						</img>
+						<img class="shop_search_list_icon_g" data-tippy-content="Blu-ray/DVDプレイヤー無料貸出(要予約)" src="/img/icon/shop_icon14.svg" ></img>
+						<img class="shop_search_list_icon_g" data-tippy-content="無料Wi-Fiあり" src="/img/icon/shop_icon26.svg" ></img>
+						<img class="shop_search_list_icon_g" data-tippy-content="スマホ充電器無料貸出" src="/img/icon/shop_icon16.svg" ></img>
+						<img class="shop_search_list_icon_g" data-tippy-content="荷物預かりサービスあり" src="/img/icon/shop_icon41.svg" ></img>
+						<img class="shop_search_list_icon_g" data-tippy-content="スマホ接続キット無料貸出(要予約)" src="/img/icon/shop_icon42.svg" ></img>
+						</img>
+						<img class="shop_search_list_icon_g" data-tippy-content="フード＆ドリンク持ち込みOK" src="/img/icon/shop_icon48.svg" ></img>
+						
+						</li>
+					</ul>
+					<p class="help"><a href="../shopicon" title="アイコンについて" data-remodal-target="modal-icon"><img src="https://big-echo.jp/wordpress/wp-content/themes/bigecho/img/icon/q_icon.png" alt="?" />アイコンについて</a></p>
+					<dl>
+							<dt>駐車場</dt>
+							<dd>
+								
+								
+									なし
+								
+							</dd>
+						</dl>
+						<dl >
+							<dt>取り扱い<br>機種</dt>
+							<dd>
+								<ul class="model-list">
+									
+										<li><img class="img1" src="/img/shop_info/icon_model_04.png" alt="LIVE DAM WAO!"></img></li>
+									
+										<li><img class="img1" src="/img/shop_info/icon_model_01.png" alt="LIVE DAM AiR"></img></li>
+									
+								</ul>
+							</dd>
+					</dl>
+					</div>
+				</div>
+				<div class="payment" data-tab-content="detail">
+					<div class="detail">
+					<dl>
+							<dt>決済方法</dt>
+							<dd>
+								<dl class="payment-list">
+									
+										<dt>＜バーコード決済＞</dt>
+										<dd class="mb1">d払い、楽天ペイ、PayPay、メルペイ、auPAY、Alipay、WeChat Pay</dd>
+									
+									
+										<dt>＜電子マネー＞</dt>
+										<dd>iD、楽天Edy、QUICPay</dd>
+									
+									
+										<dt>＜電子マネー（交通系）＞</dt>
+										<dd>Kitaca、Suica、PASMO、TOICA、manaca、ICOCA、SUGOCA、nimoca、はやかけん</dd>
+									
+									
+										<dt>＜クレジットカード＞</dt>
+										<dd>VISA、MASTER、JCB、Diners Club、American Express</dd>
+									
+									
+										<dt>＜お食事券＞</dt>
+										<dd>ジェフグルメカード</dd>
+									
+								</dl>
+							</dd>
+					</dl>
+					</div>
+				</div>
+				<div class="related" data-tab-content="detail">
+					<div class="detail">
+					<dl>
+							<dt>関連情報</dt>
+							<dd>
+								<ul class="link-list">
+									
+										<li><a href="https://osaka-city-premium2026.jp/" target="_blank">大阪市プレミアム付商品券参加</a></li>
+									
+									
+									
+								</ul>
+							</dd>
+						</dl>
+					</div>
+				</div>
+
+				<div class="related" data-tab-content="detail">
+					<div class="detail">
+						<dl><!-- 求人情報 -->
+							<dt>採用情報</dt>
+							<dd>
+								
+								
+									<ul class="link-list">
+									<li><a href="https://karaoke-bigecho-job.net/jobfind-pc/job/All/1911" target="_blank">ビッグエコーなんば戎橋店　アルバイト募集中！</a></li>
+									</ul>
+								
+							</dd>
+					</dl>
+					</div>
+				</div>
+
+				<!--</div>--><!-- tag detail-->
+
+				<div id="price" class="price" style="display: none;" data-tab-content="price">
+				<!-- d tariff -->
+				
+				<h3>30分料金（税込）</h3>
+				<div class="noon">
+				<h4 class="day ttype1"  colspan="3">
+				<div class="tariff_title">
+				<img src="/img/icon/noon.svg" width="15" height="15">OPEN〜18:00</img>
+				
+				</div>
+				</h4>
+				<table >
+					<thead>
+						<tr>
+							<td class="day" colspan="3">1ドリンクオーダー制</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="tcommon cuisine1"></td>
+								<td class="tcommon cuisine2_1" >月～金・祝前日</td>
+								<td class="tcommon cuisine3">土・日・祝日※8時から</td>
+						</tr>
+						<tr>
+							<th >学割</th>
+								<td>150円</td>
+								<td>280円</td>
+						</tr>
+						<tr>
+							<th >シニア</th>
+								<td>250円</td>
+								<td>300円</td>
+						</tr>
+						<tr>
+							<th >会員</th>
+								<td>250円</td>
+								<td>300円</td>
+							</tr>
+						<tr>
+						<th >一般</th>
+							<td>360円</td>
+							<td>430円</td>
+						</tr >
+						<tr>
+							<th style="width:7.5em;">ひとりカラオケ<br />(会員の場合)</th>
+								<td>290円</td>
+								<td>360円</td>
+						</tr>
+						<tr>
+							<td colspan="3" class="charge_info_notes" style="text-align: left; padding-left: 5px;">※学生、シニアはドリンクバー付<br />
+※小学生は室料半額、未就学児は無料です。<br />
+</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				<div class="night">
+				<h4 class="day ttype1"  colspan="3">
+				<div class="tariff_title">
+				
+				<img src="/img/icon/night.svg" width="15" height="15">18:00〜CLOSE</img>
+				</div>
+				</h4>
+				<table >
+					<thead>
+						<tr>
+							<td class="day" colspan="3">1ドリンクオーダー制</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="tcommon cuisine1"></td>
+								<td class="tcommon cuisine2_1" >月～木</td>
+								<td class="tcommon cuisine3">金～日・祝前日・祝日※8時まで</td>
+						</tr>
+						<tr>
+							<th >学割</th>
+								<td>350円</td>
+								<td>450円</td>
+						</tr>
+						<tr>
+							<th >シニア</th>
+								<td>410円</td>
+								<td>540円</td>
+						</tr>
+						<tr>
+							<th >会員</th>
+								<td>410円</td>
+								<td>540円</td>
+							</tr>
+						<tr>
+						<th >一般</th>
+							<td>590円</td>
+							<td>800円</td>
+						</tr >
+						
+						<tr>
+							<td colspan="3" class="charge_info_notes" style="text-align: left; padding-left: 5px;">※学生、シニアはドリンクバー付<br />
+※小学生は室料半額、未就学児は無料です。</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				
+				
+				
+				
+				
+				
+				
+				
+
+				<!-- f tariff -->
+				
+				<h3>フリータイム・パック料金（税込）</h3>
+				
+				
+				<div class="noon">
+				<h4 class="day ttype2" colspan="3">
+				<div class="tariff_title">
+				<img src="/img/icon/noon.svg" width="15" height="15">フリータイム※OPEN〜19:00</img>
+				
+				</div>
+				</h4>
+				<table >
+					<thead>
+					<tr>
+							<td class="day" colspan="3">1ドリンクオーダー制</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="tcommon cuisine1"></td>
+								<td class="tcommon cuisine2_1">月～金・祝前日</td>
+								<td class="tcommon cuisine3">土・日・祝日</td>
+						</tr>
+						<tr>
+							<th >学割</th>
+								<td>960円</td>
+								<td>1,600円</td>
+						</tr>
+						<tr>
+							<th >シニア</th>
+								<td>1,250円</td>
+								<td>2,000円</td>
+						</tr>
+						<tr>
+							<th >会員</th>
+								<td>1,250円</td>
+								<td>2,000円</td>
+							</tr>
+						<tr>
+						<th >一般</th>
+							<td>1,800円</td>
+							<td>2,100円</td>
+						</tr>
+						<tr>
+							<th >ひとりカラオケ<br />(会員の場合)</th>
+								<td>1,500円</td>
+								<td>2,050円</td>
+						</tr>
+						<tr>
+							<td colspan="3" class="charge_info_notes" style="text-align: left; padding-left: 5px;">※学生、シニアはドリンクバー付<br />
+※小学生は室料半額、未就学児は無料です。<br />
+※土・日・祝日のフリータイムは【なんばアムザ店/なんば千日前店】で実施しております。<br />
+</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				<div class="noon">
+				<h4 class="day ttype2" colspan="3">
+				<div class="tariff_title">
+				<img src="/img/icon/noon.svg" width="15" height="15">おはカラ フリータイム※OPEN～15：00</img>
+				
+				</div>
+				</h4>
+				<table >
+					<thead>
+					<tr>
+							<td class="day" colspan="3">1ドリンクオーダー制</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="tcommon cuisine1"></td>
+								<td class="tcommon cuisine2_1">月～金</td>
+								<td class="tcommon cuisine3">土・日・祝日※8時から</td>
+						</tr>
+						<tr>
+							<th >学割</th>
+								<td>800円</td>
+								<td>800円</td>
+						</tr>
+						<tr>
+							<th >シニア</th>
+								<td>990円</td>
+								<td>990円</td>
+						</tr>
+						<tr>
+							<th >会員</th>
+								<td>990円</td>
+								<td>990円</td>
+							</tr>
+						<tr>
+						<th >一般</th>
+							<td>990円</td>
+							<td>990円</td>
+						</tr>
+						<tr>
+							<th >ひとりカラオケ<br />(会員の場合)</th>
+								<td>1,240円</td>
+								<td>1,240円</td>
+						</tr>
+						<tr>
+							<td colspan="3" class="charge_info_notes" style="text-align: left; padding-left: 5px;">※期間限定特別価格<br />
+※割引利用不可（割引利用の場合は通常料金1,400円～）<br />
+※学生、シニアはドリンクバー付<br />
+※小学生は室料半額、未就学児は無料です。<br />
+※最終受付12時</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				<div class="noon">
+				<h4 class="day ttype2" colspan="2">
+				<div class="tariff_title">
+				<img src="/img/icon/noon.svg" width="15" height="15">昼3時間パック※OPEN～18：00</img>
+				
+				</div>
+				</h4>
+				<table >
+					<thead>
+					<tr>
+							<td class="day" colspan="2">1ドリンクオーダー制</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="tcommon cuisine1"></td>
+								
+								<td class="tcommon cuisine3">土・日・祝日※8時から</td>
+						</tr>
+						<tr>
+							<th >学割</th>
+								
+								<td>1,300円</td>
+						</tr>
+						<tr>
+							<th >シニア</th>
+								
+								<td>1,600円</td>
+						</tr>
+						<tr>
+							<th >会員</th>
+								
+								<td>1,600円</td>
+							</tr>
+						<tr>
+						<th >一般</th>
+							
+							<td>2,290円</td>
+						</tr>
+						<tr>
+							<th >ひとりカラオケ<br />(会員の場合)</th>
+								
+								<td>1,850円</td>
+						</tr>
+						<tr>
+							<td colspan="2" class="charge_info_notes" style="text-align: left; padding-left: 5px;">※学生、シニアはドリンクバー付<br />
+※小学生は室料半額、未就学児は無料です。<br />
+※最終受付15時</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				<div class="noon">
+				<h4 class="day ttype2" colspan="3">
+				<div class="tariff_title">
+				<img src="/img/icon/noon.svg" width="15" height="15">夕方フリータイム※15:00〜21:00</img>
+				
+				</div>
+				</h4>
+				<table >
+					<thead>
+					<tr>
+							<td class="day" colspan="3">1ドリンクオーダー制</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="tcommon cuisine1"></td>
+								<td class="tcommon cuisine2_1">月〜金・祝前日</td>
+								<td class="tcommon cuisine3">土・日・祝日</td>
+						</tr>
+						<tr>
+							<th >学割</th>
+								<td>1,320円</td>
+								<td>1,820円</td>
+						</tr>
+						<tr>
+							<th >シニア</th>
+								<td>1,470円</td>
+								<td>2,040円</td>
+						</tr>
+						<tr>
+							<th >会員</th>
+								<td>1,470円</td>
+								<td>2,040円</td>
+							</tr>
+						<tr>
+						<th >一般</th>
+							<td>2,100円</td>
+							<td>2,920円</td>
+						</tr>
+						<tr>
+							<th >ひとりカラオケ<br />(会員の場合)</th>
+								<td>1,720円</td>
+								<td>2,290円</td>
+						</tr>
+						<tr>
+							<td colspan="3" class="charge_info_notes" style="text-align: left; padding-left: 5px;">※学生、シニアはドリンクバー付<br />
+※小学生は室料半額、未就学児は無料です。<br />
+※最終受付18時</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				<div class="night">
+				<h4 class="day ttype2" colspan="3">
+				<div class="tariff_title">
+				
+				<img src="/img/icon/night.svg" width="15" height="15">ロングフリータイム※18:00～翌5:00</img>
+				</div>
+				</h4>
+				<table >
+					<thead>
+					<tr>
+							<td class="day" colspan="3">1ドリンクオーダー制</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="tcommon cuisine1"></td>
+								<td class="tcommon cuisine2_1">月〜木</td>
+								<td class="tcommon cuisine3">金～日・祝前日・祝日</td>
+						</tr>
+						<tr>
+							<th >学割</th>
+								<td>1,450円</td>
+								<td>2,250円</td>
+						</tr>
+						<tr>
+							<th >シニア</th>
+								<td>2,000円</td>
+								<td>2,550円</td>
+						</tr>
+						<tr>
+							<th >会員</th>
+								<td>2,000円</td>
+								<td>2,550円</td>
+							</tr>
+						<tr>
+						<th >一般</th>
+							<td>2,860円</td>
+							<td>3,650円</td>
+						</tr>
+						
+						<tr>
+							<td colspan="3" class="charge_info_notes" style="text-align: left; padding-left: 5px;">※学生、シニアはドリンクバー付<br />
+※小学生は室料半額、未就学児は無料です。</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				<div class="night">
+				<h4 class="day ttype2" colspan="3">
+				<div class="tariff_title">
+				
+				<img src="/img/icon/night.svg" width="15" height="15">深夜フリータイム※22:00～翌5:00</img>
+				</div>
+				</h4>
+				<table >
+					<thead>
+					<tr>
+							<td class="day" colspan="3">1ドリンクオーダー制</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="tcommon cuisine1"></td>
+								<td class="tcommon cuisine2_1">月～木</td>
+								<td class="tcommon cuisine3">金～日・祝前日・祝日</td>
+						</tr>
+						<tr>
+							<th >学割</th>
+								<td>1,100円</td>
+								<td>1,400円</td>
+						</tr>
+						<tr>
+							<th >シニア</th>
+								<td>1,850円</td>
+								<td>2,180円</td>
+						</tr>
+						<tr>
+							<th >会員</th>
+								<td>1,850円</td>
+								<td>2,180円</td>
+							</tr>
+						<tr>
+						<th >一般</th>
+							<td>2,150円</td>
+							<td>3,150円</td>
+						</tr>
+						
+						<tr>
+							<td colspan="3" class="charge_info_notes" style="text-align: left; padding-left: 5px;">※学生、シニアはドリンクバー付</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				<div class="night">
+				<h4 class="day ttype2" colspan="2">
+				<div class="tariff_title">
+				
+				<img src="/img/icon/night.svg" width="15" height="15">夜3時間パック※18:00～CLOSE</img>
+				</div>
+				</h4>
+				<table >
+					<thead>
+					<tr>
+							<td class="day" colspan="2">1ドリンクオーダー制</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="tcommon cuisine1"></td>
+								<td class="tcommon cuisine2_1">金～日・祝前日・祝日</td>
+								
+						</tr>
+						<tr>
+							<th >学割</th>
+								<td>1,930円</td>
+								
+						</tr>
+						<tr>
+							<th >シニア</th>
+								<td>2,330円</td>
+								
+						</tr>
+						<tr>
+							<th >会員</th>
+								<td>2,330円</td>
+								
+							</tr>
+						<tr>
+						<th >一般</th>
+							<td>3,440円</td>
+							
+						</tr>
+						
+						<tr>
+							<td colspan="2" class="charge_info_notes" style="text-align: left; padding-left: 5px;">※学生、シニアはドリンクバー付</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				
+				</div><!-- price end  -->
+
+				<div id="coupon" class="coupon" data-tab-content="coupon">
+				<div class="overlay" ></div>
+ 			 	<a class="modalLink" data-remodal-target="modal-coupon1" href="#modal1" rel="modal:open"><img class="coupon_img" src="/shop_images/coupon/1303/201908_1303_1.jpg" alt="coupon_img1" /></a>
+				
+				
+				
+				
+				</div>
+				</div>
+		</div><!-- item shop-detail  -->
+
+	<div class="text-center shop-search_btn"><a class="border-btn" href="/shop_search" title="他の店舗を検索する">他の店舗を検索する<i class="arrow-icon"></i></a></div>
+	<ul class="contact-navi">
+		
+		<li><a href="tel:06-6630-8851"  title="電話をかける"><i class="icon-phone"></i>電話をかける</a></li>
+		<li><a href="https://big-echo.tottokun.com/ownedmedia/ownedmedia_immediately_be/ZzFGGRGtCMcKH1o" title="カンタンWeb予約"><i class="icon-booking3"></i>カンタンWeb予約</a></li>
+	</ul>
+</div><!--end wrap  -->
+</section>
+</div><!--end wrapper  -->
+<style media="print">
+@media print{
+	#wrapper {display: none !important;}
+	.sec-gy.sns-area{display: none !important;}
+	footer {display: none !important; }
+	.modal {position: static;}
+	#footer {display:none; !important;}
+	.wrap{display:none; !important;}
+	.contact-navi {display:none; !important;}
+	.req-bnr.sp-only img {display:none; !important;}
+}</style>
+<script>
+$(function() {
+	/*$('.tab-content').hide();*/
+	$('.tab-navi a').click(function () {
+		/*$('.tab-content').hide().filter(this.hash).fadeIn();*/
+		$('[data-tab-content]').hide().filter("[data-tab-content=" + $(this).data("tab") + "]").fadeIn("nomal", function() {
+			$(this).show();
+		});
+		$('.tab-navi a').removeClass('active');
+		$(this).addClass('active');
+	return false;
+	}).filter(':eq(0)').click();
+});
+
+//if (window.matchMedia( "(max-width: 740px)" ).matches) {
+	//$('#price table').hide();
+	$('#price').on('click','h4',function () {
+		$(this).parent().toggleClass('active');
+	});
+//}
+</script>
+<div class="remodal"   data-remodal-id="modal-icon" data-remodal-options="hashTracking: false">
+	<a data-remodal-action="close" class="remodal-close" aria-label="Close"></a>
+	 <iframe src="/shopicon" width="680" height="760"></iframe>
+</div>
+
+	 <div id="modal1" class="modal" data-remodal-id="modal-coupon1"  >
+		<div class="coupon_popup_area modal-content coupon-box">
+		<a data-remodal-action="close" class="remodal-close" aria-label="Close" onclick="closeBtn()"></a>
+		<h2 class="grad-h">クーポン</h2>
+			<div id="coupon_img1">
+	 		<img class="coupon_img" src="/shop_images/coupon/1303/201908_1303_1.jpg"  alt="クーポンチケット"> </div>
+				<div class="print-box"><p>有効期限：<strong>2026年12月末日</strong></p>
+				<a id="coupon_btn1" class="red-btn" href="javascript:print();" title="クーポンを印刷する" onclick="window.print();return false;"><i class="icon-card"></i>クーポンを印刷する</a>
+				</div>
+				<blockquote>フリータイムにもご利用ＯＫ！！会員料金との併用ＯＫ！！<br />
+<br />
+本券利用上の注意<br />
+●本券は受付の際に提示してください。<br />
+●本券は１組様１回につき１枚のみ有効です。<br />
+●ドリンクオーダー（１部ノーオーダー）以外の場合は総額5％とさせて頂きます。<br />
+●一部店舗では会員併用時の割引率が異なる場合がございます。<br />
+●本券は他のクーポンとの併用はできません。<br />
+●有効期限なきものは無効です。</blockquote>
+       </div>
+   </div>
+
+
+
+ 
+
+    
+
+ 
+<script>
+function closeBtn() {
+	var elems = document.getElementsByClassName('modal');
+	for (var i=0;i<elems.length;i+=1){
+	  elems[i].style.display = 'none';
+	    $(".overlay").css('opacity','0');
+	}
+}
+</script>
+<style>
+.modal{
+height:100%
+}
+.remodal-close:before{
+top:0px;
+}
+.navi-area {
+   width: 100%;
+}
+.header .logo{
+   display:none;
+}
+</style>
+<!--Twitter-->
+<!--<div style="text-align:center;margin:20px 0px 20px 0px;">
+<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a>
+</div>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+-->
+<!--Twitter End-->
+
+</body>
+
+        </div>
+
+        <section class="sec-gy sns-area">
+            <div class="wrap">
+                <div class="navi">
+                    <div style="padding:20px 0" class="item">
+                        <a href="https://big-echo.jp/service" title="">
+                            <i class="icon-badge"></i>
+                            <article>
+                                <h4>提携ご優待サービス</h4>
+                            </article>
+                        </a>
+                    </div>
+                    <div style="padding:20px 0" class="item">
+                        <a href="https://big-echo.jp/payment" title="ご利用可能なお支払い方法">
+                            <i class="far fa-credit-card" style="font-size:50px;"></i>
+                            <article>
+                                <h4>ご利用可能なお支払い方法</h4>
+                            </article>
+                        </a>
+                    </div>
+
+                    <div style="padding:20px 0" class="item">
+                        <a href="https://big-echo.jp/大学祭応援" title="全国の学園祭 全力応援！">
+                            <i class="icon-student"></i>
+                            <article>
+                                <h4>全国の学園祭 全力応援！</h4>
+                            </article>
+                        </a>
+                    </div>
+                    <div style="padding:20px 0" class="item">
+                        <a href="https://big-echo.jp/nocharge" title="">
+                            <i class="icon-free"></i>
+                            <article>
+                                <h4>無料サービス・無料貸出</h4>
+                            </article>
+                        </a>
+                    </div>
+                    <div style="padding:20px 0" class="item">
+                        <a href="https://big-echo.jp/project" title="ビッグエコーの取り組み">
+                            <i class="icon-earth" style="font-size:50px;" ></i>
+                            <article>
+                                <h4>ビッグエコーの取り組み</h4>
+                            </article>
+                        </a>
+                    </div>
+                    <!--よくある質問 -->
+                        <div style="padding:20px 0" class="item">
+                            <a href="https://big-echo.jp/faq" title="よくあるご質問">
+                                <i class="material-icons">contact_support</i>
+                                    <article>
+                                        <h4>よくあるご質問</h4>
+                                    </article>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="footer-bnr">
+            <div class="wrap">
+                <div class="swiper-container bnr-slide" style="border-style:none;">
+                    <div class="swiper-wrapper">
+						<div class="swiper-slide">
+							<span style="display:none;">カラオケ ビッグエコー DAM直営店</span>
+							<a href="https://big-echo.jp/" target="_self" class="widget_sp_image-image-link" title="カラオケ ビッグエコー DAM直営店">
+								<img width="273" height="160" alt="カラオケ ビッグエコー DAM直営店" class="attachment-full" style="max-width: 100%;" srcset="/img/img_footer_karaokebigecho.jpg 273w, /img/img_footer_karaokebigecho-150x88.jpg 150w" sizes="(max-width: 273px) 100vw, 273px" src="/img/img_footer_karaokebigecho.jpg" />
+							</a>
+						</div>
+						<div class="swiper-slide">
+							<span style="display:none;">カラオケCLUB DAM</span>
+							<a href="http://karaokeclub.jp/" target="_blank" class="widget_sp_image-image-link" title="カラオケCLUB DAM">
+								<img width="273" height="160" alt="カラオケCLUB DAM" class="attachment-full" style="max-width: 100%;" src="/img/img_footer_karaokeclub.png" />
+							</a>
+						</div>
+						<div class="swiper-slide">
+							<span style="display:none;">ダーツ＆パーティー B-GARAGE</span>
+							<a href="https://big-echo.jp/b-garage/" target="_blank" class="widget_sp_image-image-link" title="ダーツ＆パーティー B-GARAGE">
+								<img width="124" height="73" alt="ダーツ＆パーティー B-GARAGE" class="attachment-full" style="max-width: 100%;" src="/img/img_b-garage_footerbnr_241016.jpg" />
+							</a>
+						</div>
+						<div class="swiper-slide">
+							<span style="display:none;">第一興商のダイニング店舗</span>
+							<a href="https://dkdining.com/" target="_blank" class="widget_sp_image-image-link" title="第一興商のダイニング店舗">
+								<img width="273" height="160" alt="第一興商のダイニング店舗" class="attachment-full" style="max-width: 100%;" src="/img/img_footer_dining.png" />
+							</a>
+						</div>
+						<div class="swiper-slide">
+							<span style="display:none;">ビッグエコーで撮影しませんか＜テレビ番組・動画配信＞</span>
+							<a href="https://big-echo.jp/campaign/studio/?be_footerbanner" target="_self" class="widget_sp_image-image-link" title="ビッグエコーで撮影しませんか＜テレビ番組・動画配信＞">
+								<img width="546" height="320" alt="ビッグエコーで撮影しませんか＜テレビ番組・動画配信＞" class="attachment-full" style="max-width: 100%;" src="/img/img_studio_footer.gif" />
+							</a>
+						</div>
+						<div class="swiper-slide">
+							<span style="display:none;">Singing歌いながらいこう</span>
+							<a href="https://www.clubdam.com/singing/" target="_blank" class="widget_sp_image-image-link" title="Singing歌いながらいこう">
+								<img width="273" height="160" alt="Singing歌いながらいこう" class="attachment-full" style="max-width: 100%;" srcset="/img/img_singing_273x16.jpg 273w, /img/img_singing_273x16-150x88.jpg 150w" sizes="(max-width: 273px) 100vw, 273px" src="/img/img_singing_273x16.jpg" />
+							</a>
+						</div>
+						<div class="swiper-slide">
+							<span style="display:none;">カラオケの窓口</span>
+							<a href="https://dam-karaoke.com/" target="_blank" class="widget_sp_image-image-link" title="カラオケの窓口">
+								<img width="273" height="160" alt="カラオケの窓口" class="attachment-full" style="max-width: 100%;" srcset="/img/img_karaokenomadoguchi_be.jpg 273w, /img/img_karaokenomadoguchi_be-150x88.jpg 150w" sizes="(max-width: 273px) 100vw, 273px" src="/img/img_karaokenomadoguchi_be.jpg" />
+							</a>
+						</div>
+						<div class="swiper-slide">
+							<span style="display:none;">よるみせナビ</span>
+							<a href="https://yorumise-navi.com/" target="_blank" class="widget_sp_image-image-link" title="よるみせナビ">
+								<img width="273" height="160" alt="よるみせナビ" class="attachment-full" style="max-width: 100%;" srcset="/img/BE_FIX_yorumise_logo.jpg 273w, /img/BE_FIX_yorumise_logo-150x88.jpg 150w" sizes="(max-width: 273px) 100vw, 273px" src="/img/BE_FIX_yorumise_logo.jpg" />
+							</a>
+						</div>
+						<div class="swiper-slide">
+							<span style="display:none;">DAM公式サイト</span>
+							<a href="https://www.clubdam.com/" target="_blank" class="widget_sp_image-image-link" title="DAM公式サイト">
+								<img width="273" height="160" alt="DAM公式サイト" class="attachment-full" style="max-width: 100%;" srcset="/img/img_dam_official_be.png 273w, /img/img_dam_official_be-150x88.png 150w" sizes="(max-width: 273px) 100vw, 273px" src="/img/img_dam_official_be.png" />
+							</a>
+						</div>
+						<div class="swiper-slide">
+							<span style="display:none;">DAM★とも 会員になろう！</span>
+							<a href="http://www.clubdam.com/app/damtomo/top/Index.do" target="_blank" class="widget_sp_image-image-link" title="DAM★とも 会員になろう！">
+								<img width="273" height="160" alt="DAM★とも 会員になろう！" class="attachment-full" style="max-width: 100%;" src="/img/img_footer_damtomo.png" />
+							</a>
+						</div>
+                    </div>
+                    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span></div>
+                <div class="swiper-button-prev" tabindex="0" role="button" aria-label="Previous slide"></div>
+                <div class="swiper-button-next" tabindex="0" role="button" aria-label="Next slide"></div>
+            </div>
+        </section>
+        <div class="req-bnr sp-only">
+            <a href="https://karaoke-bigecho-job.net/jobfind-pc/" title="アルバイト募集" target="_blank"><img src="https://big-echo.jp/wordpress/wp-content/uploads/2019/10/img_footer_kyujin.png" alt="アルバイト募集"></a>
+        </div>
+        <!-- faqonly-->
+                <ul class="contact-navi">
+                    <li style="width:100%;border:none;"><a href="https://big-echo.jp/faq" title="よくあるご質問">よくあるご質問</a></li>
+                </ul>
+            <footer>
+            <!--             <footer> -->
+            <div class="wrap">
+                <ul class="sns-btn">
+					<li><a href="https://twitter.com/bigecho_jp" title="カラオケ ビッグエコーのXアカウント" target="_blank"><img style="height:30px;display:flex;" src="https://big-echo.jp/wordpress/wp-content/themes/bigecho/img/icon/x_sp_icon.png"/></a></li>
+					<li><a href="https://www.youtube.com/channel/UCN-az9Ead4N3ByUo8f8ijig" title="カラオケ ビッグエコーのYoutubeアカウント" target="_blank"><img style="height:30px;display:flex;" src="https://big-echo.jp/wordpress/wp-content/themes/bigecho/img/icon/youtube_sp_icon.png" /></a></li>
+					<li><a href="https://www.tiktok.com/@bigecho.jp" title="カラオケ ビッグエコーのTikTokアカウント" target="_blank"><img style="height:30px;display:flex;" src="https://big-echo.jp/wordpress/wp-content/themes/bigecho/img/icon/tiktok_sp_icon.png" /></a></li>
+				</ul>
+                <div class="footer-navi">
+                    <nav>
+                        <ul class="nav-left">
+                            <li><a href="/shop_search" title="店舗検索・予約" class="radius-btn"><i class="icon-glass"></i>店舗検索・予約</a></li>
+<!--
+                            <li><a href="https://big-echo.jp/coupon-2" title="クーポン" class="radius-btn"><i class="icon-card"></i>クーポン</a></li>
+-->
+                        </ul>
+                        <ul class="nav-center">
+                            <li><a href="/" title="">ホーム</a></li>
+                            <li><a href="https://big-echo.jp/room_facilities" title="ルーム・設備">ルーム・設備</a></li>
+                            <li><a href="https://big-echo.jp/food_and_drink" title="フード＆ドリンク">フード＆ドリンク</a></li>
+                            <li><a href="https://big-echo.jp/collaboration" title="コラボキャンペーン">コラボキャンペーン</a></li>
+						</ul>
+                        <ul class="nav-right">
+                            <li><a href="https://big-echo.jp/studio/" title="撮影・収録募集">撮影・収録募集</a></li>
+                            <li><a href="https://big-echo.jp/news_info" title="ニュース">ニュース</a></li>
+                            <li><a href="https://big-echo.jp/faq" title="よくある質問">よくあるご質問</a></li>
+                            <li><a href="https://www.dkkaraoke.co.jp/business/karaoke_box/property.html" title="物件情報募集" target="_blank">物件情報募集</a></li>
+                        </ul>
+                    </nav>
+
+                    <nav>
+                        <ul class="nav-bnr">
+                            <li><a href="https://www.dkkaraoke.co.jp/index.html" title="会社情報" target="_blank">会社情報<i class="icon-link"></i></a></li>
+                            <li>
+                                <a href="https://karaoke-bigecho-job.net/jobfind-pc/" title="アルバイト・社員募集" target="_blank"><img src="https://big-echo.jp/wordpress/wp-content/uploads/2019/10/img_footer_kyujin.png" alt="アルバイト・社員募集" /></a>
+                            </li>
+                            <li>
+                                <a href="https://big-echo.jp/project" title="CSR・社会・環境への取り組み"><img src="/img/bnr/footer_bnr02.png" alt="CSR・社会・環境への取り組み" /></a>
+                            </li>
+                        </ul>
+
+                        <dl class="app-dl">
+                            <dt>絶対<strong>お得！</strong><br/><strong>無料</strong>の会員アプリ！</dt>
+                            <dd>
+                                <a class="googleplay" target="_blank" href="https://play.google.com/store/apps/details?id=jp.co.dkkaraoke.app.bigecho&hl=ja"><img src="/img/bnr/batch_play_store.png" alt="Google Playでカラオケ ビッグエコーの公式アプリをダウンロード" /></a>
+                            </dd>
+                            <dd>
+                                <a class="appstore" target="_blank" href="https://itunes.apple.com/jp/app/id1289531868"><img src="/img/bnr/batch_app_store.svg" alt="AppStoreでカラオケ ビッグエコーの公式アプリをダウンロード" /></a>
+                            </dd>
+                        </dl>
+                    </nav>
+                </div>
+            </div>
+
+            <!--             </footer> -->
+
+            <div class="bottom-line">
+                <div class="wrap">
+                    <ul>
+                        <li><a href="https://www.clubdam.com/app/inquiry/register.html?inquiryMstId=86" title="お問い合わせ" target="_blank">お問い合わせ</a></li>
+                        <li><a href="https://www.dkkaraoke.co.jp/use/" title="サイトのご利用について" target="_blank">サイトのご利用について</a></li>
+                        <li><a href="https://www.dkkaraoke.co.jp/privacy/" title="プライバシーポリシー" target="_blank">プライバシーポリシー</a></li>
+						<li><a href="https://www.dkkaraoke.co.jp/privacy/customer_harassment_index.html" title="カスタマーハラスメント対応" target="_blank">カスタマーハラスメント対応</a></li>
+                    </ul>
+                    <p class="copyright">&copy; DAIICHIKOSHO CO., LTD. ALL Rights Reserved.</p>
+                </div>
+            </div>
+
+            <ul class="sp-footernavi">
+                <li><a href="/" title="ホーム"><i class="icon-home"></i>ホーム</a></li>
+                <li style="background-color:#E94D4E;"><a href="https://big-echo.jp/shop_search" title="店舗検索・予約"><i class="icon-glass"></i>店舗検索・予約</a></li>
+                <!--<li><a href="https://big-echo.jp/coupon-2" title="クーポン"><i class="icon-card"></i>クーポン</a></li>-->
+                <li><a href="https://big-echo.jp/food_and_drink" title="フード＆ドリンク"><i class="icon-cutlery"></i>フード<span>＆</span>ドリンク</a></li>
+            </ul>
+        </footer>
+    </div>
+</body>
+
+</html>

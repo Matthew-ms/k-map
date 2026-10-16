@@ -27,12 +27,21 @@ export function slotTable(shop, party) {
   const slots = new Map();
   for (const p of rowsFor(shop, party)) {
     const k = `${p.period}|${p.name}|${p.slot}`;
-    if (!slots.has(k)) slots.set(k, { period: p.period, name: p.name, plan: p.plan, slot: p.slot, otherDay: null, weekday: {}, other: {} });
+    if (!slots.has(k)) slots.set(k, { period: p.period, name: p.name, plan: p.plan, slot: p.slot, otherDay: null, otherDayLabel: null, weekday: {}, other: {} });
     const s = slots.get(k);
     if (p.day === 'weekday') s.weekday[p.customer] = p;
-    else { s.other[p.customer] = p; s.otherDay = p.day; }
+    else { s.other[p.customer] = p; s.otherDay = p.day; s.otherDayLabel = p.day_label ?? null; }
   }
   return [...slots.values()].sort(bySiteOrder);
+}
+
+// A chain without your customer type gets the closest one, marked `substitute` so the UI can say so.
+// Only Jankara has 学生会員; elsewhere the student price (Big Echo 学割) is the closest.
+export const CUSTOMER_SUBS = { student_member: 'student' };
+export function forCustomer(byCustomer, customer) {
+  if (byCustomer?.[customer]) return byCustomer[customer];
+  const sub = CUSTOMER_SUBS[customer];
+  return sub && byCustomer?.[sub] ? { ...byCustomer[sub], substitute: sub } : undefined;
 }
 
 // Japan date parts for a moment (Japan has no daylight saving, so +9h is exact).
@@ -43,16 +52,21 @@ export function jst(date) {
 const shiftDay = (ymd, n) => new Date(Date.parse(ymd) + n * DAY_MS).toISOString().slice(0, 10);
 const dow = ymd => new Date(ymd).getUTCDay(); // 0 = Sunday
 
+// A day type is a set of days: weekdays sun…sat, "hol" (public holiday) and "eve" (the day before one).
+// Named types are Jankara's labels; other chains store the set itself, e.g. "fri+sat+eve" (金・土・祝前日).
+const NAMED_DAYS = {
+  weekend_holiday: 'sat+sun+hol', // 土日祝
+  sun_holiday: 'sun+hol', // 日祝
+  fri_sun_hol_eve: 'fri+sat+sun+hol+eve', // 金土日祝祝前
+  fri_sat_hol_eve: 'fri+sat+eve', // 金土祝前
+};
+const DOW = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+
 // Does calendar day `ymd` fall under a non-weekday day type? `holidays` = { "2026-11-03": "文化の日", … }
 export function isDayType(type, ymd, holidays) {
-  const d = dow(ymd), hol = ymd in holidays, eve = shiftDay(ymd, 1) in holidays;
-  switch (type) {
-    case 'weekend_holiday': return d === 0 || d === 6 || hol; // 土日祝
-    case 'sun_holiday': return d === 0 || hol; // 日祝
-    case 'fri_sun_hol_eve': return d === 5 || d === 6 || d === 0 || hol || eve; // 金土日祝祝前
-    case 'fri_sat_hol_eve': return d === 5 || d === 6 || eve; // 金土祝前
-  }
-  throw new Error(`unknown day type ${type}`);
+  const set = (NAMED_DAYS[type] ?? type).split('+');
+  if (!set.every(t => DOW.includes(t) || t === 'hol' || t === 'eve')) throw new Error(`unknown day type ${type}`);
+  return set.includes(DOW[dow(ymd)]) || (set.includes('hol') && ymd in holidays) || (set.includes('eve') && shiftDay(ymd, 1) in holidays);
 }
 
 const toMin = hhmm => +hhmm.slice(0, 2) * 60 + +hhmm.slice(3);
@@ -71,7 +85,9 @@ export function whichDay(entry, now, holidays) {
   if (off === null) return null;
   const day = shiftDay(t.ymd, off);
   if (entry.otherDay && isDayType(entry.otherDay, day, holidays)) return 'other';
-  if (entry.otherDay === 'sun_holiday' && dow(day) === 6) return null; // Saturday is in neither row (shop note: 土曜日は実施しておりません)
+  // A Saturday the special column leaves out while the slot's other column is 平日 (e.g. 日祝 tables): no price
+  // (shop note: 土曜日の夕方フリータイムは実施しておりません).
+  if (entry.otherDay === 'sun_holiday' && dow(day) === 6) return null;
   return 'weekday';
 }
 
@@ -81,7 +97,7 @@ export function currentPrice(shop, { plan = '30min', party, customer, now = new 
   for (const entry of slotTable(shop, party)) {
     if (entry.plan !== plan) continue;
     const day = whichDay(entry, now, holidays);
-    const row = day && entry[day][customer];
+    const row = day && forCustomer(entry[day], customer);
     if (row) return { entry, day, row };
   }
   return null;
@@ -101,7 +117,7 @@ export function freeOptions(shop, { party, customer, start, holidays }) {
   for (const entry of slotTable(shop, party)) {
     if (entry.plan === '30min') continue;
     const day = whichDay(entry, start, holidays);
-    const row = day && entry[day][customer];
+    const row = day && forCustomer(entry[day], customer);
     if (!row) continue;
     const startDay = shiftDay(t.ymd, slotStart(entry.slot, t.min));
     const alt = row.last_entry_alt && isDayType(row.last_entry_alt.day, startDay, holidays) ? row.last_entry_alt.time : null;

@@ -33,6 +33,7 @@ body.has-plan #compare-btn { bottom: calc(96px + env(safe-area-inset-bottom)); }
   left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); margin: 0 auto; max-width: 480px;
   border-radius: 14px; display: flex; align-items: center; gap: 10px; padding: 10px 8px 10px 16px; text-align: left;
 }
+#plan-card[hidden] { display: none; } /* the id rule above would otherwise beat [hidden] */
 #plan-card .pc-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 #plan-card .pc-main b, #plan-card .pc-main .meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #plan-card .pc-total { font-size: 18px; font-weight: 700; color: var(--accent); white-space: nowrap; }
@@ -91,7 +92,7 @@ body.has-plan #compare-btn { bottom: calc(96px + env(safe-area-inset-bottom)); }
 
 .toggle { display: inline-flex; flex-wrap: nowrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin: 0 6px 8px 0; vertical-align: top; }
 .toggle.wrap { flex-wrap: wrap; }
-.toggle button { border: 0; background: none; padding: 6px 12px; cursor: pointer; min-height: 36px; }
+.toggle button { border: 0; background: none; padding: 6px 10px; cursor: pointer; min-height: 36px; white-space: nowrap; }
 .toggle button[aria-pressed="true"] { background: var(--accent); color: #fff; }
 
 /* Price tables: scroll inside their own box so the slot column and header can both stay put */
@@ -147,3 +148,10 @@ body.has-plan #compare-btn { bottom: calc(96px + env(safe-area-inset-bottom)); }
 .plan-peek b { color: var(--accent); font-size: 16px; }
 body.has-plan .leaflet-bottom { bottom: calc(82px + env(safe-area-inset-bottom)); }
 @media (min-width: 768px) { body.panel-open .leaflet-right { right: 472px; } } /* keep the OSM credit visible above the plan card */
+
+/* Chains */
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--c); margin-right: 6px; vertical-align: 0; flex: none; }
+.d1 { font-size: 9px; color: var(--muted); margin-left: 2px; font-weight: 500; }
+.official-btn { display: inline-block; margin: 6px 0 4px; padding: 10px 14px; border-radius: 10px; background: var(--accent); color: #fff; font-weight: 700; text-decoration: none; }
+.no-price { list-style: none; padding: 0; margin: 6px 0; display: flex; flex-direction: column; gap: 6px; }
+.no-price li { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
