@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '0 18 * * 0' # Monday 03:00 Japan time (cron is UTC)
   workflow_dispatch: # "Run workflow" button on the Actions tab
+    inputs:
+      all_chains:
+        description: 'Also refresh Manekineko and Karaoke-kan (normally first Monday of the month only)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write # commit data/
@@ -14,7 +19,7 @@ concurrency: crawl
 jobs:
   crawl:
     runs-on: ubuntu-latest
-    timeout-minutes: 60 # four chains side by side, ~30 min
+    timeout-minutes: 60 # weekly ~20 min; first Monday of the month (all four chains) ~40 min
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -24,7 +29,15 @@ jobs:
       - run: npm ci
       - run: npm test
       # Fails (and GitHub emails the repo owner) if any shop doesn't parse or validate; nothing is committed then.
-      - run: npm run crawl
+      # Jankara and Big Echo (prices) every week. Manekineko and Karaoke-kan are pins (location, hours, machines)
+      # that rarely change, so they're refreshed on the first Monday of the month; other weeks keep last month's.
+      - name: Crawl
+        run: |
+          if [ "$(TZ=Asia/Tokyo date +%-d)" -le 7 ] || [ "${{ inputs.all_chains }}" = "true" ]; then
+            npm run crawl
+          else
+            npm run crawl -- --brands=jankara,bigecho
+          fi
       - name: Commit data if it changed
         run: |
           git config user.name "github-actions[bot]"

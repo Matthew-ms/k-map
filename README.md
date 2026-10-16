@@ -32,7 +32,9 @@ Machine names are normalised across chains (`LIVEDAM Ai` → `LIVE DAM Ai`). A c
 (学生会員 → student), marked † in the app.
 
 ## Weekly update
-`.github/workflows/crawl.yml` runs every Monday 03:00 JST (and from the Actions tab → "Weekly crawl" → "Run workflow"):
+`.github/workflows/crawl.yml` runs every Monday 03:00 JST (and from the Actions tab → "Weekly crawl" → "Run workflow").
+Jankara and Big Echo every week (~20 min); Manekineko and Karaoke-kan (pins only) on the first Monday of the month (~40 min),
+or when "Also refresh Manekineko and Karaoke-kan" is ticked on a manual run. Each run:
 tests → full crawl → commit `data/` if changed → Pages rebuild. If any shop fails to parse or validate, or more than
 10% of shops disappear, the run fails, nothing is committed, and GitHub emails the repo owner.
 
