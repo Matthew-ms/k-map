@@ -27,10 +27,12 @@ MVP: Jankara, Osaka Namba/Shinsaibashi.
 | Jankara (212) | `jankara.ne.jp/shop/ajax/?a={area}` JSON | shop page tables, incl. Super Jankara grid |
 | Big Echo | `shop.big-echo.jp/api/point?b=24,122,46,154` (all shops, with coordinates) | shop page tables; 学割→student; ひとりカラオケ(会員の場合) = 1名 member price; 1ドリンクオーダー制 → `drinks_included: false` (+1D) except 学生/シニア (drink bar) |
 | Manekineko | admin-ajax `loc_load_more` per prefecture (nonce from /locations/) | **not read**: per-shop PDF under /wp-content/uploads/, which robots.txt disallows → pin + link |
-| Karaoke-kan | sitemap `/shop/detail/{id}` | **not read**: price images → pin + link |
+| Karaoke-kan | sitemap `/shop/detail/{id}` | **not read**: price images → pin + link (hand-entered for 8 Kansai shops, see below) |
 
-Hand-entered prices: `data/manual-prices.json` (8 Manekineko shops near Namba, typed from their official PDFs, checked 2026-10-17).
-Merged on every run and validated like crawled data; the weekly log warns after 90 days. To refresh: save the shop's PDF into
+Hand-entered prices: `data/manual-prices.json` (8 Manekineko shops near Namba, typed from their official PDFs, checked 2026-10-17;
+8 Karaoke-kan shops in Osaka, Kobe and Kyoto, typed from their price images, checked 2026-10-18). Karaoke-kan entries keep each
+image's SHA-1: the monthly Karaoke-kan crawl warns when an image is new, gone or changed, so the entry gets re-read.
+Merged on every run and validated like crawled data; the weekly log warns after 90 days. To refresh: save the shop's PDF / images into
 `manual/` (git-ignored) and update the entry.
 
 Machine names are normalised across chains (`LIVEDAM Ai` → `LIVE DAM Ai`). A customer type a chain lacks falls back to the closest
@@ -38,7 +40,7 @@ Machine names are normalised across chains (`LIVEDAM Ai` → `LIVE DAM Ai`). A c
 
 ## Weekly update
 `.github/workflows/crawl.yml` runs every Monday 03:00 JST (and from the Actions tab → "Weekly crawl" → "Run workflow").
-Jankara and Big Echo every week (~20 min); Manekineko and Karaoke-kan (pins only) on the first Monday of the month (~40 min),
+Jankara and Big Echo every week (~20 min); Manekineko and Karaoke-kan (pins, plus the image check above) on the first Monday of the month (~40 min),
 or when "Also refresh Manekineko and Karaoke-kan" is ticked on a manual run. Each run:
 tests → full crawl → commit `data/` if changed → Pages rebuild. If any shop fails to parse or validate, or more than
 10% of shops disappear, the run fails, nothing is committed, and GitHub emails the repo owner.

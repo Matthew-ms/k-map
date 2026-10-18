@@ -40,7 +40,7 @@ const officialLink = s => `<a class="official-btn" href="${esc(s.price_url ?? s.
 // Hand-entered prices: say where they came from and when, and warn once they're old.
 const manualNote = s => {
   const days = Math.floor((Date.now() - Date.parse(s.manual.checked_on)) / 864e5);
-  return `<p class="meta source">${t('公式の料金表（PDF）から手入力 · {date}確認', { date: esc(s.manual.checked_on) })} · <a href="${esc(s.manual.source)}" target="_blank" rel="noopener">${t('料金表を開く')} ↗</a></p>${days > 90 ? `<p class="warn">${t('確認から{days}日経っています。最新の料金は公式の料金表でご確認ください。', { days })}</p>` : ''}`;
+  return `<p class="meta source">${t('公式の料金表から手入力 · {date}確認', { date: esc(s.manual.checked_on) })} · <a href="${esc(s.manual.source)}" target="_blank" rel="noopener">${t('料金表を開く')} ↗</a></p>${days > 90 ? `<p class="warn">${t('確認から{days}日経っています。最新の料金は公式の料金表でご確認ください。', { days })}</p>` : ''}`;
 };
 
 // ---- My identity: how many people and which price type (saved on this device) ----
@@ -425,7 +425,7 @@ function cardTable(shop, p, full) {
     if (mine !== me.customer) marks.substitute.add(mine);
     return `${nowLine}<div class="table-scroll"><table class="prices mine">
       <thead><tr><th class="slot">${esc(custLabel(shop, mine))}${mine !== me.customer ? '†' : ''}</th><th>${t('平日')}</th><th>${t('休日')}</th></tr></thead>
-      <tbody>${rows.map(r => { const d = nowDay(r); return `<tr>${slotHead(r, d)}
+      <tbody>${rows.filter(r => r.weekday[mine] || r.other[mine]).map(r => { const d = nowDay(r); return `<tr>${slotHead(r, d)}
         <td class="${d === 'weekday' ? 'now' : ''}">${cell(r.weekday[mine])}</td><td class="${d === 'other' ? 'now' : ''}">${cell(r.other[mine])}</td></tr>`; }).join('')}</tbody></table></div>
       <ul class="notes">${markNotes(marks)}</ul>`;
   }

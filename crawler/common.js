@@ -25,9 +25,9 @@ export function parseSlot(s, hours) {
 // Fetch with a raw cache so parser fixes can re-run without hitting the site (offline = cache only).
 // The delay is per host, so different chains can be crawled at the same time without hurrying any one site.
 const lastFetch = new Map();
-export async function get(url, file, { offline, headers = {}, method = 'GET', body } = {}) {
+export async function get(url, file, { offline, headers = {}, method = 'GET', body, binary = false } = {}) {
   const path = new URL(file, CACHE);
-  if (offline === true || (offline === 'cached' && existsSync(path))) return readFileSync(path, 'utf8'); // 'cached': fetch only what's missing
+  if (offline === true || (offline === 'cached' && existsSync(path))) return readFileSync(path, binary ? undefined : 'utf8'); // 'cached': fetch only what's missing
   const host = new URL(url).host;
   for (;;) { // claim the next slot for this host before awaiting, so parallel callers queue up
     const wait = (lastFetch.get(host) ?? 0) + DELAY_MS - Date.now();
@@ -42,7 +42,7 @@ export async function get(url, file, { offline, headers = {}, method = 'GET', bo
     await new Promise(r => setTimeout(r, DELAY_MS * 3));
   }
   if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
-  const text = await res.text();
+  const text = binary ? Buffer.from(await res.arrayBuffer()) : await res.text(); // binary: a Buffer (images)
   if (!existsSync(CACHE)) mkdirSync(CACHE);
   writeFileSync(path, text);
   return text;

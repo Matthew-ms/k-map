@@ -1,6 +1,9 @@
-// Karaoke-kan: map pins only. Prices are images (karaokekan.net/shop2price/…), so the app links to the shop page
-// that shows them. Shop list: the sitemap's /shop/detail/{id} pages; coordinates from each page's Google Maps embed.
+// Karaoke-kan: map pins. Prices are images (karaokekan.net/shop2price/…), so the app links to the shop page that shows
+// them; a few shops have prices typed in from those images (data/manual-prices.json), and the crawl warns when one of
+// those images changes. Shop list: the sitemap's /shop/detail/{id} pages; coordinates from each page's Google Maps embed.
 import * as cheerio from 'cheerio';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { get, text, today } from './common.js';
 
 // The 機種 field lists models after a family label ("JOYSOUND" / "X1 MAX GO MAX2"); names contain spaces, so
@@ -32,7 +35,7 @@ export function parseShopPage(html) {
     lat: map ? +map[2] : null,
     lng: map ? +map[1] : null,
     machines,
-    has_price_images: html.includes('shop2price/image'),
+    price_images: [...new Set(html.match(/https?:\/\/[^"'\s]+\/shop2price\/image\/[\w/]+/g) ?? [])],
   };
 }
 
@@ -40,7 +43,7 @@ export async function crawl({ offline = false } = {}) {
   const sitemap = await get('https://karaokekan.jp/sitemap.xml', 'karaokekan-sitemap.xml', { offline });
   const ids = [...new Set([...sitemap.matchAll(/karaokekan\.jp\/shop\/detail\/(\d+)/g)].map(m => m[1]))];
   if (!ids.length) throw new Error('Karaoke-kan: no shop pages in the sitemap');
-  const shops = [], errors = [];
+  const shops = [], errors = [], images = new Map();
   for (const id of ids) {
     const url = `https://karaokekan.jp/shop/detail/${id}`;
     try {
@@ -57,14 +60,36 @@ export async function crawl({ offline = false } = {}) {
         machines: page.machines,
         rooms: null,
         amenities: null,
-        prices: [], // images: not read (see the note at the top)
+        prices: [], // images: not read; hand-entered ones are added by manual.js
         notes: [],
         source_url: url,
         price_url: url,
         prices_as_of: null,
         fetched_at: today(),
       });
+      images.set(id, page.price_images);
     } catch (e) { if (!/HTTP 404|ENOENT/.test(e.message)) errors.push(`${url}: ${e.message}`); } // 404 (or never cached because of it): in the sitemap but closed
   }
-  return { shops, errors };
+  return { shops, errors, warnings: offline === true ? [] : await imageChanges(images) };
+}
+
+// Hand-entered shops (data/manual-prices.json) keep the SHA-1 of each price image they were typed from. A new, missing
+// or changed image means the prices may have changed: warn, so someone re-reads the image and updates the entry.
+export async function imageChanges(images) {
+  const manual = JSON.parse(readFileSync(new URL('../data/manual-prices.json', import.meta.url), 'utf8'));
+  const warnings = [];
+  for (const [key, entry] of Object.entries(manual)) {
+    const id = key.match(/^karaokekan-(\d+)$/)?.[1];
+    if (!id || !entry.images || !images.has(id)) continue;
+    const now = images.get(id), typed = Object.keys(entry.images);
+    const changed = [...now.filter(u => !typed.includes(u)).map(u => `new ${u}`), ...typed.filter(u => !now.includes(u)).map(u => `gone ${u}`)];
+    for (const url of typed.filter(u => now.includes(u))) {
+      try {
+        const img = await get(url, `karaokekan-price-${id}-${url.split('/').pop()}.jpg`, { binary: true }); // always fresh
+        if (createHash('sha1').update(img).digest('hex') !== entry.images[url]) changed.push(`changed ${url}`);
+      } catch (e) { changed.push(`unreadable ${url}: ${e.message}`); }
+    }
+    if (changed.length) warnings.push(`Karaoke-kan ${key}: price image ${changed.join(', ')} — re-check the hand-entered prices (${entry.source})`);
+  }
+  return warnings;
 }

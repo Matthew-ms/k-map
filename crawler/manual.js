@@ -1,5 +1,6 @@
 // Prices typed in by hand from a chain's official price sheet (data/manual-prices.json), for chains whose prices
-// the crawler can't read (Manekineko: PDFs in a folder robots.txt closes to crawlers). Merged on every run.
+// the crawler can't read (Manekineko: PDFs in a folder robots.txt closes to crawlers; Karaoke-kan: images).
+// Merged on every run.
 import { existsSync, readFileSync } from 'node:fs';
 
 const FILE = new URL('../data/manual-prices.json', import.meta.url);
@@ -7,18 +8,22 @@ const STALE_DAYS = 90;
 const CUSTOMERS = ['student_member', 'student', 'member', 'senior', 'general'];
 
 // One slot { slot, days, member: [weekday, other], … } → price rows like the crawlers produce.
+// A cell is a number, null (not listed) or the sheet's own text ("-"). `last` (最終受付) and `drinks` may be set per
+// slot; `last` may also be [weekday, other] when the two columns differ.
 export function expandManual(entry) {
   const rows = [];
   for (const s of entry.slots) {
     const [other, label] = entry.days[s.days] ?? [];
     if (!other) throw new Error(`slot ${s.name} ${s.slot}: unknown days "${s.days}"`);
     for (const customer of CUSTOMERS) {
-      (s[customer] ?? []).forEach((yen, i) => {
-        if (yen == null) return;
+      (s[customer] ?? []).forEach((cell, i) => {
+        if (cell == null) return;
         const row = { party: 'group', period: s.period, name: s.name, plan: s.plan, slot: s.slot, day: i ? other : 'weekday',
-          customer, yen, drinks_included: entry.drinks_included };
+          customer, yen: typeof cell === 'number' ? cell : null, drinks_included: s.drinks ?? entry.drinks_included };
+        if (typeof cell === 'string') row.text = cell;
         if (i) row.day_label = label;
-        if (s.last) row.last_entry = s.last;
+        const last = Array.isArray(s.last) ? s.last[i] : s.last;
+        if (last) row.last_entry = last;
         if (s.note) row.slot_note = s.note;
         rows.push(row);
       });
