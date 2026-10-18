@@ -73,8 +73,9 @@ export function parseShopPage(html, hours) {
     const days = rows[dayIdx].find('td, th').toArray().map(c => text($(c))).filter(l => dayTokens(l.split('※')[0])).map(label => {
       const [d, note] = label.split('※');
       const set = dayTokens(d);
+      // The 平日 column also keeps its own days unless it is every day: a lone 月～金 column has no Saturday price.
       return isWeekdaySide(set)
-        ? { day: 'weekday', label: d, note: note ? `${d}は${note}` : null }
+        ? { day: 'weekday', label: d, note: note ? `${d}は${note}` : null, only: DOW.every(x => set.has(x)) ? null : DOW.concat('hol', 'eve').filter(x => set.has(x)).join('+') }
         : { day: DOW.concat('hol', 'eve').filter(x => set.has(x)).join('+'), label: d, note: note ? `${d}は${note}` : null };
     });
     if (days.filter(d => d.day !== 'weekday').length > 1 || days.filter(d => d.day === 'weekday').length > 1) {
@@ -83,7 +84,9 @@ export function parseShopPage(html, hours) {
     const tableText = text(t);
     const oneDrink = /[1１]ドリンク/.test(tableText);
     const noteText = rows.map(r => text(r.find('td.charge_info_notes'))).join(' ');
-    let lastEntry = null;
+    // 最終受付 can sit in the heading itself ("3時間パック 最終受付16:00", "15:00受付終了"); a remark below the table wins.
+    const inName = nameText.replace(/：/g, ':').match(/最終受付\s*:?\s*(\d{1,2})(?:時|:(\d{2}))|(\d{1,2})(?:時|:(\d{2}))\s*受付終了/);
+    let lastEntry = inName ? `${(inName[1] ?? inName[3]).padStart(2, '0')}:${inName[2] ?? inName[4] ?? '00'}` : null;
     const own = [];
     for (const n of [...remarks, ...noteText.split('※')].map(x => x.trim()).filter(Boolean)) {
       const le = n.match(/最終受付\s*(\d{1,2})(?:時|[:：](\d{2}))/);
@@ -103,6 +106,7 @@ export function parseShopPage(html, hours) {
         const yen = parseInt(raw.replace(/[,，円]/g, ''), 10);
         const row = { ...who, period, name, plan, slot, day: days[i].day, yen: Number.isNaN(yen) ? null : yen, drinks_included: !oneDrink || drinkBar(who.customer) };
         if (days[i].day !== 'weekday') row.day_label = days[i].label;
+        else if (days[i].only) row.weekday_days = days[i].only;
         if (row.yen === null) row.text = raw || null; // keep the site's own words
         const slotNote = [days[i].note, ...own].filter(Boolean).join(' ');
         if (slotNote) row.slot_note = slotNote;

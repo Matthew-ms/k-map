@@ -1,4 +1,4 @@
-import { slotTable, currentPrice, whichDay, jst, estimate, slotName, CUSTOMER_SUBS, rankNow, daySet } from './price.js';
+import { slotTable, currentPrice, whichDay, jst, estimate, slotName, nameNote, lastEntry, CUSTOMER_SUBS, rankNow, daySet } from './price.js';
 import { t, LANGS, LANG_SHORT, getLang, setLang, trWords, dayText, dateText, yenText, walkText } from './i18n.js';
 
 const BRAND_COLORS = { jankara: '#e60012', bigecho: '#2563eb', manekineko: '#f59e0b', karaokekan: '#16a34a' };
@@ -14,7 +14,8 @@ const custName = c => t(CUSTOMER_JA[c]);
 const custLabel = (shop, c) => (shop.brand === 'bigecho' && c === 'student' ? t('学割') : custName(c)); // a chain's own word
 const brandName = b => t(BRAND_NAMES[b] ?? b);
 // Day label of a slot's special column: the chain's own words in Japanese, written from the day set elsewhere.
-const otherLabel = e => (getLang() === 'ja' ? DAY_JA[e.otherDay] ?? e.otherDayLabel : null) ?? dayText(daySet(e.otherDay));
+const otherLabel = c => (getLang() === 'ja' ? DAY_JA[c.day] ?? c.label : null) ?? dayText(daySet(c.day)); // c: a slot's otherCols item
+const dayName = (e, key) => (key === 'weekday' ? t('平日') : otherLabel(e.otherCols.find(c => c.key === key))); // the column that applies
 const sName = e => trWords(slotName(e));
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => `&#${c.charCodeAt(0)};`);
 const slotText = s => s.replace(/(^|-)0/g, '$1').replace('-', '–');
@@ -37,6 +38,7 @@ const markNotes = m => [
 const hasPrices = s => s.prices.length > 0;
 const badge = (s, small) => `<span class="badge${small ? ' sm' : ''}" style="--c:${BRAND_COLORS[s.brand] ?? '#666'}" aria-hidden="true">${BRAND_MARKS[s.brand] ?? '?'}</span>`;
 const officialLink = s => `<a class="official-btn" href="${esc(s.price_url ?? s.source_url)}" target="_blank" rel="noopener">${t('公式サイトで料金を見る')} ↗</a>`;
+const shopLink = s => `<a class="shop-page" href="${esc(s.source_url)}" target="_blank" rel="noopener">${t('店舗ページを開く')} ↗</a>`;
 // Hand-entered prices: say where they came from and when, and warn once they're old.
 const manualNote = s => {
   const days = Math.floor((Date.now() - Date.parse(s.manual.checked_on)) / 864e5);
@@ -83,7 +85,7 @@ const [shops, holidays] = await Promise.all(['data/shops.json', 'data/holidays.j
 const byId = id => shops.find(s => s.id === id);
 const $ = id => document.getElementById(id);
 const panel = $('panel'), compareBtn = $('compare-btn'), areaBtn = $('area-btn'), meBtn = $('me-btn'),
-  filterBtn = $('filter-btn'), langBtn = $('lang-btn'), refreshBtn = $('refresh-btn'), planCard = $('plan-card'), toast = $('toast');
+  filterBtn = $('filter-btn'), langBtn = $('lang-btn'), planCard = $('plan-card'), toast = $('toast');
 
 // Badge pins: the chain's mark on its colour inside a white ring. The planned shop's pin is bigger.
 const pinIcon = (s, big) => L.divIcon({ className: 'pin-wrap', iconSize: big ? [40, 40] : [30, 30],
@@ -134,7 +136,6 @@ function renderChrome() {
   meBtn.setAttribute('aria-label', t('人数と区分を変更'));
   langBtn.textContent = LANG_SHORT[getLang()];
   langBtn.setAttribute('aria-label', t('言語'));
-  refreshBtn.setAttribute('aria-label', t('再読み込み'));
   areaBtn.textContent = t('このエリアで検索');
   renderPlanBar();
 }
@@ -167,7 +168,6 @@ map.invalidateSize(); // the frame's size is known only after layout
 quietly(() => map.setView(lastView?.center ?? [34.6695, 135.5015], lastView?.zoom ?? 15));
 searchArea();
 areaBtn.onclick = searchArea;
-refreshBtn.onclick = () => location.reload(); // installed app: no browser pull-to-refresh
 setInterval(refresh, 60_000); // "now" prices move with the clock
 
 // ---- Current location → walking time ----
@@ -327,7 +327,7 @@ function planResult(s) {
   if (e.mode === 'time') {
     for (const g of e.segs) {
       lines.push(g.cp
-        ? `${hm(g.from)}–${hm(g.to)} ${esc(sName(g.cp.entry))} ${g.cp.day === 'weekday' ? t('平日') : esc(otherLabel(g.cp.entry))}：${cell(g.cp.row, true)} × ${g.count}`
+        ? `${hm(g.from)}–${hm(g.to)} ${esc(sName(g.cp.entry))} ${esc(dayName(g.cp.entry, g.cp.day))}：${cell(g.cp.row, true)} × ${g.count}`
         : `${hm(g.from)}–${hm(g.to)}：${t('料金の掲載なし（営業時間外の可能性）')}`);
     }
   } else if (e.pick) {
@@ -408,39 +408,78 @@ function myColumn(shop) {
   const present = CUSTOMER_KEYS.filter(c => shop.prices.some(x => x.customer === c));
   return { present, mine: present.includes(me.customer) ? me.customer : (CUSTOMER_SUBS[me.customer] ?? []).find(c => present.includes(c)) ?? null };
 }
+// Slot cell: name, いま when it can be used now, time window and last entry (最終受付).
+// Columns whose last entry differs are named: "受付〜15:00（平日）・14:00（休日）".
 function slotHead(r, d) {
-  return `<th class="slot"><b>${esc(sName(r))}</b>${d ? ` <span class="now-badge">${t('いま')}</span>` : ''}<br>${slotText(r.slot)}${r.otherDay && r.otherDay !== 'weekend_holiday' ? `<br><span class="meta">${t('休日')}=${esc(otherLabel(r))}</span>` : ''}</th>`;
+  // A 土日祝 exception (last_entry_alt) for the very days of a holiday column is that column's time; others stay extra.
+  const cols = [{ key: 'weekday', day: null, label: t('平日') }, ...r.otherCols.map(c => ({ ...c, label: r.otherCols.length > 1 ? otherLabel(c) : t('休日') }))];
+  const time = new Map(), extra = new Map();
+  for (const c of cols) {
+    const row = Object.values(r[c.key]).find(x => x.last_entry);
+    if (!time.has(c.label)) time.set(c.label, row?.last_entry ?? null);
+    const alt = row?.last_entry_alt;
+    if (!alt) continue;
+    const same = cols.find(x => x.day === alt.day);
+    if (same) time.set(same.label, alt.time); else extra.set(otherLabel({ day: alt.day, label: null }), alt.time);
+  }
+  const lasts = [...time, ...extra].filter(([, x]) => x);
+  const last = !lasts.length ? null : lasts.length === time.size && new Set(lasts.map(([, x]) => x)).size === 1 ? slotText(lasts[0][1])
+    : lasts.map(([label, x]) => `${slotText(x)}（${label}）`).join('・');
+  return `<th class="slot"><b>${esc(sName(r))}</b>${d ? ` <span class="now-badge">${t('いま')}</span>` : ''}<br><span class="meta">${slotText(r.slot)}${last ? ` · ${t('受付〜{time}', { time: last })}` : ''}</span></th>`;
+}
+// Holiday columns, said once above the table: "休日＝土・日・祝（夜 30分は金・土・日・祝・祝前日）".
+function holidayLine(rows) {
+  const groups = new Map();
+  for (const r of rows) for (const c of r.otherCols) { const l = otherLabel(c); groups.set(l, [...(groups.get(l) ?? []), r]); }
+  if (!groups.size) return '';
+  const names = rows.map(r => sName(r));
+  const plan = r => (names.filter(n => n === sName(r)).length > 1 ? `${sName(r)} ${slotText(r.slot).split('–')[0]}〜` : sName(r)); // same name twice: add the start
+  const [main, ...rest] = [...groups].sort((a, b) => b[1].length - a[1].length);
+  const more = rest.map(([l, rs]) => t('{plans}は{days}', { plans: [...new Set(rs.map(plan))].join('・'), days: l }));
+  return `<p class="meta day-legend">${t('休日')}＝${esc(main[0])}${more.length ? `（${esc(more.join('、'))}）` : ''}</p>`;
 }
 // Compact table for my type (平日 / 休日 per slot), or the full table for every type.
+// A slot with a third day column (月～木 / 金・祝前 / 土日祝) gets an extra line for it.
 function cardTable(shop, p, full) {
   const { present, mine } = myColumn(shop);
   const rows = slotTable(shop, p);
-  const nowDay = r => (r.plan === '30min' ? whichDay(r, new Date(), holidays) : null); // only 30分: free time also depends on last entry
-  const now = currentPrice(shop, { party: p, customer: me.customer, holidays });
+  const at = new Date();
+  // いま: the column usable right now — 30分 while the slot runs, free time and packs until their last entry.
+  const nowKey = r => {
+    const k = whichDay(r, at, holidays);
+    const row = k && ((mine && r[k][mine]) || Object.values(r[k]).find(x => x.yen != null));
+    if (row?.yen == null) return null;
+    return r.plan === '30min' || !lastEntry(r, row, at, holidays).late ? k : null;
+  };
+  const now = currentPrice(shop, { party: p, customer: me.customer, now: at, holidays });
   const nowLine = `<p class="now-line">${now
-    ? `${t('いま')} <b>${esc(sName(now.entry))} ${now.day === 'weekday' ? t('平日') : esc(otherLabel(now.entry))}</b>：<b class="now-price">${cell(now.row, true)}</b>`
+    ? `${t('いま')} <b>${esc(sName(now.entry))} ${esc(dayName(now.entry, now.day))}</b>：<b class="now-price">${cell(now.row, true)}</b>`
     : t('いまの時間帯の30分料金は掲載されていません')}</p>`;
+  const extra = r => r.otherCols.slice(1);
   if (!full && mine) {
-    const marks = marksOf(rows.flatMap(r => [r.weekday[mine], r.other[mine]]));
+    const shown = rows.filter(r => r.weekday[mine] || r.otherCols.some(c => r[c.key][mine])); // slots not sold to my type: full table only
+    const marks = marksOf(shown.flatMap(r => [r.weekday[mine], ...r.otherCols.map(c => r[c.key][mine])]));
     if (mine !== me.customer) marks.substitute.add(mine);
-    return `${nowLine}<div class="table-scroll"><table class="prices mine">
+    return `${nowLine}${holidayLine(shown)}<div class="table-scroll"><table class="prices mine">
       <thead><tr><th class="slot">${esc(custLabel(shop, mine))}${mine !== me.customer ? '†' : ''}</th><th>${t('平日')}</th><th>${t('休日')}</th></tr></thead>
-      <tbody>${rows.filter(r => r.weekday[mine] || r.other[mine]).map(r => { const d = nowDay(r); return `<tr>${slotHead(r, d)}
-        <td class="${d === 'weekday' ? 'now' : ''}">${cell(r.weekday[mine])}</td><td class="${d === 'other' ? 'now' : ''}">${cell(r.other[mine])}</td></tr>`; }).join('')}</tbody></table></div>
+      <tbody>${shown.map(r => { const d = nowKey(r); return `<tr>${slotHead(r, d)}
+        <td class="${d === 'weekday' ? 'now' : ''}">${cell(r.weekday[mine])}</td><td class="${d === 'other' ? 'now' : ''}">${cell(r.other[mine])}</td></tr>
+        ${extra(r).map(c => `<tr class="sub"><th class="slot"><span class="meta">${esc(otherLabel(c))}</span></th><td></td><td class="${d === c.key ? 'now' : ''}">${cell(r[c.key][mine])}</td></tr>`).join('')}`; }).join('')}</tbody></table></div>
       <ul class="notes">${markNotes(marks)}</ul>`;
   }
   const order = mine ? [mine, ...present.filter(c => c !== mine)] : present;
   const cls = (c, side) => (c === mine ? `me me-${side}` : '');
-  const marks = marksOf(rows.flatMap(r => [...Object.values(r.weekday), ...Object.values(r.other)]));
+  const marks = marksOf(rows.flatMap(r => [...Object.values(r.weekday), ...r.otherCols.flatMap(c => Object.values(r[c.key]))]));
   if (mine && mine !== me.customer) marks.substitute.add(mine);
-  return `${nowLine}<div class="table-scroll"><table class="prices">
+  return `${nowLine}${holidayLine(rows)}<div class="table-scroll"><table class="prices">
     <thead>
       <tr><th rowspan="2" class="slot">${t('時間帯')}</th>${order.map(c => `<th colspan="2" class="${c === mine ? 'me me-l me-r' : ''}">${esc(custLabel(shop, c))}${c === mine && mine !== me.customer ? '†' : ''}</th>`).join('')}</tr>
       <tr>${order.map(c => `<th class="day ${cls(c, 'l')}">${t('平日')}</th><th class="day ${cls(c, 'r')}">${t('休日')}</th>`).join('')}</tr>
     </thead>
-    <tbody>${rows.map(r => { const d = nowDay(r); return `<tr>${slotHead(r, d)}
+    <tbody>${rows.map(r => { const d = nowKey(r); return `<tr>${slotHead(r, d)}
       ${order.map(c => `<td class="${cls(c, 'l')}${d === 'weekday' && c === mine ? ' now' : ''}">${cell(r.weekday[c])}</td><td class="${cls(c, 'r')}${d === 'other' && c === mine ? ' now' : ''}">${cell(r.other[c])}</td>`).join('')}
-    </tr>`; }).join('')}</tbody></table></div>
+    </tr>${extra(r).map(col => `<tr class="sub"><th class="slot"><span class="meta">${esc(otherLabel(col))}</span></th>
+      ${order.map(c => `<td class="${cls(c, 'l')}"></td><td class="${cls(c, 'r')}${d === col.key && c === mine ? ' now' : ''}">${cell(r[col.key][c])}</td>`).join('')}</tr>`).join('')}`; }).join('')}</tbody></table></div>
     <ul class="notes">${markNotes(marks)}</ul>`;
 }
 
@@ -451,7 +490,9 @@ function openCard(s, from = view?.type === 'compare' ? 'compare' : null) {
   const w = walk(s);
   const chosen = plan.shopId === s.id;
   const slotNotes = [...new Set(s.prices.filter(x => x.slot_note).map(x => `${sName(x)}：${x.slot_note}`))];
-  const notes = [...s.notes, ...slotNotes];
+  // Where the short plan name dropped real information, the site's own heading.
+  const headings = [...new Set(s.prices.map(x => nameNote(x) && `${sName(x)}（${slotText(x.slot)}）：${t('公式の表記')}「${x.name}」`).filter(Boolean))];
+  const notes = [...s.notes, ...slotNotes, ...headings];
   panel.innerHTML = `
     <div class="panel-head">${from ? `<button class="back">← ${t('比較に戻る')}</button>` : ''}<button class="close" aria-label="${t('閉じる')}">×</button></div>
     <div class="card-head">
@@ -459,20 +500,20 @@ function openCard(s, from = view?.type === 'compare' ? 'compare' : null) {
         <p class="brand">${badge(s, true)}${esc(brandName(s.brand))}</p>
         <h2>${esc(s.name)}</h2>
         <p class="meta">${esc(hoursText(s.hours))}${w ? ` · ${w}` : ''}</p>
+        ${shopLink(s)}
       </div>
       <div class="ch-side">
         <button class="choose" aria-pressed="${chosen}">${chosen ? `✓ ${t('選択中')}` : t('この店にする')}</button>
         ${hasSolo ? `<div class="toggle party-toggle" role="group" aria-label="${t('料金表の人数')}">${[['solo', t('1名')], ['group', t('2名以上')]].map(([k, v]) => `<button data-party="${k}" aria-pressed="${p === k}">${v}</button>`).join('')}</div>` : ''}
       </div>
     </div>
-    ${!hasPrices(s) ? `<p class="meta">${t('この店舗の料金表は公式サイトで画像・PDFとして公開されているため、アプリには掲載していません。')}</p>${officialLink(s)}` : `
+    ${!hasPrices(s) ? `<p class="meta">${t('この店舗の料金表は公式サイトで画像・PDFとして公開されているため、アプリには掲載していません。')}</p>${s.price_url && s.price_url !== s.source_url ? officialLink(s) : ''}` : `
     <p class="price-cap">${t('料金（円・税込）')}${s.prices.every(x => x.drinks_included) ? ` · ${t('ドリンク飲み放題')}` : ''}</p>
     <div class="price-area">${cardTable(s, p, full)}</div>
     ${myColumn(s).mine ? `<button class="expand" aria-expanded="false">▼ ${t('他の区分も表示')}</button>` : ''}`}
     ${s.machines.length ? `<ul class="chips">${s.machines.map(m => `<li>${esc(m)}</li>`).join('')}</ul>` : ''}
     ${notes.length ? `<ul class="notes">${notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
-    ${hasPrices(s) ? (s.manual ? manualNote(s) : `<p class="meta source">${t('料金は{date}時点 · 最終確認 {checked}', { date: esc(s.prices_as_of), checked: esc(s.fetched_at) })}</p>`) : ''}
-    <p class="meta"><a href="${esc(s.source_url)}" target="_blank" rel="noopener">${t('公式ページで店舗情報を見る')} ↗</a></p>`;
+    ${hasPrices(s) ? (s.manual ? manualNote(s) : `<p class="meta source">${t('料金は{date}時点 · 最終確認 {checked}', { date: esc(s.prices_as_of), checked: esc(s.fetched_at) })}</p>`) : ''}`;
   const redraw = () => (panel.querySelector('.price-area').innerHTML = cardTable(s, p, full));
   panel.querySelectorAll('.party-toggle button').forEach(b => b.onclick = () => {
     p = b.dataset.party;

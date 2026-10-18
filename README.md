@@ -65,6 +65,15 @@ tests → full crawl → commit `data/` if changed → Pages rebuild. If any sho
 - 平日 means "the days the other row of that slot doesn't cover", e.g. Mon–Thu in a 金土日祝祝前 table.
 - Exception: in a 日祝 table, Saturday is in **neither** row (shop notes: 「土曜日の夕方フリータイムは実施しておりません」) → no price.
 - Night slots belong to the evening they start: 02:00 Saturday uses Friday night's row.
+- A slot can have several special-day columns (Big Echo: 月～木 / 金・祝前 / 土日祝); `slotTable` keeps them as `other`, `other2`…
+- Big Echo rows keep the 平日 column's own days in `weekday_days` when it doesn't cover the whole week: a lone 月～金
+  column has no Saturday price.
+
+## Plan names
+The chains' headings mix the plan with times, days, last entry and slogans. `slotName` (price.js) shows a short name
+(「期間限定 おはカラフリータイム 最終受付12:00」 → おはカラフリータイム); when that drops real information (days, other time
+windows, conditions), the card lists the site's own heading under the table. Big Echo's 最終受付 written in a heading
+is read into `last_entry`.
 
 ## Phases
 Done: 1. real-data map · 2. prices + shop card · 2.5 identity, site-style table, compare, area search, walking time ·

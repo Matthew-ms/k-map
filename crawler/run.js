@@ -45,6 +45,11 @@ for (const [b, r] of results) {
   console.log(`${b}: ${r.shops.length} shops${WITH_PRICES.has(b) ? ` (${priced} with prices)` : ''}${r.errors.length ? `, ${r.errors.length} failed` : ''}`);
 }
 const shops = [...byId.values()];
+// --offline re-parses saved pages: nothing was fetched today, so keep the dates from when the page was really fetched.
+if (offline === true) for (const s of shops) {
+  const p = prev.find(x => x.id === s.id);
+  if (p) Object.assign(s, { fetched_at: p.fetched_at, prices_as_of: p.prices_as_of ?? s.prices_as_of });
+}
 // Chains not crawled this time keep their shops from the last run.
 const kept = prev.filter(s => !brands.includes(s.brand));
 const all = [...kept, ...shops];

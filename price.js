@@ -3,8 +3,41 @@
 
 export const PERIODS = ['朝', '昼', '夜', '深夜'];
 export const PLAN_ORDER = ['30min', 'free_time', 'pack', 'night_pack'];
-// Display name for a slot: "昼 30分", "昼3時間パック", or the site's own name ("夕方フリータイム").
-export const slotName = e => (e.plan === '30min' ? (e.name === '30分' ? `${e.period} 30分` : e.name) : e.plan === 'pack' ? `${e.period}${e.name}` : e.name);
+// Plan names: the chains' headings carry times, days, last entry and slogans ("期間限定 おはカラフリータイム 最終受付12:00").
+// The table shows those elsewhere, so the display name keeps only what makes the plan special (おはカラ, ロング, 学生限定…).
+const T = String.raw`(?:翌)?(?:\d{1,2}(?:[:：]\d{2}|時(?!間))|OPEN|CLOSE|LAST)`;
+const D = String.raw`(?:[月火水木金土日](?:曜日?)?|祝(?:前日?|祭?日)?|平日|週末|休日)`;
+const DECOR = /[★☆●≪≫♪!！<>＜＞【】]|お得[なの]?|本気の|期間限定|必見|カラオケ|ドリンクバー付き?|DB付|1ドリンク制|時間保証|持ち込みOK|様/g;
+const LAST = new RegExp(String.raw`最終受付\s*[:：]?\s*${T}?|${T}?\s*(?:受付終了|受付限定|まで受付|までのご入室|まで滞在可能|まで|迄|受付)`, 'g');
+const TIMES = new RegExp(String.raw`${T}(?:\s*[~〜～\-]\s*${T}?)?|[~〜～\-]\s*${T}`, 'gi');
+const DAYS = new RegExp(String.raw`${D}(?:[・、,/&\s]*[~〜～]?[・、,/&\s]*${D})*(?:は|のみ|限定|以外)?`, 'g');
+const tidy = s => s.replace(/内\d+時間/g, ' ').replace(/(^|\s)[\d:・、/,&]+(?=\s|$)/g, ' ')
+  .replace(/^[\s:：/・、,&の]+|[\s:：/・、,&は]+$/g, '').replace(/\s*[:：/]\s*/g, ' ').replace(/\s+/g, ' ').trim();
+export function shortName(name, plan) {
+  const s = tidy(name.replace(/お昼/g, '昼').replace(DECOR, '').replace(LAST, ' ').replace(TIMES, ' ').replace(DAYS, ' '));
+  if (s.length < 2 || s.length > 16) return null; // nothing left, or still a sentence: the caller falls back
+  return plan === 'pack' && s === 'パック' && /\d+時間/.test(name) ? `${name.match(/\d+時間/)[0]}パック` : s;
+}
+// Last entry written into a heading ("3時間パック 最終受付16:00"): the crawler reads it into last_entry.
+export const LAST_IN_NAME = new RegExp(String.raw`最終受付\s*[:：]?\s*${T}|${T}\s*受付終了`, 'g');
+// The site's own heading, when the short name dropped more than decoration, the last entry and the slot's own times
+// (days, other time windows, conditions like "アムザ1000飲食店ご利用後"). Shown under the table so nothing is lost.
+export function nameNote(e) {
+  if (e.plan === '30min') return null;
+  const own = e.slot.split('-').flatMap(t => [t, t.replace(/^0/, '')]);
+  let rest = e.name.replace(/お昼/g, '昼').replace(DECOR, '').replace(LAST_IN_NAME, ' ');
+  for (const t of own) rest = rest.split(t).join(' ');
+  rest = tidy(rest.replace(/翌|受付/g, ' ').replace(/[~〜～\-]\s*(?=\s|$)/g, ' ').replace(/(OPEN|CLOSE|LAST)/gi, ' '));
+  const short = shortName(e.name, e.plan);
+  return short && rest.replace(/\s/g, '') === short.replace(/\s/g, '') ? null : e.name;
+}
+// Display name for a slot: "昼 30分", "昼3時間パック", "おはカラフリータイム", or "夜フリータイム" when the heading has no usable name.
+export function slotName(e) {
+  if (e.plan === '30min') return e.name === '30分' ? `${e.period} 30分` : shortName(e.name, e.plan) ?? `${e.period} 30分`;
+  const s = shortName(e.name, e.plan);
+  if (e.plan === 'pack') return /^\d|^パック$/.test(s ?? '') ? `${e.period}${s}` : s ?? `${e.period}パック`;
+  return s ?? `${e.period}${e.plan === 'night_pack' ? 'ナイトパック' : 'フリータイム'}`;
+}
 const DAY_MS = 864e5;
 
 const startHour = slot => { const h = +slot.slice(0, 2); return h < 5 ? h + 24 : h; }; // after-midnight starts sort last
@@ -22,15 +55,25 @@ export function rowsFor(shop, party) {
   return [...own, ...shop.prices.filter(p => p.party === 'group' && !have.has(key(p))).map(p => ({ ...p, fallback: true }))];
 }
 
-// One entry per slot, in site order: { period, name, plan, slot, otherDay, weekday: {customer: row}, other: {customer: row} }
+// One entry per slot, in site order: { period, name, plan, slot, otherDay, weekday: {customer: row}, other: {customer: row} }.
+// A slot with more special-day columns (月～木 / 金・祝前 / 土日祝) keeps the next ones as other2, other3…; `otherCols`
+// lists them all as { key, day, label }. `weekdayDays`: the 平日 column's own days when it doesn't cover the rest
+// (a lone 月～金 column), else null.
 export function slotTable(shop, party) {
   const slots = new Map();
   for (const p of rowsFor(shop, party)) {
     const k = `${p.period}|${p.name}|${p.slot}`;
-    if (!slots.has(k)) slots.set(k, { period: p.period, name: p.name, plan: p.plan, slot: p.slot, otherDay: null, otherDayLabel: null, weekday: {}, other: {} });
+    if (!slots.has(k)) slots.set(k, { period: p.period, name: p.name, plan: p.plan, slot: p.slot, otherDay: null, otherDayLabel: null, weekday: {}, other: {}, otherCols: [], weekdayDays: null });
     const s = slots.get(k);
-    if (p.day === 'weekday') s.weekday[p.customer] = p;
-    else { s.other[p.customer] = p; s.otherDay = p.day; s.otherDayLabel = p.day_label ?? null; }
+    if (p.day === 'weekday') { s.weekday[p.customer] = p; s.weekdayDays ??= p.weekday_days ?? null; continue; }
+    let col = s.otherCols.find(c => c.day === p.day);
+    if (!col) {
+      col = { key: s.otherCols.length ? `other${s.otherCols.length + 1}` : 'other', day: p.day, label: p.day_label ?? null };
+      s.otherCols.push(col);
+      s[col.key] ??= {};
+      if (col.key === 'other') { s.otherDay = p.day; s.otherDayLabel = col.label; }
+    }
+    s[col.key][p.customer] = p;
   }
   return [...slots.values()].sort(bySiteOrder);
 }
@@ -80,21 +123,24 @@ export function slotStart(slot, min) {
   return min >= a ? 0 : min < b ? -1 : null; // crosses midnight
 }
 
-// Which row of a slot applies at `now`: 'weekday', 'other', or null (slot not running, or no row covers that day).
-// The day type belongs to the day the slot started: at 02:00 Saturday a 19:00–8:00 slot uses Friday.
+// Which column of a slot applies at `now`: 'weekday', 'other' (or 'other2'…), or null (slot not running, or no column
+// covers that day). The day type belongs to the day the slot started: at 02:00 Saturday a 19:00–8:00 slot uses Friday.
 export function whichDay(entry, now, holidays) {
   const t = jst(now);
   const off = slotStart(entry.slot, t.min);
   if (off === null) return null;
   const day = shiftDay(t.ymd, off);
-  if (entry.otherDay && isDayType(entry.otherDay, day, holidays)) return 'other';
+  const cols = entry.otherCols ?? (entry.otherDay ? [{ key: 'other', day: entry.otherDay }] : []);
+  const col = cols.find(c => isDayType(c.day, day, holidays));
+  if (col) return col.key;
+  if (entry.weekdayDays && !isDayType(entry.weekdayDays, day, holidays)) return null; // e.g. a 月～金-only slot on Saturday
   // A Saturday the special column leaves out while the slot's other column is 平日 (e.g. 日祝 tables): no price
   // (shop note: 土曜日の夕方フリータイムは実施しておりません).
   if (entry.otherDay === 'sun_holiday' && dow(day) === 6) return null;
   return 'weekday';
 }
 
-// The price row for this plan running at `now`, or null. { entry, day: 'weekday'|'other', row }
+// The price row for this plan running at `now`, or null. { entry, day: 'weekday'|'other'|'other2'…, row }
 // ponytail: ignores 最終受付 (last entry) — fine for 30分, not for "can I still start free time now".
 export function currentPrice(shop, { plan = '30min', party, customer, now = new Date(), holidays }) {
   for (const entry of slotTable(shop, party)) {
@@ -112,20 +158,25 @@ const hhmm = min => `${String(Math.floor(min / 60) % 24).padStart(2, '0')}:${Str
 const into = (slot, t) => (toMin(t) - toMin(slot.slice(0, 5)) + 1440) % 1440; // minutes since the slot began
 const slotLength = slot => into(slot, slot.slice(6)) || 1440;
 
+// 最終受付 (last entry) of a running slot's row at `start`, using the 土日祝 / 金土祝前 variant when it applies.
+// → { last: "15:00" | null, late: past it }
+export function lastEntry(entry, row, start, holidays) {
+  const t = jst(start);
+  const startDay = shiftDay(t.ymd, slotStart(entry.slot, t.min) ?? 0);
+  const alt = row.last_entry_alt && isDayType(row.last_entry_alt.day, startDay, holidays) ? row.last_entry_alt.time : null;
+  const last = alt ?? row.last_entry ?? null;
+  return { last, late: last != null && into(entry.slot, hhmm(t.min)) > into(entry.slot, last) };
+}
+
 // Free-time / night-pack options that can be started at `start`, usable ones first, cheapest first.
-// `late` = past 最終受付 (last entry), using the 土日祝 / 金土祝前 variant when it applies.
 export function freeOptions(shop, { party, customer, start, holidays }) {
-  const t = jst(start), now = hhmm(t.min);
   const out = [];
   for (const entry of slotTable(shop, party)) {
     if (entry.plan === '30min') continue;
     const day = whichDay(entry, start, holidays);
     const row = day && forCustomer(entry[day], customer);
     if (!row) continue;
-    const startDay = shiftDay(t.ymd, slotStart(entry.slot, t.min));
-    const alt = row.last_entry_alt && isDayType(row.last_entry_alt.day, startDay, holidays) ? row.last_entry_alt.time : null;
-    const last = alt ?? row.last_entry ?? null;
-    out.push({ key: `${entry.period}|${entry.name}|${entry.slot}`, entry, day, row, last, late: last != null && into(entry.slot, now) > into(entry.slot, last) });
+    out.push({ key: `${entry.period}|${entry.name}|${entry.slot}`, entry, day, row, ...lastEntry(entry, row, start, holidays) });
   }
   return out.sort((a, b) => a.late - b.late || (a.row.yen ?? Infinity) - (b.row.yen ?? Infinity));
 }

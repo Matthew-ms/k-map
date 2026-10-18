@@ -107,3 +107,35 @@ test('rankNow: cheapest option per shop right now, shops ordered by price', asyn
   const late = rankNow([j269], { mode: 'free', party: 'group', customer: 'general', now: at('2026-10-15', '04:30'), holidays });
   assert.ok(late.none.length + late.ranked.length === 1);
 });
+
+test('3 day columns (月～木 / 金・祝前 / 土日祝) and a lone 月～金 column pick the right price on each day', async () => {
+  const { slotTable, rankNow } = await import('../price.js');
+  const row = (day, yen, extra = {}) => ({ party: 'group', period: '夜', name: '30分', plan: '30min', slot: '18:00-05:00', day, customer: 'general', yen, drinks_included: true, ...extra });
+  const shop = { id: 'x', brand: 'bigecho', prices: [
+    row('weekday', 800, { weekday_days: 'mon+tue+wed+thu' }), row('sun+sat+hol', 950, { day_label: '土・日・祝日' }), row('fri+eve', 980, { day_label: '金、祝前' }),
+    { ...row('weekday', 500, { weekday_days: 'mon+tue+wed+thu+fri' }), period: '昼', name: '平日昼', slot: '10:00-18:00' },
+  ] };
+  const price = (ymd, hhmm) => rankNow([shop], { mode: '30min', party: 'group', customer: 'general', now: at(ymd, hhmm), holidays }).ranked[0]?.main.row.yen ?? null;
+  assert.equal(price('2026-10-15', '20:00'), 800); // Thu
+  assert.equal(price('2026-10-16', '20:00'), 980); // Fri
+  assert.equal(price('2026-10-17', '20:00'), 950); // Sat: the 土日祝 column, not 平日
+  assert.equal(price('2026-10-17', '02:00'), 980); // Sat 02:00 = Friday night
+  assert.equal(price('2026-11-02', '20:00'), 980); // Mon, eve of 文化の日
+  assert.equal(price('2026-11-03', '20:00'), 950); // 文化の日
+  assert.equal(price('2026-10-16', '12:00'), 500); // the 月～金 day slot on a Friday
+  assert.equal(price('2026-10-17', '12:00'), null); // …and not on Saturday
+  assert.equal(slotTable(shop, 'group').find(e => e.period === '夜').otherCols.length, 2);
+});
+
+test('plan names: decoration, times, days and last entry go; what makes the plan special stays', async () => {
+  const { slotName, nameNote } = await import('../price.js');
+  const e = (name, plan = 'free_time', period = '昼', slot = '10:00-19:00') => ({ name, plan, period, slot });
+  assert.equal(slotName(e('期間限定 おはカラフリータイム 最終受付12:00')), 'おはカラフリータイム');
+  assert.equal(nameNote(e('期間限定 おはカラフリータイム 最終受付12:00')), null); // last entry is read into last_entry
+  assert.equal(slotName(e('★昼3時間パック★', 'pack')), '昼3時間パック');
+  assert.equal(slotName(e('会員様限定早割3時間パック までのご入室', 'pack')), '会員限定早割3時間パック');
+  assert.equal(slotName(e('金・土・日・祝前日・祝日は23:00~', 'free_time', '夜', '22:00-05:00')), '夜フリータイム');
+  assert.equal(nameNote(e('金・土・日・祝前日・祝日は23:00~', 'free_time', '夜', '22:00-05:00')), '金・土・日・祝前日・祝日は23:00~'); // a real condition: kept as a note
+  assert.ok(nameNote(e('学生様必見! アムザ1000飲食店ご利用後 ロングフリータイム', 'free_time', '夜')));
+  assert.equal(slotName(e('30分', '30min', '夜')), '夜 30分');
+});
