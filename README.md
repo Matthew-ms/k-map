@@ -9,6 +9,7 @@ MVP: Jankara, Osaka Namba/Shinsaibashi.
 - `crawler/` (Node) fetches each chain's shop data offline and writes `data/shops.json`.
 - `price.js` holds the price rules (which row applies at a given moment) and is shared by the app and the tests.
 - `data/holidays.json` (Japanese public holidays, from holidays-jp.github.io) is refreshed by the crawler.
+- `i18n.js`: UI languages (日本語 default, English, 繁體中文). Strings are keyed by their Japanese text; `node` check: every `t('…')` in app.js needs an entry in each dictionary. Shop names and the chains' remarks are not translated.
 - The site (`index.html`, `app.js`) is static: Leaflet + OpenStreetMap, reads `data/shops.json`, filters on the device.
 - `data/shops.json` is the contract between the two halves.
 

@@ -92,3 +92,18 @@ test('Big Echo なんば戎橋店: 学生会員 falls back to 学割 (marked), �
   const night = currentPrice(shop, { party: 'group', customer: 'general', now: at('2026-10-16', '20:00'), holidays }).row; // Fri evening
   assert.equal(night.yen, 800); // 金～日・祝前日・祝日 column
 });
+
+test('rankNow: cheapest option per shop right now, shops ordered by price', async () => {
+  const { rankNow } = await import('../price.js');
+  const j269 = { id: 'j269', prices: parseShopPage(readFileSync(new URL('./fixtures/jankara-269.html', import.meta.url), 'utf8'), '24h').prices };
+  const be = { id: 'be', prices: parseBigEcho(readFileSync(new URL('./fixtures/bigecho-1303.html', import.meta.url), 'utf8'), '10:00-5:00').prices };
+  const pin = { id: 'pin', prices: [] };
+  const now = at('2026-10-15', '12:00'); // Thursday noon
+  const r30 = rankNow([j269, be, pin], { mode: '30min', party: 'group', customer: 'general', now, holidays });
+  assert.deepEqual(r30.ranked.map(x => [x.shop.id, x.main.row.yen]), [['be', 360], ['j269', 500]]);
+  assert.deepEqual(r30.none, [{ shop: pin, reason: 'no_prices' }]);
+  const free = rankNow([j269], { mode: 'free', party: 'group', customer: 'general', now: at('2026-10-15', '17:00'), holidays });
+  assert.equal(free.ranked[0].main.entry.name, '夕方フリータイム'); // 昼フリータイム is past its 16時 last entry
+  const late = rankNow([j269], { mode: 'free', party: 'group', customer: 'general', now: at('2026-10-15', '04:30'), holidays });
+  assert.ok(late.none.length + late.ranked.length === 1);
+});

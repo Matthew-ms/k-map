@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>K-map</title>
   <meta name="theme-color" content="#e60012">
   <link rel="manifest" href="manifest.webmanifest">
@@ -15,15 +15,21 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="map"></div>
-  <button id="area-btn" class="float" hidden>このエリアで検索</button>
-  <div id="topbar">
-    <button id="filter-btn" class="float">絞り込み</button>
-    <button id="me-btn" class="float" aria-label="人数と区分を変更"></button>
-  </div>
-  <button id="plan-btn" class="float" aria-label="プランを編集"></button>
-  <button id="compare-btn" class="float"></button>
-  <div id="plan-card" class="float" role="button" tabindex="0" aria-label="プランを開く" hidden></div>
+  <header id="topbar">
+    <span class="app-name"><img src="icon.svg" alt=""><span>K-map</span></span>
+    <button id="refresh-btn" class="hb">↻</button>
+    <button id="filter-btn" class="hb"></button>
+    <button id="me-btn" class="hb"></button>
+    <button id="lang-btn" class="hb"></button>
+  </header>
+  <main id="map-wrap">
+    <div id="map"></div>
+    <button id="area-btn" hidden></button>
+  </main>
+  <footer id="bottombar">
+    <div id="plan-card" role="button" tabindex="0"></div>
+    <button id="compare-btn"></button>
+  </footer>
   <aside id="panel" hidden aria-live="polite"></aside>
   <div id="toast" role="status" hidden></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>

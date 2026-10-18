@@ -1,8 +1,8 @@
 // Keeps a copy of the app on the phone so it opens without a connection, using the last downloaded data.
 // Network first: weekly data and code updates arrive whenever there's a connection; the saved copy is the fallback.
-const CACHE = 'kmap-v2';
+const CACHE = 'kmap-v3';
 const SHELL = [
-  './', 'index.html', 'app.js', 'price.js', 'style.css', 'manifest.webmanifest', 'icon.svg',
+  './', 'index.html', 'app.js', 'price.js', 'i18n.js', 'style.css', 'manifest.webmanifest', 'icon.svg',
   'data/shops.json', 'data/holidays.json',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js',

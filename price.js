@@ -61,7 +61,9 @@ const NAMED_DAYS = {
   fri_sun_hol_eve: 'fri+sat+sun+hol+eve', // 金土日祝祝前
   fri_sat_hol_eve: 'fri+sat+eve', // 金土祝前
 };
-const DOW = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+export const DOW = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+// The day set behind a day type, e.g. 'weekend_holiday' → ['sat', 'sun', 'hol'] (used to write day labels in any language).
+export const daySet = type => (NAMED_DAYS[type] ?? type).split('+');
 
 // Does calendar day `ymd` fall under a non-weekday day type? `holidays` = { "2026-11-03": "文化の日", … }
 export function isDayType(type, ymd, holidays) {
@@ -157,4 +159,30 @@ export function estimate(shop, { party, customer, start, mode, blocks = 2, freeK
     into(o.entry.slot, hhmm(jst(start).min)) + blocks * 30 <= slotLength(o.entry.slot);
   const cheaperFree = !missing ? options.find(o => fits(o) && o.row.yen < sum) ?? null : null;
   return { mode, segs, perPerson: missing ? null : sum, partial: sum, missing, cheaperFree };
+}
+
+// ---- Comparison "right now" ----
+// For each shop, what you could pay at `now`: mode '30min' → the 30分 slots running now; mode 'free' → free time,
+// packs and night packs you could still start now (before 最終受付). Cheapest first per shop, shops by their cheapest.
+// → { ranked: [{ shop, main, others }], none: [{ shop, reason: 'no_prices' | 'none_now' }] }
+export function rankNow(shops, { mode, party, customer, now = new Date(), holidays }) {
+  const ranked = [], none = [];
+  for (const shop of shops) {
+    if (!shop.prices.length) { none.push({ shop, reason: 'no_prices' }); continue; }
+    let options;
+    if (mode === '30min') {
+      options = slotTable(shop, party).filter(e => e.plan === '30min').map(entry => {
+        const day = whichDay(entry, now, holidays);
+        const row = day && forCustomer(entry[day], customer);
+        return row && { entry, day, row };
+      }).filter(Boolean);
+    } else {
+      options = freeOptions(shop, { party, customer, start: now, holidays }).filter(o => !o.late);
+    }
+    options = options.filter(o => o.row.yen != null).sort((a, b) => a.row.yen - b.row.yen);
+    if (options.length) ranked.push({ shop, main: options[0], others: options.slice(1) });
+    else none.push({ shop, reason: 'none_now' });
+  }
+  ranked.sort((a, b) => a.main.row.yen - b.main.row.yen);
+  return { ranked, none };
 }
