@@ -1,8 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- App icon: white map pin with a microphone on Jankara red. Full-bleed so phones can mask it to any shape. -->
+  <!-- App icon: white map pin holding a handheld karaoke mic (mesh ball head, tapered handle) on Jankara red.
+       Full-bleed so phones can mask it to any shape. -->
+  <defs><clipPath id="head"><circle r="46"/></clipPath></defs>
   <rect width="512" height="512" fill="#e60012"/>
   <path d="M256 92c-70 0-126 55-126 124 0 92 126 210 126 210s126-118 126-210c0-69-56-124-126-124z" fill="#fff"/>
-  <rect x="226" y="146" width="60" height="96" rx="30" fill="#e60012"/>
-  <path d="M206 222c0 30 22 52 50 52s50-22 50-52" fill="none" stroke="#e60012" stroke-width="14" stroke-linecap="round"/>
-  <path d="M256 274v30" stroke="#e60012" stroke-width="14" stroke-linecap="round"/>
+  <g transform="translate(286 182) rotate(35)" fill="#e60012">
+    <circle r="46"/>
+    <path d="M-16 -46V46M16 -46V46M-46 -16H46M-46 16H46" stroke="#fff" stroke-width="6" clip-path="url(#head)"/>
+    <rect x="-30" y="50" width="60" height="14" rx="4"/>
+    <path d="M-26 64L-15 150A15 15 0 0 0 15 150L26 64Z"/>
+  </g>
 </svg>
