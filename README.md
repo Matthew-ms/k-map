@@ -28,6 +28,10 @@ MVP: Jankara, Osaka Namba/Shinsaibashi.
 | Manekineko | admin-ajax `loc_load_more` per prefecture (nonce from /locations/) | **not read**: per-shop PDF under /wp-content/uploads/, which robots.txt disallows → pin + link |
 | Karaoke-kan | sitemap `/shop/detail/{id}` | **not read**: price images → pin + link |
 
+Hand-entered prices: `data/manual-prices.json` (8 Manekineko shops near Namba, typed from their official PDFs, checked 2026-10-17).
+Merged on every run and validated like crawled data; the weekly log warns after 90 days. To refresh: save the shop's PDF into
+`manual/` (git-ignored) and update the entry.
+
 Machine names are normalised across chains (`LIVEDAM Ai` → `LIVE DAM Ai`). A customer type a chain lacks falls back to the closest
 (学生会員 → student), marked † in the app.
 

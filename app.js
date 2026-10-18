@@ -10,7 +10,7 @@ const otherLabel = e => DAY[e.otherDay] ?? e.otherDayLabel ?? '休日'; // Janka
 const PLAN_TABS = { '30min': '30分', free_time: 'フリータイム', pack: 'パック', night_pack: 'ナイトパック' };
 const FALLBACK_NOTE = '＊1名料金の記載なし・2名以上の料金を表示';
 const DRINK_NOTE = '+1D：ドリンク1杯の注文が別途必要（1ドリンクオーダー制）';
-const subNote = c => `†${CUSTOMERS[c]}の料金がないため、${CUSTOMERS[CUSTOMER_SUBS[c]]}（学割など）の料金を表示`;
+const subNote = used => `†${CUSTOMERS[me.customer]}の料金がない店舗は、${[...used].map(c => CUSTOMERS[c]).join('・')}の料金を表示`;
 const HALF_MS = 30 * 60e3;
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => `&#${c.charCodeAt(0)};`);
@@ -18,11 +18,16 @@ const slotText = s => s.replace(/(^|-)0/g, '$1').replace('-', '–');
 // A price with its marks: ＊ 2名以上 price shown for 1名, † closest customer type, +1D drink ordered separately.
 const cell = (r, unit = '') => !r ? '' : r.yen == null ? esc(r.text)
   : `${r.yen.toLocaleString()}${unit}${r.fallback ? '＊' : ''}${r.substitute ? '†' : ''}${r.drinks_included === false ? '<span class="d1">+1D</span>' : ''}`;
-const marksOf = rows => ({ fallback: rows.some(r => r?.fallback), substitute: rows.some(r => r?.substitute), drink: rows.some(r => r && r.drinks_included === false) });
-const markNotes = m => [m.fallback && FALLBACK_NOTE, m.substitute && subNote(me.customer), m.drink && DRINK_NOTE].filter(Boolean).map(n => `<li>${n}</li>`).join('');
+const marksOf = rows => ({ fallback: rows.some(r => r?.fallback), substitute: new Set(rows.map(r => r?.substitute).filter(Boolean)), drink: rows.some(r => r && r.drinks_included === false) });
+const markNotes = m => [m.fallback && FALLBACK_NOTE, m.substitute.size && subNote(m.substitute), m.drink && DRINK_NOTE].filter(Boolean).map(n => `<li>${n}</li>`).join('');
 const hasPrices = s => s.prices.length > 0;
 const custLabel = (shop, c) => CUSTOMER_LABELS[shop.brand]?.[c] ?? CUSTOMERS[c];
 const dot = s => `<span class="dot" style="--c:${BRAND_COLORS[s.brand] ?? '#666'}" aria-hidden="true"></span>`;
+// Hand-entered prices: say where they came from and when, and warn once they're old.
+const manualNote = s => {
+  const days = Math.floor((Date.now() - Date.parse(s.manual.checked_on)) / 864e5);
+  return `<p class="meta source">公式の料金表（PDF）から手入力 · ${esc(s.manual.checked_on)}確認 · <a href="${esc(s.manual.source)}" target="_blank" rel="noopener">料金表を開く ↗</a></p>${days > 90 ? `<p class="warn">確認から${days}日経っています。最新の料金は公式の料金表でご確認ください。</p>` : ''}`;
+};
 const officialLink = s => `<a class="official-btn" href="${esc(s.price_url ?? s.source_url)}" target="_blank" rel="noopener">公式サイトで料金を見る ↗</a>`;
 const yen = n => `${n.toLocaleString()}円`;
 const hm = d => { const m = jst(d).min; return `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`; };
@@ -372,13 +377,13 @@ function planChanged() {
 // ---- Shop card ----
 function cardTable(shop, p) {
   const present = Object.keys(CUSTOMERS).filter(c => shop.prices.some(x => x.customer === c));
-  const mine = present.includes(me.customer) ? me.customer : present.includes(CUSTOMER_SUBS[me.customer]) ? CUSTOMER_SUBS[me.customer] : null;
+  const mine = present.includes(me.customer) ? me.customer : (CUSTOMER_SUBS[me.customer] ?? []).find(c => present.includes(c)) ?? null;
   const order = mine ? [mine, ...present.filter(c => c !== mine)] : present;
   const cls = (c, side) => (c === mine ? `me me-${side}` : '');
   const rows = slotTable(shop, p);
   const nowDay = r => (r.plan === '30min' ? whichDay(r, new Date(), holidays) : null); // only 30分: free time also depends on last entry
   const marks = marksOf(rows.flatMap(r => [...Object.values(r.weekday), ...Object.values(r.other)]));
-  if (mine && mine !== me.customer) marks.substitute = true;
+  if (mine && mine !== me.customer) marks.substitute.add(mine);
   const now = currentPrice(shop, { party: p, customer: me.customer, holidays });
   return `<p class="now-line">${now
       ? `いま <b>${esc(now.entry.period)} 30分 ${now.day === 'weekday' ? '平日' : otherLabel(now.entry)}</b>：<b class="now-price">${cell(now.row, '円')}</b>`
@@ -425,7 +430,7 @@ function openCard(s, from = view?.type === 'compare' ? 'compare' : null) {
       const all = [...s.notes, ...slotNotes];
       return all.length ? `<ul class="notes">${all.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : '';
     })()}
-    <p class="meta source">料金は${esc(s.prices_as_of)}時点 · 最終確認 ${esc(s.fetched_at)}</p>`}`;
+    ${s.manual ? manualNote(s) : `<p class="meta source">料金は${esc(s.prices_as_of)}時点 · 最終確認 ${esc(s.fetched_at)}</p>`}`}`;
   panel.querySelectorAll('.party-toggle button').forEach(b => b.onclick = () => {
     p = b.dataset.party;
     panel.querySelectorAll('.party-toggle button').forEach(x => x.setAttribute('aria-pressed', x === b));
@@ -465,7 +470,7 @@ function openCompare() {
     cols.get(k).times[r.slot] = (cols.get(k).times[r.slot] ?? 0) + 1;
   }
   const colList = [...cols.values()].map(c => ({ ...c, slot: Object.entries(c.times).sort((a, b) => b[1] - a[1])[0][0] })).sort(bySiteOrder);
-  const label = c => (cmp.plan === '30min' ? c.period : cmp.plan === 'pack' ? slotName(c) : cmp.plan === 'night_pack' ? c.name : c.name.replace('フリータイム', '') || c.name);
+  const label = c => (cmp.plan === '30min' ? c.period : cmp.plan === 'pack' ? slotName(c) : cmp.plan === 'night_pack' ? c.name : c.name.replace('フリータイム', '') || c.period);
   const running = c => whichDay({ slot: c.slot }, new Date(), holidays) !== null;
 
   const pick = (slots, c) => {

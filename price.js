@@ -4,7 +4,7 @@
 export const PERIODS = ['朝', '昼', '夜', '深夜'];
 export const PLAN_ORDER = ['30min', 'free_time', 'pack', 'night_pack'];
 // Display name for a slot: "昼 30分", "昼3時間パック", or the site's own name ("夕方フリータイム").
-export const slotName = e => (e.plan === '30min' ? `${e.period} 30分` : e.plan === 'pack' ? `${e.period}${e.name}` : e.name);
+export const slotName = e => (e.plan === '30min' ? (e.name === '30分' ? `${e.period} 30分` : e.name) : e.plan === 'pack' ? `${e.period}${e.name}` : e.name);
 const DAY_MS = 864e5;
 
 const startHour = slot => { const h = +slot.slice(0, 2); return h < 5 ? h + 24 : h; }; // after-midnight starts sort last
@@ -36,12 +36,13 @@ export function slotTable(shop, party) {
 }
 
 // A chain without your customer type gets the closest one, marked `substitute` so the UI can say so.
-// Only Jankara has 学生会員; elsewhere the student price (Big Echo 学割) is the closest.
-export const CUSTOMER_SUBS = { student_member: 'student' };
+// In order of preference: only Jankara has 学生会員, so the student price (Big Echo 学割) comes first, then 会員
+// (Manekineko has only 会員 / 一般). A non-member student falls back to 一般.
+export const CUSTOMER_SUBS = { student_member: ['student', 'member'], student: ['general'] };
 export function forCustomer(byCustomer, customer) {
   if (byCustomer?.[customer]) return byCustomer[customer];
-  const sub = CUSTOMER_SUBS[customer];
-  return sub && byCustomer?.[sub] ? { ...byCustomer[sub], substitute: sub } : undefined;
+  const sub = (CUSTOMER_SUBS[customer] ?? []).find(c => byCustomer?.[c]);
+  return sub ? { ...byCustomer[sub], substitute: sub } : undefined;
 }
 
 // Japan date parts for a moment (Japan has no daylight saving, so +9h is exact).

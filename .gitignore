@@ -1,2 +1,5 @@
 node_modules/
 crawler/cache/
+manual/*.pdf
+manual/*.png
+manual/*.jpg

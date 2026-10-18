@@ -9,6 +9,7 @@ import * as jankara from './jankara.js';
 import * as bigecho from './bigecho.js';
 import * as manekineko from './manekineko.js';
 import * as karaokekan from './karaokekan.js';
+import { applyManual } from './manual.js';
 
 const CHAINS = { jankara, bigecho, manekineko, karaokekan };
 const WITH_PRICES = new Set(['jankara', 'bigecho']); // the others are map pins with a link to their official prices
@@ -43,17 +44,23 @@ for (const [b, r] of results) {
   const priced = r.shops.filter(s => s.prices.length).length;
   console.log(`${b}: ${r.shops.length} shops${WITH_PRICES.has(b) ? ` (${priced} with prices)` : ''}${r.errors.length ? `, ${r.errors.length} failed` : ''}`);
 }
+const shops = [...byId.values()];
+// Chains not crawled this time keep their shops from the last run.
+const kept = prev.filter(s => !brands.includes(s.brand));
+const all = [...kept, ...shops];
+// Hand-entered prices (data/manual-prices.json) go onto their shops every run, then get the same checks.
+warnings.push(...applyManual(all));
+
 // Warnings don't block: a shop whose prices can't be read stays a pin with a link (missing beats wrong).
 if (warnings.length) console.log(`\n${warnings.length} warning(s):\n${warnings.join('\n')}`);
-const shops = [...byId.values()];
 
 // Wrong data is worse than missing data: refuse to write a file with problems.
-const problems = [...errors, ...shops.flatMap(s => {
+const problems = [...errors, ...[...shops, ...kept.filter(s => s.manual)].flatMap(s => {
   const p = [];
   if (!s.name) p.push('no name');
   if (!(s.lat > 24 && s.lat < 46 && s.lng > 122 && s.lng < 154)) p.push(`coords outside Japan: ${s.lat},${s.lng}`);
   for (const m of s.machines) if (!isMachine(m)) p.push(`not a karaoke machine name: "${m}"`);
-  if (!WITH_PRICES.has(s.brand) || s.price_error) {
+  if ((!WITH_PRICES.has(s.brand) && !s.manual) || s.price_error) {
     if (!s.price_url) p.push('no link to official prices');
   } else {
     if (!s.prices_as_of) p.push('no price date');
@@ -73,10 +80,6 @@ if (problems.length) {
   console.error(`\n${problems.length} problem(s), nothing written:\n${problems.join('\n')}`);
   process.exit(1);
 }
-
-// Chains not crawled this time keep their shops from the last run.
-const kept = prev.filter(s => !brands.includes(s.brand));
-const all = [...kept, ...shops];
 
 // Compare with the last run so big changes get a human look before they go live.
 const before = new Map(prev.map(s => [s.id, s]));
