@@ -27,10 +27,10 @@ MVP: Jankara, Osaka Namba/Shinsaibashi.
 | Jankara (212) | `jankara.ne.jp/shop/ajax/?a={area}` JSON | shop page tables, incl. Super Jankara grid |
 | Big Echo | `shop.big-echo.jp/api/point?b=24,122,46,154` (all shops, with coordinates) | shop page tables; 学割→student; ひとりカラオケ(会員の場合) = 1名 member price; 1ドリンクオーダー制 → `drinks_included: false` (+1D) except 学生/シニア (drink bar) |
 | Manekineko | admin-ajax `loc_load_more` per prefecture (nonce from /locations/) | **not read**: per-shop PDF under /wp-content/uploads/, which robots.txt disallows → pin + link |
-| Karaoke-kan | sitemap `/shop/detail/{id}` | **not read**: price images → pin + link (hand-entered for 8 Kansai shops, see below) |
+| Karaoke-kan | sitemap `/shop/detail/{id}` | **not read**: price images → pin + link (hand-entered for some shops, see below) |
 
 Hand-entered prices: `data/manual-prices.json` (8 Manekineko shops near Namba, typed from their official PDFs, checked 2026-10-17;
-8 Karaoke-kan shops in Osaka, Kobe and Kyoto, typed from their price images, checked 2026-10-18). Karaoke-kan entries keep each
+Karaoke-kan shops typed from their price images: 8 in Osaka, Kobe and Kyoto, checked 2026-10-18; 18 in Tokyo so far, checked 2026-10-19, each read twice independently and compared cell by cell). Karaoke-kan entries keep each
 image's SHA-1: the monthly Karaoke-kan crawl warns when an image is new, gone or changed, so the entry gets re-read.
 Merged on every run and validated like crawled data; the weekly log warns after 90 days. To refresh: save the shop's PDF / images into
 `manual/` (git-ignored) and update the entry.
