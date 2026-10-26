@@ -30,8 +30,20 @@ architecture, commands, data format and day-type rules; read it first.
   screenshots need cdnjs.cloudflare.com (Leaflet) and tile.openstreetmap.org (map tiles) allowed too.
 
 ## Checking UI changes yourself
-- After a UI change, run `node scripts/screenshot.js` (iPhone 13, all 3 languages; options listed at the top of the
-  file: `--lang`, `--time`, `--shop`, `--device`, `--url`) and look at the PNGs in `screenshots/` (git-ignored)
-  before asking the owner to check on the phone. It exits 1 on a page error or a failed request.
-- If cdnjs is blocked: `npm pack leaflet@1.9.4` in the scratchpad, untar, pass `--leaflet=<that>/package/dist`.
-- It is Chromium, not iOS Safari: Safari-only issues (100vh, safe areas, home-screen mode) still need the phone.
+- After changing anything the owner sees, check it yourself in a phone-sized browser before asking them to test on
+  the phone, and show them the screenshots you checked.
+- Tool: Playwright with Chromium. In cloud sessions it is preinstalled (`require('playwright')`, `chromium.launch()`);
+  don't install another version. When `HTTPS_PROXY` is set, launch with
+  `proxy: { server: process.env.HTTPS_PROXY, bypass: 'localhost,127.0.0.1' }` or outside requests fail (the script
+  below does this). On the owner's computer, use the Playwright MCP server.
+- Use `node scripts/screenshot.js`: it serves the project locally, emulates an iPhone 13 with locale ja-JP and time
+  zone Asia/Tokyo, and screenshots map, shop card, compare, plan, filters and identity in all 3 languages into
+  `screenshots/` (git-ignored). Options at the top of the file: `--lang`, `--time` (fake clock), `--shop`, `--device`,
+  `--url`. It collects page errors, console errors and failed requests, and exits 1 on any of them. Look at every
+  screenshot of the screens the change touches, not just the exit code; add a screen to the script when a change
+  touches one it doesn't capture.
+- If CDN files or map tiles fail to load, the environment's network allowlist is blocking them: tell the owner which
+  hosts to allow (cdnjs.cloudflare.com for Leaflet, tile.openstreetmap.org for tiles). Meanwhile for Leaflet:
+  `npm pack leaflet@1.9.4` in the scratchpad, untar, pass `--leaflet=<that>/package/dist`.
+- It is Chromium, not iOS Safari: say what still needs the real phone (Safari-only layout such as 100vh and safe
+  areas, home-screen mode, real GPS, touch feel).
