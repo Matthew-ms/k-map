@@ -20,6 +20,7 @@ MVP: Jankara, Osaka Namba/Shinsaibashi.
     npm run crawl -- --brands=jankara --areas=10 --offline  # parser work on one Jankara area (writes only that area!)
     npm test                   # parser + price-rule tests
     npm run serve              # http://localhost:8080
+    node scripts/screenshot.js # phone screenshots (map, card, compare, plan, filter, me × 3 languages) → screenshots/
 
 ## Chains
 | Chain | Shop list | Prices |

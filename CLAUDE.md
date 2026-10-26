@@ -26,4 +26,12 @@ architecture, commands, data format and day-type rules; read it first.
 - `crawler/cache/` and `manual/` don't exist there, so `--offline` has nothing to read. Fetching needs the
   environment's network access set to **Custom** with: jankara.ne.jp, big-echo.jp, shop.big-echo.jp,
   www.karaokemanekineko.jp, karaokekan.jp, karaokekan.net, holidays-jp.github.io.
-- UI work (index.html, app.js, style.css, i18n.js, price.js) needs no network beyond the defaults.
+- UI work (index.html, app.js, style.css, i18n.js, price.js) needs no network beyond the defaults, except that
+  screenshots need cdnjs.cloudflare.com (Leaflet) and tile.openstreetmap.org (map tiles) allowed too.
+
+## Checking UI changes yourself
+- After a UI change, run `node scripts/screenshot.js` (iPhone 13, all 3 languages; options listed at the top of the
+  file: `--lang`, `--time`, `--shop`, `--device`, `--url`) and look at the PNGs in `screenshots/` (git-ignored)
+  before asking the owner to check on the phone. It exits 1 on a page error or a failed request.
+- If cdnjs is blocked: `npm pack leaflet@1.9.4` in the scratchpad, untar, pass `--leaflet=<that>/package/dist`.
+- It is Chromium, not iOS Safari: Safari-only issues (100vh, safe areas, home-screen mode) still need the phone.
