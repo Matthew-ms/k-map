@@ -45,11 +45,12 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
 let server, url = arg('url');
 if (!url) {
   server = createServer(async (req, res) => {
-    const path = join(ROOT, decodeURIComponent(new URL(req.url, 'http://x').pathname));
-    const file = path.endsWith('/') ? join(path, 'index.html') : path;
+    const pathname = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    const file = join(ROOT, pathname.endsWith('/') ? `${pathname}index.html` : pathname); // test the URL: Windows paths use \
     if (!file.startsWith(ROOT)) return res.writeHead(403).end();
-    try { res.writeHead(200, { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' }).end(await readFile(file)); }
-    catch { res.writeHead(404).end(); }
+    let body;
+    try { body = await readFile(file); } catch { return res.writeHead(404).end(); } // read first: headers can only be sent once
+    res.writeHead(200, { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' }).end(body);
   });
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   url = `http://127.0.0.1:${server.address().port}/`;
