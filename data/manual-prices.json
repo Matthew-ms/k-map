@@ -20769,5 +20769,2720 @@
    "終電パック 18:00～24:00（日～木・祝日は～25:00）2.5時間分の料金で最大7時間（2名様以上・組数限定）",
    "カラ館ロング（大学生・専門学生）18:00～LAST ロングフリータイム 550円（金・土・祝前日 +550円）ドリンクバー付き"
   ]
+ },
+ "karaokekan-204": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/204",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/204/0": "df4f10d2063842ad97e924181f6c3f00a253b5a8",
+   "https://karaokekan.net/shop2price/image/204/3": "3ae3c12f563c83281ee9db19fc0a545b6f1bdac4",
+   "https://karaokekan.net/shop2price/image/204/6": "867409f9e6b5a5341631fef820cd22d6777c4234"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "09:00-19:00",
+    "days": "day",
+    "student": [
+     160,
+     260
+    ],
+    "member": [
+     240,
+     310
+    ],
+    "general": [
+     320,
+     413
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-06:00",
+    "note": "土は8:00まで",
+    "days": "night",
+    "student": [
+     250,
+     300
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-06:00",
+    "note": "土は8:00まで",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     390,
+     420
+    ],
+    "general": [
+     520,
+     560
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-19:00",
+    "last": "15:00",
+    "days": "day",
+    "student": [
+     640,
+     1320
+    ],
+    "member": [
+     1250,
+     1600
+    ],
+    "general": [
+     1666,
+     2133
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "15:00-21:00",
+    "last": "19:00",
+    "days": "night",
+    "student": [
+     1000,
+     1450
+    ],
+    "member": [
+     1460,
+     1650
+    ],
+    "general": [
+     1946,
+     2200
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-06:00",
+    "days": "night",
+    "student": [
+     600,
+     950
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-06:00",
+    "days": "night",
+    "member": [
+     1870,
+     2170
+    ],
+    "general": [
+     2493,
+     2893
+    ]
+   }
+  ],
+  "notes": [
+   "中学生は18時、高校生は22時まで室料0円（1ドリンク制、もしくは月～金 +500円／土・日・祝 +850円でドリンクバー付）",
+   "ダーツのご利用は投げ放題で30分料金は上記同一（フリータイムは会員 +330円／一般 +440円）",
+   "終電パック 19:00～24:00 2.5時間分の料金で最大5時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）OPEN～22:00 室料0円、1ドリンク制またはドリンクバー 月～金 500円／土・日・祝 850円",
+   "カラ館ロング（大学生・専門学生）18:00～6:00 ロングフリータイム 600円（金・土・日・祝・祝前日 +350円）ドリンクバー付"
+  ]
+ },
+ "karaokekan-200": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/200",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/200/0": "6bbb5d4626c4a46875e9b32843b1eee67ed8096e",
+   "https://karaokekan.net/shop2price/image/200/3": "95c8504d766322bb6ca9a236f56fbd81b97ebe2b",
+   "https://karaokekan.net/shop2price/image/200/6": "8ac2246d3bc85de75fcc5273e20cd3285fb9a145"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "09:00-19:00",
+    "days": "day",
+    "student": [
+     140,
+     190
+    ],
+    "member": [
+     220,
+     260
+    ],
+    "general": [
+     293,
+     346
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-06:00",
+    "days": "night",
+    "student": [
+     200,
+     330
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-06:00",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     390,
+     470
+    ],
+    "general": [
+     520,
+     626
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-19:00",
+    "days": "day",
+    "student": [
+     800,
+     1020
+    ],
+    "member": [
+     1090,
+     1490
+    ],
+    "general": [
+     1453,
+     1986
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-06:00",
+    "days": "night",
+    "student": [
+     500,
+     1090
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-06:00",
+    "days": "night",
+    "member": [
+     1750,
+     2150
+    ],
+    "general": [
+     2333,
+     2866
+    ]
+   }
+  ],
+  "notes": [
+   "土・日・祝（OPEN～19:00）のお一人様でのご利用は 30分 +40円、フリータイム +200円",
+   "中学生は18時、高校生は22時まで室料0円（月～金 +600円／土・日・祝 +800円でドリンクバー付をご注文）",
+   "終電パック 19:00～24:00 2.5時間分の料金で最大5時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）OPEN～22:00 室料0円、ドリンクバー付 月～金 600円／土・日・祝 800円",
+   "カラ館ロング（大学生・専門学生）18:00～5:00 ロングフリータイム 500円（金・土・日・祝・祝前日 +590円）ドリンクバー付"
+  ]
+ },
+ "karaokekan-203": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/203",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/203/0": "082aaa1d616c666e800330b304c441a993b15089",
+   "https://karaokekan.net/shop2price/image/203/3": "3c414a7fbe79d8c8847b1ad3a3040dca250fee6c",
+   "https://karaokekan.net/shop2price/image/203/6": "bdff81912299bfe2da3cfa4e9bb613fbbd8685c1"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "11:00-19:00",
+    "note": "土・日・祝は9:00から",
+    "days": "day",
+    "student": [
+     200,
+     280
+    ],
+    "senior": [
+     200,
+     280
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "11:00-19:00",
+    "note": "土・日・祝は9:00から",
+    "days": "day",
+    "drinks": false,
+    "member": [
+     140,
+     300
+    ],
+    "general": [
+     186,
+     400
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-06:00",
+    "days": "night",
+    "student": [
+     250,
+     300
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-06:00",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     390,
+     420
+    ],
+    "general": [
+     520,
+     560
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-19:00",
+    "last": "15:00",
+    "days": "day",
+    "student": [
+     900,
+     1600
+    ],
+    "senior": [
+     900,
+     1600
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-19:00",
+    "last": "15:00",
+    "days": "day",
+    "drinks": false,
+    "member": [
+     900,
+     1750
+    ],
+    "general": [
+     1200,
+     2333
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "15:00-21:00",
+    "last": "19:00",
+    "days": "night",
+    "student": [
+     1100,
+     1650
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "15:00-21:00",
+    "last": "19:00",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     1100,
+     1800
+    ],
+    "general": [
+     1466,
+     2400
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-05:00",
+    "days": "night",
+    "student": [
+     500,
+     950
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-06:00",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     1450,
+     2480
+    ],
+    "general": [
+     1933,
+     3306
+    ]
+   }
+  ],
+  "notes": [
+   "会員・一般（昼30分、フリータイム全時間帯）は 1ドリンク制 or ドリンクバー+650円",
+   "土・日・祝（OPEN～19:00）のお一人様でのご利用は 30分 +50円、フリータイム +400円",
+   "中学生は18時、高校生は22時まで室料0円（1ドリンク制、もしくは月～金 +500円／土・日・祝 +850円でドリンクバー付）",
+   "終電パック 19:00～24:00 2.5時間分の料金で最大5時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）OPEN～22:00 室料0円、1ドリンク制またはドリンクバー 月～金 500円／土・日・祝 850円",
+   "カラ館ロング（大学生・専門学生）18:00～5:00 ロングフリータイム 500円（金・土・日・祝・祝前日 +450円）ドリンクバー付"
+  ]
+ },
+ "karaokekan-208": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/208",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/208/0": "d102d06e6082263626843f0ded700dc828423992",
+   "https://karaokekan.net/shop2price/image/208/3": "e929172bd3c37c4259352df888975d7ff8fdfe06",
+   "https://karaokekan.net/shop2price/image/208/6": "547ca44b7b0ac0186507ae4d3e9820e4742959ed"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ],
+   "late": [
+    "fri+sat+eve",
+    "金・土・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "09:00-18:00",
+    "days": "day",
+    "student": [
+     170,
+     200
+    ],
+    "member": [
+     220,
+     260
+    ],
+    "general": [
+     293,
+     346
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-03:00",
+    "note": "日・祝以外は5:00まで",
+    "days": "night",
+    "student": [
+     360,
+     390
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-03:00",
+    "note": "日・祝以外は5:00まで",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     300,
+     450
+    ],
+    "general": [
+     400,
+     600
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "学生限定フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-03:00",
+    "note": "日・祝以外は5:00まで",
+    "days": "late",
+    "student": [
+     1470,
+     1680
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-19:00",
+    "days": "day",
+    "student": [
+     920,
+     950
+    ],
+    "member": [
+     1050,
+     1240
+    ],
+    "general": [
+     1400,
+     1653
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "15:00-21:00",
+    "days": "day",
+    "student": [
+     1080,
+     1260
+    ],
+    "member": [
+     1440,
+     1660
+    ],
+    "general": [
+     1920,
+     2213
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "22:00-03:00",
+    "note": "日・祝以外は5:00まで",
+    "days": "late",
+    "drinks": false,
+    "member": [
+     1820,
+     2310
+    ],
+    "general": [
+     2426,
+     3080
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-03:00",
+    "note": "日・祝以外は5:00まで",
+    "days": "late",
+    "student": [
+     1100,
+     1410
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-03:00",
+    "note": "日・祝以外は5:00まで",
+    "days": "late",
+    "drinks": false,
+    "member": [
+     1520,
+     1860
+    ],
+    "general": [
+     2026,
+     2480
+    ]
+   }
+  ],
+  "notes": [
+   "ドリンクバー飲み放題利用でソフトクリーム +120円で食べ放題",
+   "中学生は18時、高校生は22時まで室料0円（土・日・祝は2名様以上対象）（1ドリンク制、もしくは月～金 +600円／土・日・祝 +800円でドリンクバー付）",
+   "終電パック 18:00～24:00 2.5時間分の料金で最大6時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）OPEN～22:00 室料0円（土・日・祝は2名様以上対象）、1ドリンク制またはドリンクバー 月～金 660円／土・日・祝 800円",
+   "カラ館ロング（大学生・専門学生）18:00～LAST ロングフリータイム 1,470円（金・土・祝前日 +210円）ドリンクバー付"
+  ]
+ },
+ "karaokekan-207": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/207",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/207/0": "bdd2e6d0be0bbbabfd8705bbd4bfa1d8f738c16e",
+   "https://karaokekan.net/shop2price/image/207/3": "1a1426a6d3c788313d5c8b3620373a051ae35c46",
+   "https://karaokekan.net/shop2price/image/207/6": "57a5e229ed2623b269033359dc6775adc7b4a2a0"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ],
+   "late": [
+    "fri+sat+eve",
+    "金・土・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "11:00-18:00",
+    "days": "day",
+    "student": [
+     150,
+     200
+    ],
+    "member": [
+     180,
+     290
+    ],
+    "general": [
+     240,
+     386
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-03:00",
+    "note": "金・土・祝前日は5:00まで",
+    "days": "night",
+    "student": [
+     240,
+     300
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-03:00",
+    "note": "金・土・祝前日は5:00まで",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     280,
+     330
+    ],
+    "general": [
+     373,
+     440
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "学生限定フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-03:00",
+    "note": "金・土・祝前日は5:00まで",
+    "days": "night",
+    "student": [
+     770,
+     1320
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-20:00",
+    "days": "day",
+    "student": [
+     700,
+     990
+    ],
+    "member": [
+     900,
+     1350
+    ],
+    "general": [
+     1200,
+     1800
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "22:00-03:00",
+    "note": "金・土・祝前日は5:00まで",
+    "days": "late",
+    "drinks": false,
+    "member": [
+     1600,
+     2090
+    ],
+    "general": [
+     2133,
+     2786
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-03:00",
+    "note": "金・土・祝前日は5:00まで",
+    "days": "late",
+    "student": [
+     770,
+     1320
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-03:00",
+    "note": "金・土・祝前日は5:00まで",
+    "days": "late",
+    "drinks": false,
+    "member": [
+     1320,
+     1760
+    ],
+    "general": [
+     1760,
+     2346
+    ]
+   }
+  ],
+  "notes": [
+   "ドリンクバー飲み放題利用でソフトクリーム +120円で食べ放題",
+   "中学生は18時、高校生は22時まで、月～金 室料0円（1ドリンク制、もしくは月～金 +550円／土・日・祝 +850円でドリンクバー＆ソフトクリーム付）",
+   "終電パック 18:00～24:00 2.5時間分の料金で最大6時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）OPEN～22:00 室料0円 ソフトクリーム食べ放題付き、1ドリンク制または月～金 550円／土・日・祝 850円でドリンクバー＆ソフトクリーム付",
+   "カラ館ロング（大学生・専門学生）18:00～LAST ロングフリータイム 770円（金・土・祝前日 +550円）ドリンクバー付"
+  ]
+ },
+ "karaokekan-210": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/210",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/210/0": "2154377b8b25cdede32782f042154c6effeaa885",
+   "https://karaokekan.net/shop2price/image/210/3": "fca4974cb8f28cefe24883d863f9d36dbfc714fc",
+   "https://karaokekan.net/shop2price/image/210/6": "55564d8f4502e7e573d3335fb0a3ea5805b68345"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ],
+   "late": [
+    "fri+sat+eve",
+    "金・土・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "11:00-18:00",
+    "days": "day",
+    "student": [
+     200,
+     270
+    ],
+    "member": [
+     250,
+     300
+    ],
+    "general": [
+     333,
+     400
+    ],
+    "senior": [
+     200,
+     270
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-02:00",
+    "note": "金・祝前日は3:00まで、土は4:00まで",
+    "days": "night",
+    "student": [
+     330,
+     380
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-02:00",
+    "note": "金・祝前日は3:00まで、土は4:00まで",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     250,
+     330
+    ],
+    "general": [
+     333,
+     440
+    ],
+    "senior": [
+     250,
+     330
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "学生限定フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-02:00",
+    "note": "金・祝前日は3:00まで、土は4:00まで",
+    "days": "night",
+    "student": [
+     760,
+     1620
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-20:00",
+    "days": "day",
+    "student": [
+     null,
+     1230
+    ],
+    "senior": [
+     1080,
+     1230
+    ],
+    "member": [
+     1450,
+     1550
+    ],
+    "general": [
+     1933,
+     2066
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "16:00-22:00",
+    "note": "学生 月～金は16:00～22:00",
+    "days": "day",
+    "student": [
+     1080,
+     null
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "22:00-02:00",
+    "note": "金・祝前日は3:00まで、土は4:00まで",
+    "days": "late",
+    "member": [
+     1490,
+     null
+    ],
+    "general": [
+     1986,
+     null
+    ],
+    "senior": [
+     1490,
+     null
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "22:00-02:00",
+    "note": "金・祝前日は3:00まで、土は4:00まで",
+    "drinks": false,
+    "days": "late",
+    "member": [
+     null,
+     1980
+    ],
+    "senior": [
+     null,
+     1980
+    ],
+    "general": [
+     null,
+     2640
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-02:00",
+    "note": "金・祝前日は3:00まで、土は4:00まで",
+    "days": "late",
+    "student": [
+     700,
+     1540
+    ],
+    "member": [
+     1240,
+     null
+    ],
+    "senior": [
+     1240,
+     null
+    ],
+    "general": [
+     1653,
+     null
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-02:00",
+    "note": "金・祝前日は3:00まで、土は4:00まで",
+    "drinks": false,
+    "days": "late",
+    "member": [
+     null,
+     1650
+    ],
+    "senior": [
+     null,
+     1650
+    ],
+    "general": [
+     null,
+     2200
+    ]
+   }
+  ],
+  "notes": [
+   "ドリンクバー飲み放題利用でソフトクリーム +120円で食べ放題",
+   "深夜フリータイム（22:00～・23:00～）の会員・シニア・一般は日～木・祝はドリンクバー付、金・土・祝前日は1ドリンク制",
+   "中学生は18時、高校生は22時まで室料0円（1ドリンク制、もしくは月～金 +550円／土・日・祝 +880円でドリンクバー付）",
+   "終電パック 18:00～24:00 2.5時間分の料金で最大6時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）OPEN～22:00 室料0円、1ドリンク制またはドリンクバー 月～金 550円／土・日・祝 880円",
+   "カラ館ロング（大学生・専門学生）18:00～LAST ロングフリータイム 760円（金・土・日・祝・祝前日 +860円）ドリンクバー付"
+  ]
+ },
+ "karaokekan-212": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/212",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/212/0": "3035c6a015705f5f20a3350f15873d431714d96b",
+   "https://karaokekan.net/shop2price/image/212/3": "7b2515749698869bee41dcc7ea7fedcf88e215a2",
+   "https://karaokekan.net/shop2price/image/212/6": "379e38db5dc16763ba804a5e5cc6ad733dbb0a7e"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ],
+   "late": [
+    "fri+sat+eve",
+    "金・土・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "09:00-18:00",
+    "days": "day",
+    "student": [
+     150,
+     200
+    ],
+    "member": [
+     270,
+     330
+    ],
+    "general": [
+     360,
+     440
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-02:00",
+    "note": "土は4:00まで",
+    "days": "night",
+    "student": [
+     300,
+     380
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-02:00",
+    "note": "土は4:00まで",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     330,
+     400
+    ],
+    "general": [
+     440,
+     533
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "学生限定フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-02:00",
+    "note": "土は4:00まで",
+    "days": "night",
+    "student": [
+     1350,
+     1650
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-20:00",
+    "days": "day",
+    "student": [
+     800,
+     1250
+    ],
+    "member": [
+     1100,
+     1650
+    ],
+    "general": [
+     1466,
+     2200
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "22:00-02:00",
+    "note": "土は4:00まで",
+    "days": "late",
+    "drinks": false,
+    "member": [
+     1080,
+     2050
+    ],
+    "general": [
+     1440,
+     2733
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-02:00",
+    "note": "土は4:00まで",
+    "days": "late",
+    "drinks": false,
+    "member": [
+     750,
+     1650
+    ],
+    "general": [
+     1000,
+     2200
+    ]
+   }
+  ],
+  "notes": [
+   "ドリンクバー飲み放題利用でソフトクリーム +120円で食べ放題",
+   "中学生は18時、高校生は22時まで、月～金 室料0円（1ドリンク制、もしくは +600円でドリンクバー付）",
+   "終電パック 18:00～24:00 2.5時間分の料金で最大6時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）平日限定 OPEN～22:00 室料0円、1ドリンク制またはドリンクバー 600円",
+   "カラ館ロング（大学生・専門学生）18:00～LAST ロングフリータイム 1,350円（金・土・日・祝・祝前日 +300円）ドリンクバー付"
+  ]
+ },
+ "karaokekan-202": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/202",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/202/0": "4b0a25be2fab3d75ac7ddbda11570958d9b6f4cc",
+   "https://karaokekan.net/shop2price/image/202/3": "cd3e57025abc9559788088cddd1f879e3651d601",
+   "https://karaokekan.net/shop2price/image/202/6": "fb6788d07d6e31f0ab2da0af2f1d239657f7efc6"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "11:00-19:00",
+    "days": "day",
+    "student": [
+     160,
+     260
+    ],
+    "member": [
+     240,
+     310
+    ],
+    "general": [
+     320,
+     413
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-00:00",
+    "note": "金・土・日・祝・祝前日は5:00まで",
+    "days": "night",
+    "student": [
+     250,
+     300
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-00:00",
+    "note": "金・土・日・祝・祝前日は5:00まで",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     390,
+     420
+    ],
+    "general": [
+     520,
+     560
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-19:00",
+    "last": "15:00",
+    "days": "day",
+    "student": [
+     640,
+     1320
+    ],
+    "member": [
+     1250,
+     1600
+    ],
+    "general": [
+     1666,
+     2133
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "15:00-21:00",
+    "last": [
+     "18:00",
+     "19:00"
+    ],
+    "days": "night",
+    "student": [
+     1000,
+     1450
+    ],
+    "member": [
+     1460,
+     1650
+    ],
+    "general": [
+     1946,
+     2200
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-00:00",
+    "days": "night",
+    "student": [
+     600,
+     null
+    ],
+    "member": [
+     1950,
+     null
+    ],
+    "general": [
+     2600,
+     null
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-05:00",
+    "days": "night",
+    "student": [
+     null,
+     950
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-05:00",
+    "days": "night",
+    "member": [
+     null,
+     2170
+    ],
+    "general": [
+     null,
+     2893
+    ]
+   }
+  ],
+  "notes": [
+   "中学生は18時、高校生は22時まで室料0円（1ドリンク制、もしくは月～金 +500円／土・日・祝 +850円でドリンクバー付）",
+   "終電パック 19:00～24:00 2.5時間分の料金で最大5時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）OPEN～22:00 室料0円、1ドリンク制またはドリンクバー 月～金 500円／土・日・祝 850円",
+   "カラ館ロング（大学生・専門学生）18:00～24:00（金・土・日・祝・祝前日は18:00～5:00）ロングフリータイム 600円（金・土・日・祝・祝前日 +350円）ドリンクバー付"
+  ]
+ },
+ "karaokekan-211": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/211",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/211/0": "28dbe07f59a6b40db511c981e1ded07ad0ded226",
+   "https://karaokekan.net/shop2price/image/211/3": "68b43a80345b1ae7ff1e5d2fdcf9a0fa4cba5d8e",
+   "https://karaokekan.net/shop2price/image/211/6": "d3f2b555926630f82bb6baa7ffc98ab36df01fa7"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ],
+   "late": [
+    "fri+sat+eve",
+    "金・土・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "09:00-18:00",
+    "days": "day",
+    "student": [
+     210,
+     280
+    ],
+    "member": [
+     250,
+     300
+    ],
+    "general": [
+     333,
+     400
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-02:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "student": [
+     300,
+     380
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-02:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     250,
+     310
+    ],
+    "general": [
+     333,
+     413
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "3時間パック",
+    "plan": "pack",
+    "slot": "11:00-20:00",
+    "days": "day",
+    "student": [
+     null,
+     1200
+    ],
+    "member": [
+     null,
+     1450
+    ],
+    "general": [
+     null,
+     1933
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "学生限定フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-02:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "student": [
+     1180,
+     1650
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-20:00",
+    "days": "day",
+    "student": [
+     800,
+     1500
+    ],
+    "member": [
+     1250,
+     1700
+    ],
+    "general": [
+     1666,
+     2266
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "22:00-02:00",
+    "note": "土は3:00まで",
+    "days": "late",
+    "member": [
+     1430,
+     2090
+    ],
+    "general": [
+     1906,
+     2786
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-02:00",
+    "note": "土は3:00まで",
+    "days": "late",
+    "student": [
+     800,
+     1280
+    ],
+    "member": [
+     1180,
+     1780
+    ],
+    "general": [
+     1573,
+     2373
+    ]
+   }
+  ],
+  "notes": [
+   "モーニングパック OPEN～12:00（最終受付11:00）カラオケ＋ドリンクバー 平日 680円／土・日・祝 880円、+350円でモーニングメニュー1品（他のサービスとの併用不可）",
+   "ドリンクバー飲み放題利用でソフトクリーム +120円で食べ放題",
+   "中学生は18時、高校生は22時まで、月～金 室料0円（1ドリンク制、もしくは +660円でドリンクバー付）",
+   "終電パック 18:00～24:00 2.5時間分の料金で最大6時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）平日限定 OPEN～22:00 室料0円、1ドリンク制またはドリンクバー 660円",
+   "カラ館ロング（大学生・専門学生）18:00～LAST ロングフリータイム 1,180円（金・土・日・祝・祝前日 +470円）ドリンクバー付"
+  ]
+ },
+ "karaokekan-206": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/206",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/206/0": "277c0c967b07693954457f10c7a5a801761dcc31",
+   "https://karaokekan.net/shop2price/image/206/3": "28f875b17a41de8cec2e627e9c99ef91d8d46483",
+   "https://karaokekan.net/shop2price/image/206/6": "e7357f7a1cd22af3312de5731cd1567095f5b9f3"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ],
+   "late": [
+    "fri+sat+eve",
+    "金・土・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "09:00-18:00",
+    "days": "day",
+    "student": [
+     200,
+     300
+    ],
+    "member": [
+     250,
+     330
+    ],
+    "general": [
+     333,
+     440
+    ],
+    "senior": [
+     200,
+     300
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-02:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "student": [
+     300,
+     350
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-02:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     330,
+     400
+    ],
+    "general": [
+     440,
+     533
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "学生限定フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-02:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "student": [
+     1200,
+     1500
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "10:00-20:00",
+    "days": "day",
+    "student": [
+     980,
+     1500
+    ],
+    "member": [
+     1300,
+     1700
+    ],
+    "general": [
+     1733,
+     2266
+    ],
+    "senior": [
+     980,
+     1500
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "22:00-02:00",
+    "note": "土は3:00まで",
+    "days": "late",
+    "member": [
+     1400,
+     2000
+    ],
+    "general": [
+     1866,
+     2666
+    ]
+   }
+  ],
+  "notes": [
+   "モーニングパック OPEN～12:00（最終受付11:00）カラオケ＋ドリンクバー 平日 680円／土・日・祝 880円、+350円でモーニングメニュー1品（他のサービスとの併用不可）",
+   "ドリンクバー飲み放題利用でソフトクリーム +120円で食べ放題",
+   "学生限定フリータイムはドリンクバー付＆ソフトクリーム付",
+   "中学生は18時、高校生は22時まで室料0円（月～金 +550円／土・日・祝 +800円でドリンクバーをご注文）",
+   "終電パック 18:00～24:00 2.5時間分の料金で最大6時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）OPEN～22:00 室料0円、ドリンクバー付 月～金 550円／土・日・祝 800円",
+   "カラ館ロング（大学生・専門学生）18:00～LAST ロングフリータイム 1,200円（金・土・日・祝・祝前日 +300円）ドリンクバー・ソフトクリーム付き"
+  ]
+ },
+ "karaokekan-205": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/205",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/205/0": "76cdf83ec5a7206c9c3a624d28c61293e05a39f3",
+   "https://karaokekan.net/shop2price/image/205/3": "1ce49cafe1470871b2641b020fee3752018cf574",
+   "https://karaokekan.net/shop2price/image/205/6": "ca90a703975115e7ad4c78e69b66c87026fa3496"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ],
+   "late": [
+    "fri+sat+eve",
+    "金・土・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "09:00-18:00",
+    "days": "day",
+    "student": [
+     240,
+     250
+    ],
+    "member": [
+     280,
+     330
+    ],
+    "general": [
+     373,
+     440
+    ],
+    "senior": [
+     240,
+     250
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-01:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "student": [
+     250,
+     300
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-01:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     280,
+     330
+    ],
+    "general": [
+     373,
+     440
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "学生限定フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-01:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "student": [
+     1200,
+     1350
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-20:00",
+    "last": "17:59",
+    "days": "day",
+    "student": [
+     1200,
+     1420
+    ],
+    "member": [
+     1400,
+     1600
+    ],
+    "general": [
+     1866,
+     2133
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "15:00-22:00",
+    "last": "18:59",
+    "days": "day",
+    "student": [
+     1300,
+     1500
+    ],
+    "member": [
+     1500,
+     1600
+    ],
+    "general": [
+     2000,
+     2133
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "22:00-01:00",
+    "note": "土は3:00まで",
+    "days": "late",
+    "member": [
+     1280,
+     1980
+    ],
+    "general": [
+     1706,
+     2640
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-01:00",
+    "note": "土は3:00まで",
+    "days": "late",
+    "student": [
+     1000,
+     1350
+    ],
+    "member": [
+     1000,
+     1650
+    ],
+    "general": [
+     1333,
+     2200
+    ]
+   }
+  ],
+  "notes": [
+   "モーニングパック OPEN～12:00（最終受付11:00）カラオケ＋ドリンクバー 平日 680円／土・日・祝 880円、+350円でモーニングメニュー1品（他のサービスとの併用不可）",
+   "ドリンクバー飲み放題利用でソフトクリーム +120円で食べ放題",
+   "中学生は18時、高校生は22時まで室料0円（1ドリンク制、もしくは月～金 +770円／土・日・祝 +880円でドリンクバー付）",
+   "終電パック 18:00～24:00（日～金・祝日は～25:00）2.5時間分の料金で最大7時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）OPEN～22:00 室料0円、1ドリンク制またはドリンクバー 月～金 770円／土・日・祝 880円",
+   "カラ館ロング（大学生・専門学生）18:00～LAST ロングフリータイム 1,200円（金・土・日・祝・祝前日 +150円）ドリンクバー付"
+  ]
+ },
+ "karaokekan-209": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/209",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/209/0": "46a65aad6faa998cd714deed58007ff1d3c811ad",
+   "https://karaokekan.net/shop2price/image/209/3": "ef74804457f8c49711acf4564ebadfb99955c71a",
+   "https://karaokekan.net/shop2price/image/209/6": "87a02467b9643d0faf9b4856a19a594350e8c052"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ],
+   "late": [
+    "fri+sat+eve",
+    "金・土・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "11:00-18:00",
+    "days": "day",
+    "student": [
+     150,
+     180
+    ],
+    "member": [
+     230,
+     270
+    ],
+    "general": [
+     306,
+     360
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-01:00",
+    "note": "金・土・祝前日は3:00まで",
+    "days": "night",
+    "student": [
+     290,
+     330
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-01:00",
+    "note": "金・土・祝前日は3:00まで",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     290,
+     330
+    ],
+    "general": [
+     386,
+     440
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "学生限定フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-01:00",
+    "note": "金・土・祝前日は3:00まで",
+    "days": "night",
+    "student": [
+     1450,
+     1700
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-20:00",
+    "days": "day",
+    "student": [
+     850,
+     1100
+    ],
+    "member": [
+     1150,
+     1450
+    ],
+    "general": [
+     1533,
+     1933
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "22:00-01:00",
+    "note": "金・土・祝前日は3:00まで",
+    "days": "late",
+    "member": [
+     1040,
+     1830
+    ],
+    "general": [
+     1386,
+     2440
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-01:00",
+    "note": "金・土・祝前日は3:00まで",
+    "days": "late",
+    "student": [
+     600,
+     1400
+    ],
+    "member": [
+     750,
+     1500
+    ],
+    "general": [
+     1000,
+     2000
+    ]
+   }
+  ],
+  "notes": [
+   "ドリンクバー飲み放題利用でソフトクリーム +120円で食べ放題",
+   "中学生は18時、高校生は22時まで室料0円（1ドリンク制、もしくは月～金 +550円／土・日・祝 +880円でドリンクバー付）",
+   "終電パック 18:00～24:00（日～木・祝日は～25:00）2.5時間分の料金で最大7時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）OPEN～22:00 室料0円、1ドリンク制またはドリンクバー 月～金 550円／土・日・祝 880円",
+   "カラ館ロング（大学生・専門学生）18:00～LAST ロングフリータイム 1,450円（金・土・日・祝・祝前日 +250円）ドリンクバー付"
+  ]
+ },
+ "karaokekan-198": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/198",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/198/0": "fe0e7e8f6ce0304fa449e14ca327e6085b72396b",
+   "https://karaokekan.net/shop2price/image/198/3": "81015254c46b5b397c4909d6200d7a0a6bc54010",
+   "https://karaokekan.net/shop2price/image/198/6": "b68fad9711d0eec6a4f3e028e7523cac39cccf38"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "11:00-19:00",
+    "note": "土・日は9:00から",
+    "days": "day",
+    "student": [
+     100,
+     190
+    ],
+    "member": [
+     110,
+     200
+    ],
+    "general": [
+     146,
+     266
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-06:00",
+    "days": "night",
+    "student": [
+     250,
+     360
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-06:00",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     330,
+     360
+    ],
+    "general": [
+     440,
+     480
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "3時間パック",
+    "plan": "pack",
+    "slot": "11:00-19:00",
+    "last": "19:00",
+    "days": "day",
+    "student": [
+     561,
+     950
+    ],
+    "member": [
+     693,
+     1000
+    ],
+    "general": [
+     923,
+     1333
+    ],
+    "note": "開始時刻の記載なし（受付19時まで）。土・日はOPEN 9:00"
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-19:00",
+    "days": "day",
+    "student": [
+     540,
+     1090
+    ],
+    "member": [
+     840,
+     1210
+    ],
+    "general": [
+     1120,
+     1613
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "15:00-21:00",
+    "last": "19:00",
+    "days": "day",
+    "student": [
+     700,
+     1020
+    ],
+    "member": [
+     1070,
+     1470
+    ],
+    "general": [
+     1426,
+     1960
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-06:00",
+    "days": "night",
+    "student": [
+     430,
+     980
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-06:00",
+    "days": "night",
+    "member": [
+     1370,
+     1740
+    ],
+    "general": [
+     1826,
+     2320
+    ]
+   }
+  ],
+  "notes": [
+   "土・日・祝（OPEN～19:00）のお一人様でのご利用は 30分 +20円、フリータイム +150円",
+   "ダーツのご利用は投げ放題で上記同一料金",
+   "中学生は18時、高校生は22時まで室料0円（1ドリンク制、もしくは月～金 +540円／土・日・祝 +920円でドリンクバー付）",
+   "終電パック 19:00～24:00 2.5時間分の料金で最大5時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）OPEN～22:00 室料0円、1ドリンク制またはドリンクバー 月～金 540円／土・日・祝 920円",
+   "カラ館ロング（大学生・専門学生）店舗限定 18:00～6:00 ロングフリータイム 430円（金・土・日・祝・祝前日 +550円）ドリンクバー付、最大12時間"
+  ]
+ },
+ "karaokekan-214": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/214",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/214/0": "5b37289884ce0063d4604cfa42422b33e3061f9c",
+   "https://karaokekan.net/shop2price/image/214/3": "01dccbb6f12fd1f22961665169df4179da506ac3",
+   "https://karaokekan.net/shop2price/image/214/6": "7bb31d87929c045169ba712724ac7d05ec34bb81"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ],
+   "late": [
+    "fri+sat+eve",
+    "金・土・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "09:00-18:00",
+    "days": "day",
+    "student": [
+     150,
+     180
+    ],
+    "member": [
+     230,
+     300
+    ],
+    "general": [
+     306,
+     400
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-01:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "student": [
+     260,
+     330
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-01:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     230,
+     330
+    ],
+    "general": [
+     306,
+     440
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "3時間パック",
+    "plan": "pack",
+    "slot": "11:00-20:00",
+    "last": "17:00",
+    "days": "day",
+    "student": [
+     null,
+     860
+    ],
+    "member": [
+     null,
+     1350
+    ],
+    "general": [
+     null,
+     1800
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "学生限定フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-01:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "student": [
+     770,
+     1320
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-20:00",
+    "days": "day",
+    "student": [
+     680,
+     990
+    ],
+    "member": [
+     1080,
+     1500
+    ],
+    "general": [
+     1440,
+     2000
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "22:00-01:00",
+    "note": "土は3:00まで",
+    "days": "late",
+    "member": [
+     1610,
+     1980
+    ],
+    "general": [
+     2146,
+     2640
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-01:00",
+    "note": "土は3:00まで",
+    "days": "late",
+    "student": [
+     1000,
+     1650
+    ],
+    "member": [
+     1380,
+     1650
+    ],
+    "general": [
+     1840,
+     2200
+    ]
+   }
+  ],
+  "notes": [
+   "モーニングパック OPEN～12:00（最終受付11:00）カラオケ＋ドリンクバー 平日 680円／土・日・祝 880円、+350円でモーニングメニュー1品（他のサービスとの併用不可）",
+   "ドリンクバー飲み放題利用でソフトクリーム +120円で食べ放題",
+   "中学生は18時、高校生は22時まで、月～土 室料0円（1ドリンク制、もしくは +600円でドリンクバー付）",
+   "終電パック 18:00～24:00（日～金・祝日は～25:00）2.5時間分の料金で最大7時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）月～土 OPEN～22:00 室料0円、1ドリンク制またはドリンクバー 600円",
+   "カラ館ロング（大学生・専門学生）18:00～LAST ロングフリータイム 770円（金・土・日・祝・祝前日 +550円）ドリンクバー付"
+  ]
+ },
+ "karaokekan-213": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/213",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/213/0": "8427dac1544236d9e8c882d4fd08a0260274215d",
+   "https://karaokekan.net/shop2price/image/213/3": "228ffe358f3d7b9c276d1e0fa7eedc162fbd446b",
+   "https://karaokekan.net/shop2price/image/213/6": "37a78462c9215fb698710da78f90e28cc32791c8"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ],
+   "late": [
+    "fri+sat+eve",
+    "金・土・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "11:00-18:00",
+    "days": "day",
+    "student": [
+     130,
+     180
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "11:00-18:00",
+    "days": "day",
+    "drinks": false,
+    "member": [
+     130,
+     180
+    ],
+    "general": [
+     173,
+     240
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-01:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "student": [
+     280,
+     330
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "18:00-01:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     280,
+     330
+    ],
+    "general": [
+     373,
+     440
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "学生限定フリータイム",
+    "plan": "free_time",
+    "slot": "16:00-01:00",
+    "note": "月～木は16:00から",
+    "days": "night",
+    "student": [
+     1200,
+     null
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "学生限定フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-01:00",
+    "note": "土は3:00まで",
+    "days": "night",
+    "student": [
+     null,
+     1400
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-20:00",
+    "days": "day",
+    "student": [
+     680,
+     1250
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-20:00",
+    "days": "day",
+    "drinks": false,
+    "member": [
+     660,
+     1100
+    ],
+    "general": [
+     880,
+     1466
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "22:00-01:00",
+    "note": "土は3:00まで",
+    "days": "late",
+    "member": [
+     1280,
+     1730
+    ],
+    "general": [
+     1706,
+     2306
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-01:00",
+    "note": "土は3:00まで",
+    "days": "late",
+    "student": [
+     1000,
+     1000
+    ],
+    "member": [
+     1000,
+     1400
+    ],
+    "general": [
+     1333,
+     1866
+    ]
+   }
+  ],
+  "notes": [
+   "ドリンクバー飲み放題利用でソフトクリーム +120円で食べ放題",
+   "中学生は18時、高校生は22時まで、月～土 室料0円（1ドリンク制、もしくは +600円でドリンクバー付）",
+   "終電パック 18:00～24:00（日～金・祝日は～25:00）2.5時間分の料金で最大7時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）月～土 OPEN～22:00 室料0円、1ドリンク制またはドリンクバー 600円",
+   "カラ館ロング（大学生・専門学生）月～木 16:00～LAST（金・土・祝前日 18:00～）ロングフリータイム 1,200円（金・土・日・祝・祝前日 +200円）ドリンクバー付"
+  ]
+ },
+ "karaokekan-216": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/216",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/216/0": "1d2fe36d1cd739ce48ddd556abf83af0639e30e3",
+   "https://karaokekan.net/shop2price/image/216/3": "ef0679afc1e71c531f5fab3f31f68ab5398a11b4",
+   "https://karaokekan.net/shop2price/image/216/6": "c9d4e63c32da8d4d9ecfef7be61b09b6908b2ea7"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ],
+   "late": [
+    "fri+sat+eve",
+    "金・土・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "11:00-19:00",
+    "days": "day",
+    "student": [
+     140,
+     220
+    ],
+    "member": [
+     180,
+     260
+    ],
+    "general": [
+     240,
+     346
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-06:00",
+    "days": "late",
+    "student": [
+     320,
+     380
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-06:00",
+    "days": "late",
+    "drinks": false,
+    "member": [
+     330,
+     390
+    ],
+    "general": [
+     440,
+     520
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-19:00",
+    "days": "day",
+    "student": [
+     890,
+     1180
+    ],
+    "member": [
+     980,
+     1320
+    ],
+    "general": [
+     1306,
+     1760
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "15:00-21:00",
+    "last": "19:00",
+    "days": "night",
+    "student": [
+     890,
+     1190
+    ],
+    "member": [
+     1010,
+     1510
+    ],
+    "general": [
+     1346,
+     2013
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-06:00",
+    "days": "late",
+    "student": [
+     880,
+     1320
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "22:00-06:00",
+    "days": "late",
+    "member": [
+     1250,
+     1720
+    ],
+    "general": [
+     1666,
+     2293
+    ]
+   }
+  ],
+  "notes": [
+   "土・日・祝（OPEN～19:00）のお一人様でのご利用は 30分 +100円、フリータイム +500円",
+   "ダーツのご利用は投げ放題で上記同一料金",
+   "中学生は18時、高校生は19時まで（土・日・祝は13時まで）室料0円（1ドリンク制、もしくは月～金 +750円／土・日・祝 +800円でドリンクバー付）",
+   "終電パック 19:00～24:00 2.5時間分の料金で最大5時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）OPEN～19:00（土・日・祝はOPEN～13:00）室料0円、1ドリンク制またはドリンクバー 月～金 750円／土・日・祝 800円",
+   "カラ館ロング（大学生・専門学生）店舗限定 18:00～6:00 ロングフリータイム 880円（金・土・祝前日 +440円）ドリンクバー付、最大12時間"
+  ]
+ },
+ "karaokekan-199": {
+  "checked_on": "2026-10-28",
+  "source": "https://karaokekan.jp/shop/detail/199",
+  "drinks_included": true,
+  "images": {
+   "https://karaokekan.net/shop2price/image/199/0": "44320578dbb23b2e3cebf0d24cb093d0add9ea57",
+   "https://karaokekan.net/shop2price/image/199/3": "04bfa5625215a318710e0e4993cdab176bfafaa0",
+   "https://karaokekan.net/shop2price/image/199/6": "3589575c3ee28d3421e957848b7b7cea2e08867f"
+  },
+  "days": {
+   "day": [
+    "sat+sun+hol",
+    "土・日・祝"
+   ],
+   "night": [
+    "fri+sat+sun+hol+eve",
+    "金・土・日・祝・祝前日"
+   ]
+  },
+  "slots": [
+   {
+    "period": "昼",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "11:00-19:00",
+    "note": "土・日・祝は9:00から",
+    "days": "day",
+    "student": [
+     120,
+     190
+    ],
+    "member": [
+     180,
+     250
+    ],
+    "general": [
+     240,
+     333
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-05:00",
+    "note": "金・土・祝前日は6:00まで",
+    "days": "night",
+    "student": [
+     300,
+     330
+    ]
+   },
+   {
+    "period": "夜",
+    "name": "30分",
+    "plan": "30min",
+    "slot": "19:00-05:00",
+    "note": "金・土・祝前日は6:00まで",
+    "days": "night",
+    "drinks": false,
+    "member": [
+     380,
+     450
+    ],
+    "general": [
+     506,
+     600
+    ]
+   },
+   {
+    "period": "昼",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "11:00-20:00",
+    "days": "day",
+    "student": [
+     690,
+     990
+    ],
+    "member": [
+     920,
+     1250
+    ],
+    "general": [
+     1226,
+     1666
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "18:00-05:00",
+    "note": "金・土・祝前日は6:00まで",
+    "days": "night",
+    "student": [
+     760,
+     1310
+    ]
+   },
+   {
+    "period": "深夜",
+    "name": "フリータイム",
+    "plan": "free_time",
+    "slot": "23:00-05:00",
+    "note": "金・土・祝前日は6:00まで",
+    "days": "night",
+    "member": [
+     1800,
+     2400
+    ],
+    "general": [
+     2400,
+     3200
+    ]
+   }
+  ],
+  "notes": [
+   "中学生は18時、高校生は22時まで室料0円（1ドリンク制、もしくは月～金 +600円／土・日・祝 +800円でドリンクバー付）",
+   "終電パック 19:00～24:00 2.5時間分の料金で最大5時間（2名様以上・組数限定）",
+   "カラ館ゼロ（中学生・高校生）OPEN～22:00 室料0円、1ドリンク制またはドリンクバー 月～金 600円／土・日・祝 800円",
+   "カラ館ロング（大学生・専門学生）店舗限定 18:00～5:00 ロングフリータイム 760円（金・土・日・祝・祝前日 +550円）ドリンクバー付、最大11時間"
+  ]
  }
 }
