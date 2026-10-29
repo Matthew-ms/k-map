@@ -1,6 +1,6 @@
 // Keeps a copy of the app on the phone so it opens without a connection, using the last downloaded data.
 // Network first: weekly data and code updates arrive whenever there's a connection; the saved copy is the fallback.
-const CACHE = 'kmap-v7';
+const CACHE = 'kmap-v8';
 const SHELL = [
   './', 'index.html', 'app.js', 'price.js', 'i18n.js', 'style.css', 'manifest.webmanifest', 'icon.svg',
   'data/shops.json', 'data/holidays.json',

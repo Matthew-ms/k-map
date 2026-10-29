@@ -42,6 +42,12 @@ architecture, commands, data format and day-type rules; read it first.
 - Primary buttons name their result ("25店の料金を比較"), with the line break set per language in i18n.js.
 - The language button is a globe (its word took 86 px of the header); the footer plan card says what the plan is
   ("今日 20:30〜 2時間"), not an instruction.
+- Shop card: the price right now is the first thing, large (it used to sit 339 px down, 620 px for Big Echo).
+  Customer-type chips switch one 2-column table; there is no every-type table (it was 676 px wide in 345 and
+  scrolled sideways inside a scrolling card). この店にする and the booking/phone button are pinned in the sheet
+  foot (`.sheet-foot`), always on screen. Shop page and Google Maps are 44 px icon buttons beside the name. Long
+  opening hours fold to one line and notes fold behind a row that says how many there are, so official text never
+  sits above the prices.
 
 ## Checking UI changes yourself
 - After changing anything the owner sees, check it yourself in a phone-sized browser before asking them to test on
