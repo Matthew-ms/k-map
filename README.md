@@ -31,7 +31,7 @@ MVP: Jankara, Osaka Namba/Shinsaibashi.
 | Karaoke-kan | sitemap `/shop/detail/{id}` | **not read**: price images → pin + link (hand-entered for some shops, see below) |
 
 Hand-entered prices: `data/manual-prices.json` (8 Manekineko shops near Namba, typed from their official PDFs, checked 2026-10-17;
-Karaoke-kan shops typed from their price images: 8 in Osaka, Kobe and Kyoto, checked 2026-10-18; all 84 in Tokyo, checked 2026-10-19 to 2026-10-20; all 20 in Saitama, checked 2026-10-22; all 15 in Chiba and all 12 in Kanagawa, checked 2026-10-26; 17 in Kyushu (Fukuoka, Kumamoto, Kagoshima, Miyazaki), checked 2026-10-28. All but the Kansai 8 were each read twice independently and compared cell by cell). Karaoke-kan entries keep each
+Karaoke-kan shops typed from their price images: 8 in Osaka, Kobe and Kyoto, checked 2026-10-18; all 84 in Tokyo, checked 2026-10-19 to 2026-10-20; all 20 in Saitama, checked 2026-10-22; all 15 in Chiba and all 12 in Kanagawa, checked 2026-10-26; 17 in Kyushu (Fukuoka, Kumamoto, Kagoshima, Miyazaki), checked 2026-10-28; 21 in Hokkaido, Tohoku (Miyagi, Iwate) and northern Kanto (Ibaraki, Gunma, Tochigi), checked 2026-10-29. All but the Kansai 8 were each read twice independently and compared cell by cell). Karaoke-kan entries keep each
 image's SHA-1: the monthly Karaoke-kan crawl warns when an image is new, gone or changed, so the entry gets re-read.
 Merged on every run and validated like crawled data; the weekly log warns after 90 days. To refresh: save the shop's PDF / images into
 `manual/` (git-ignored) and update the entry.
