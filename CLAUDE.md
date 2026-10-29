@@ -52,6 +52,10 @@ architecture, commands, data format and day-type rules; read it first.
   per-chain section repeated rows: 31 rows for 24 shops, 4.2 screens). It ranks at いま or at the plan's start
   (owner's choice, 2026-10); the title says which. Its controls stay at the top while the list scrolls, so keep
   that block short: who is going and "per person" live in the notes, not in it.
+- Plan sheet: the total is first and large, the cheaper-plan hint right under it with a one-tap switch (the total
+  used to be last, at 680–822 px on an 812 px phone). The visit is a sentence of chips; the phone's own date/time
+  picker lies invisible over each chip at 16 px (the browser's 13 px boxes made iPhones zoom in). Word order
+  follows the language ("From Thu 10/29 22:00" in English). Its pinned button opens the comparison at the plan's time.
 
 ## Checking UI changes yourself
 - After changing anything the owner sees, check it yourself in a phone-sized browser before asking them to test on

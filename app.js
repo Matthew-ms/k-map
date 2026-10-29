@@ -250,7 +250,7 @@ function popover(id, render, onClick) {
 }
 
 // Identity: 人数 stepper + 区分. Shared by the popover and the plan editor.
-const countStepper = () => `<div class="stepper"><button data-count="-1" aria-label="${t('1人減らす')}" ${me.count <= 1 ? 'disabled' : ''}>−</button><b>${t('{n}名', { n: me.count })}</b><button data-count="1" aria-label="${t('1人増やす')}" ${me.count >= 20 ? 'disabled' : ''}>＋</button></div>`;
+const countStepper = () => `<div class="stepper"><button data-count="-1" aria-label="${t('1人減らす')}" ${me.count <= 1 ? 'disabled' : ''}>−</button><b>${me.count === 1 ? t('1名') : t('{n}名', { n: me.count })}</b><button data-count="1" aria-label="${t('1人増やす')}" ${me.count >= 20 ? 'disabled' : ''}>＋</button></div>`;
 const customerChips = () => `<div class="chips-toggle">${CUSTOMER_KEYS.map(k => `<button data-customer="${k}" aria-pressed="${me.customer === k}">${custName(k)}</button>`).join('')}</div>`;
 function applyIdentity(b) {
   if (b.dataset.count) me.count = Math.min(20, Math.max(1, me.count + +b.dataset.count));
@@ -342,78 +342,79 @@ planCard.onclick = e => {
 };
 planCard.onkeydown = e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), openPlan());
 
-function planResult(s) {
-  if (!hasPrices(s)) return `<div class="plan-total"><p class="warn">${t('この店舗の料金はアプリに掲載していません（公式サイトの料金表が画像・PDFのため）。')}</p>${officialLink(s)}</div>`;
+// The total first and large (it used to sit last, partly off screen), then the cheaper-plan hint right under it.
+function planHero(s) {
+  if (!s) return `<div class="plan-hero"><p class="warn">${t('店舗が未選択です。地図のピンから店舗を開き「この店にする」を押してください。')}</p></div>`;
+  const shopLine = `<button class="shop-link plan-shop" data-id="${esc(s.id)}">${badge(s, true)}${esc(s.name)}</button>${walk(s) ? ` <span class="meta">${walk(s)}</span>` : ''}`;
+  if (!hasPrices(s)) return `<div class="plan-hero">${shopLine}<p class="warn">${t('この店舗の料金はアプリに掲載していません（公式サイトの料金表が画像・PDFのため）。')}</p>${officialLink(s)}</div>`;
   const { e, total } = planTotal(s);
   const per = e.perPerson;
-  const lines = [];
-  const used = e.mode === 'time' ? e.segs.map(g => g.cp?.row) : [e.pick?.row];
-  if (e.mode === 'time') {
-    for (const g of e.segs) {
-      lines.push(g.cp
-        ? `${hm(g.from)}–${hm(g.to)} ${esc(sName(g.cp.entry))} ${esc(dayName(g.cp.entry, g.cp.day))}：${cell(g.cp.row, true)} × ${g.count}`
-        : `${hm(g.from)}–${hm(g.to)}：${t('料金の掲載なし（営業時間外の可能性）')}`);
-    }
-  } else if (e.pick) {
-    lines.push(`${esc(sName(e.pick.entry))} ${slotText(e.pick.entry.slot)}：${cell(e.pick.row, true)}`);
-  }
-  const hint = e.mode === 'time' && e.cheaperFree
-    ? `<div class="hint">${t('{name}（〜{end}）なら1人{yen}で、こちらの方が安くなります。', { name: esc(sName(e.cheaperFree.entry)), end: slotText(e.cheaperFree.entry.slot).split('–')[1], yen: yenText(e.cheaperFree.row.yen) })}
-        <button class="use-free" data-free="${esc(e.cheaperFree.key)}">${t('フリータイムにする')}</button></div>` : '';
-  return `<div class="plan-total">
-      <p class="meta">${t('合計の目安（{me}）', { me: esc(meLabel()) })}</p>
+  return `<div class="plan-hero">${shopLine}
       <p class="total">${total != null ? t('約{yen}', { yen: yenText(total) }) : t('計算できません')}</p>
-      ${per != null ? `<p class="meta">${t('1人 {yen} × {n}名', { yen: yenText(per), n: me.count })}</p>` : ''}
+      <p class="meta">${per != null ? t('1人 {yen} × {n}名', { yen: yenText(per), n: me.count }) + ' · ' : ''}${esc(custName(me.customer))}</p>
       ${e.mode === 'time' && e.missing ? `<p class="warn">${t('一部の時間帯に料金の掲載がありません。掲載分のみ：1人 {yen}', { yen: yenText(e.partial) })}</p>` : ''}
       ${e.mode === 'free' && !e.pick ? `<p class="warn">${e.options.length ? t('この開始時刻から使えるフリータイムがありません（最終受付を過ぎています）。') : t('この開始時刻から使えるフリータイムがありません。')}</p>` : ''}
-      ${lines.length ? `<ul class="breakdown">${lines.map(l => `<li>${l}</li>`).join('')}</ul>` : ''}
-      ${hint}
     </div>
-    <ul class="notes">
+    ${e.mode === 'time' && e.cheaperFree ? `<div class="hint"><span>${t('{name}（〜{end}）なら1人{yen}で、こちらの方が安くなります。', { name: esc(sName(e.cheaperFree.entry)), end: slotText(e.cheaperFree.entry.slot).split('–')[1], yen: yenText(e.cheaperFree.row.yen) })}</span>
+      <button class="use-free" data-free="${esc(e.cheaperFree.key)}">${t('切り替える')}</button></div>` : ''}`;
+}
+// How the estimate was made, below the controls.
+function planBreakdown(s) {
+  if (!s || !hasPrices(s)) return '';
+  const { e } = planTotal(s);
+  const lines = e.mode === 'time'
+    ? e.segs.map(g => (g.cp ? `${hm(g.from)}–${hm(g.to)} ${esc(sName(g.cp.entry))} ${esc(dayName(g.cp.entry, g.cp.day))}：${cell(g.cp.row, true)} × ${g.count}`
+      : `${hm(g.from)}–${hm(g.to)}：${t('料金の掲載なし（営業時間外の可能性）')}`))
+    : e.pick ? [`${esc(sName(e.pick.entry))} ${slotText(e.pick.entry.slot)}：${cell(e.pick.row, true)}`] : [];
+  const used = e.mode === 'time' ? e.segs.map(g => g.cp?.row) : [e.pick?.row];
+  return `<ul class="notes">${lines.map(l => `<li>${l}</li>`).join('')}
       <li>${t('目安です。部屋の追加料金・有料ドリンクコース・時間帯をまたぐ際の扱いなどで実際の金額は変わります。')}</li>
       ${markNotes(marksOf(used))}
-      <li>${t('全員が「{type}」として計算。料金は{date}時点', { type: custName(me.customer), date: esc(s.prices_as_of) })}</li>
-    </ul>`;
+      <li>${t('全員が「{type}」として計算。料金は{date}時点', { type: custName(me.customer), date: esc(s.prices_as_of) })}</li></ul>`;
 }
 
 function openPlan() {
   view = { type: 'plan' };
   const s = plan.shopId && byId(plan.shopId);
   const e = s && hasPrices(s) && plan.mode === 'free' ? estimateFor(s) : null;
+  // The visit as a sentence of chips; the phone's own date / time picker opens under each chip (16 px: no zoom).
+  const picker = (id, type, value, text, extra = '') => `<label class="chip-picker"><span>${text}</span><input type="${type}" id="${id}" value="${value}" ${extra} aria-label="${type === 'date' ? t('日付') : t('開始')}"></label>`;
   panel.innerHTML = `
-    <div class="panel-head"><button class="close" aria-label="${t('閉じる')}">×</button></div>
-    <h2>${t('プラン')}</h2>
-    <div class="plan-shop">${s
-      ? `<p class="meta">${t('行く店舗')}</p>${badge(s, true)}<button class="shop-link" data-id="${esc(s.id)}">${esc(s.name)}</button>${walk(s) ? ` <span class="meta">${walk(s)}</span>` : ''}`
-      : `<p class="warn">${t('店舗が未選択です。地図のピンから店舗を開き「この店にする」を押してください。')}</p>`}</div>
-    <div class="field-row">
-      <label>${t('日付')}<input type="date" id="plan-date" value="${plan.date}" min="${jst(new Date()).ymd}"></label>
-      <label>${t('開始')}<input type="time" id="plan-start" value="${plan.start}"></label>
-      <button class="now-btn" data-now>${t('今')}</button>
+    <div class="panel-head"><h2>${t('プラン')}</h2><button class="close" aria-label="${t('閉じる')}">×</button></div>
+    ${planHero(s)}
+    <div class="toggle plan-mode" role="group" aria-label="${t('利用方法')}">${[['time', t('時間で指定')], ['free', t('フリータイム')]].map(([k, v]) => `<button data-mode="${k}" aria-pressed="${plan.mode === k}">${v}</button>`).join('')}</div>
+    <div class="plan-sentence">
+      ${getLang() === 'en' ? `<span>${t('から')}</span>` : ''}
+      ${picker('plan-date', 'date', plan.date, esc(dateText(plan.date)), `min="${jst(new Date()).ymd}"`)}
+      ${picker('plan-start', 'time', plan.start, esc(hm(planStart())))}
+      ${getLang() === 'en' ? '' : `<span>${t('から')}</span>`}
+      ${plan.mode === 'time' ? `<span class="stepper"><button data-blocks="-1" aria-label="${t('30分減らす')}" ${plan.blocks <= 1 ? 'disabled' : ''}>−</button><b>${durationLabel(plan.blocks)}</b><button data-blocks="1" aria-label="${t('30分増やす')}" ${plan.blocks >= 24 ? 'disabled' : ''}>＋</button></span>` : ''}
+      <button class="now-link" data-now>${t('今に戻す')}</button>
     </div>
-    <div class="toggle" role="group" aria-label="${t('利用方法')}">${[['time', t('時間で指定')], ['free', t('フリータイム')]].map(([k, v]) => `<button data-mode="${k}" aria-pressed="${plan.mode === k}">${v}</button>`).join('')}</div>
-    ${plan.mode === 'time' ? `
-      <div class="stepper"><button data-blocks="-1" aria-label="${t('30分減らす')}" ${plan.blocks <= 1 ? 'disabled' : ''}>−</button><b>${durationLabel(plan.blocks)}</b><button data-blocks="1" aria-label="${t('30分増やす')}" ${plan.blocks >= 24 ? 'disabled' : ''}>＋</button></div>
-      <div class="chips-toggle">${[1, 2, 3, 4, 6].map(b => `<button data-set-blocks="${b}" aria-pressed="${plan.blocks === b}">${durationLabel(b)}</button>`).join('')}</div>`
-    : e ? (e.options.length ? `<div class="free-options">${e.options.map(o => `
+    ${plan.mode === 'free' ? (e ? (e.options.length ? `<div class="free-options">${e.options.map(o => `
         <button data-free="${esc(o.key)}" aria-pressed="${e.pick?.key === o.key}" ${o.late ? 'class="late" disabled' : ''}>
           <span><b>${esc(sName(o.entry))}</b> ${slotText(o.entry.slot)}<br><span class="meta">${o.last ? t('最終受付 {time}', { time: slotText(o.last) }) : ''}${o.late ? ` · ${t('受付終了')}` : ''}${o.row.slot_note ? ` · ${esc(o.row.slot_note)}` : ''}</span></span>
           <span class="fo-price">${cell(o.row, true)}<span class="meta">${t('/人')}</span></span>
         </button>`).join('')}</div>` : `<p class="warn">${t('この開始時刻に使えるフリータイムの掲載がありません。')}</p>`)
-    : `<p class="meta">${t('店舗を選ぶと、使えるフリータイムが表示されます。')}</p>`}
-    <p class="label">${t('人数・区分')}</p>${countStepper()}${customerChips()}
-    ${s ? planResult(s) : ''}`;
-  panel.querySelector('#plan-date').onchange = ev => { if (ev.target.value) { plan.date = ev.target.value; planChanged(); } };
-  panel.querySelector('#plan-start').onchange = ev => { if (ev.target.value) { plan.start = ev.target.value; planChanged(); } };
-  panel.querySelector('.shop-link')?.addEventListener('click', () => openCard(s));
+      : `<p class="meta">${t('店舗を選ぶと、使えるフリータイムが表示されます。')}</p>`) : ''}
+    <div class="plan-people"><span class="label">${t('人数')}</span>${countStepper()}</div>
+    ${customerChips()}
+    ${planBreakdown(s)}
+    <div class="sheet-foot"><button class="btn-primary" data-compare-plan>${t('このプランの時間で比較（{time}）', { time: hm(planStart()) })}</button></div>`;
+  for (const id of ['plan-date', 'plan-start']) {
+    const input = panel.querySelector(`#${id}`);
+    input.onclick = () => input.showPicker?.(); // desktop browsers open the picker only from its icon otherwise
+    input.onchange = ev => { if (!ev.target.value) return; plan[id === 'plan-date' ? 'date' : 'start'] = ev.target.value; planChanged(); }; // a cleared picker gives ''
+  }
+  panel.querySelector('.plan-shop')?.addEventListener('click', () => openCard(s));
   panel.onclick = ev => {
     const b = ev.target.closest('button');
     if (!b || b.classList.contains('close') || b.classList.contains('shop-link')) return;
+    if (b.dataset.comparePlan !== undefined) { cmp.at = 'plan'; return openCompare(); }
     if (applyIdentity(b)) return openPlan();
-    if (b.dataset.now !== undefined) Object.assign(plan, nowParts()); // 今: today, this minute
+    if (b.dataset.now !== undefined) Object.assign(plan, nowParts()); // today, this minute
     else if (b.dataset.mode) plan.mode = b.dataset.mode;
     else if (b.dataset.blocks) plan.blocks = Math.min(24, Math.max(1, plan.blocks + +b.dataset.blocks));
-    else if (b.dataset.setBlocks) plan.blocks = +b.dataset.setBlocks;
     else if (b.dataset.free) Object.assign(plan, { mode: 'free', freeKey: b.dataset.free });
     else return;
     planChanged();
