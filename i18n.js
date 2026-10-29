@@ -79,6 +79,7 @@ export function walkText(m) {
 
 const DICT = {
   en: {
+    '機種を選ぶ（{n}）': 'Choose models ({n})', '{n}件選択中': '{n} chosen', '{n}店を表示': 'Show {n} shops',
     '切り替える': 'Switch', 'から': 'From', '今に戻す': 'Back to now', 'このプランの時間で比較（{time}）': 'Compare at plan time ({time})',
     'プランの時刻': 'Plan time',
     'いまの最安': 'Cheapest right now', '{when}の最安': 'Cheapest at {when}', '1人あたり（円・税込）': 'per person (¥, tax incl.)', 'いつの料金': 'Prices at', 'いま {time}': 'Now {time}', '{date} {time}': '{date} {time}', '{n}店': '{n} shops', 'チェーン最安': 'cheapest of chain', 'この時間に使えるこのプランの料金がありません。': 'No prices for this plan at that time.', 'この時間に料金のない店舗（{n}）': 'Shops without a price at that time ({n})',
@@ -104,8 +105,7 @@ const DICT = {
     区分: 'Price type', この端末に保存されます: 'Saved on this device',
     ブランド: 'Chain', 機種: 'Machine', '{f}系すべて': 'All {f}', 上限料金: 'Max price',
     'いまの30分・{me}': '30 min right now · {me}', '{yen}以下': 'up to {yen}', 指定なし: 'No limit',
-    'いま30分料金のない店舗（営業時間外など）は除外されます': 'Shops with no 30-min price right now (e.g. closed) are left out',
-    '{n}店が該当': '{n} shops match', リセット: 'Reset',
+    'いま30分料金のない店舗（営業時間外など）は除外されます': 'Shops with no 30-min price right now (e.g. closed) are left out', リセット: 'Reset',
     プラン: 'Plan', '約{yen}': 'about {yen}', 料金を確認: 'Check prices', 店舗を選ぶと金額を表示: 'Pick a shop to see the total',
     店舗の選択を解除: 'Clear the chosen shop', プランを開く: 'Open plan',
     'この店舗の料金はアプリに掲載していません（公式サイトの料金表が画像・PDFのため）。': 'This shop\'s prices are not in the app (the official price list is an image or PDF).',
@@ -140,6 +140,7 @@ const DICT = {
     '対象は「このエリアで検索」した範囲の店舗。地図を動かして検索し直すと変わります': 'Covers shops in the area of your last "Search this area". Move the map and search again to change it.',
   },
   'zh-Hant': {
+    '機種を選ぶ（{n}）': '選擇機種（{n}）', '{n}件選択中': '已選{n}項', '{n}店を表示': '顯示{n}家店',
     '切り替える': '切換', 'から': '起', '今に戻す': '改回現在', 'このプランの時間で比較（{time}）': '以方案時間比較（{time}）',
     'プランの時刻': '方案時間',
     'いまの最安': '現在最便宜', '{when}の最安': '{when}最便宜', '1人あたり（円・税込）': '每人（日圓・含稅）', 'いつの料金': '哪個時間的價格', 'いま {time}': '現在 {time}', '{date} {time}': '{date} {time}', '{n}店': '{n}家', 'チェーン最安': '該連鎖最便宜', 'この時間に使えるこのプランの料金がありません。': '這個時間沒有此方案的價格。', 'この時間に料金のない店舗（{n}）': '這個時間沒有價格的店舖（{n}）',
@@ -164,8 +165,7 @@ const DICT = {
     区分: '身分', この端末に保存されます: '儲存在此裝置',
     ブランド: '品牌', 機種: '機種', '{f}系すべて': '全部{f}', 上限料金: '價格上限',
     'いまの30分・{me}': '目前的30分鐘・{me}', '{yen}以下': '{yen}以下', 指定なし: '不限',
-    'いま30分料金のない店舗（営業時間外など）は除外されます': '目前沒有30分鐘價格的店舖（如非營業時間）不列入',
-    '{n}店が該当': '符合{n}家', リセット: '重設',
+    'いま30分料金のない店舗（営業時間外など）は除外されます': '目前沒有30分鐘價格的店舖（如非營業時間）不列入', リセット: '重設',
     プラン: '方案', '約{yen}': '約{yen}', 料金を確認: '查看價格', 店舗を選ぶと金額を表示: '選擇店舖後顯示金額',
     店舗の選択を解除: '取消選擇店舖', プランを開く: '開啟方案',
     'この店舗の料金はアプリに掲載していません（公式サイトの料金表が画像・PDFのため）。': '此店舖的價格未收錄（官方價目表為圖片或PDF）。',

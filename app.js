@@ -233,6 +233,7 @@ const rerender = () => {
   if (view?.type === 'card') openCard(view.shop, view.from);
   else if (view?.type === 'compare') openCompare();
   else if (view?.type === 'plan') openPlan();
+  else if (view?.type === 'filters') openFilters();
 };
 
 // ---- Small popovers under the header buttons ----
@@ -279,45 +280,51 @@ langBtn.onclick = () => popover('lang-panel', () => `<p class="label">${t('言�
   rerender();
 });
 
-// Filter panel
+// Filters: a sheet with 44 px chips (the popover was 672 px tall with 19 machine chips and a 13 px slider).
+// Machines start as the two families; single models fold away. Filters apply as you tap; the pinned button
+// says how many shops are left and closes the sheet.
 const brands = [...new Set(shops.map(s => s.brand))];
 const machines = [...new Set(shops.flatMap(s => s.machines))].sort();
 const families = [...new Set(machines.map(family))].filter(f => !machines.includes(f));
-function renderFilters() {
-  const prices = shops.map(s => nowPrice(s)?.row.yen).filter(y => y != null);
-  const lo = Math.floor(Math.min(...prices, 100) / 10) * 10, hi = Math.ceil(Math.max(...prices, 1000) / 10) * 10;
+const PRICE_CAPS = [null, 200, 300, 500]; // いまの30分, per person
+let modelsOpen = false;
+function openFilters() {
+  view = { type: 'filters' };
   const chip = (kind, value, label, on, pre = '') => `<button data-${kind}="${esc(value)}" aria-pressed="${on}">${pre}${esc(label)}</button>`;
-  return `
-    <p class="label">${t('ブランド')}</p><div class="chips-toggle">${brands.map(b => chip('brand', b, brandName(b), filters.brands.has(b), badge({ brand: b }, true))).join('')}</div>
-    <p class="label">${t('機種')}</p><div class="chips-toggle">
-      ${families.map(f => chip('machine', f, t('{f}系すべて', { f }), filters.machines.has(f))).join('')}
-      ${machines.map(m => chip('machine', m, m, filters.machines.has(m))).join('')}</div>
+  const inBrand = b => inArea.filter(s => s.brand === b).length;
+  const models = machines.filter(m => !families.includes(m));
+  const pickedModels = models.filter(m => filters.machines.has(m)).length;
+  panel.innerHTML = `
+    <div class="panel-head"><h2>${t('絞り込み')}</h2><button class="reset-link" data-reset>${t('リセット')}</button><button class="close" aria-label="${t('閉じる')}">×</button></div>
+    <p class="label">${t('ブランド')}</p>
+    <div class="chips-toggle">${brands.filter(inBrand).map(b => chip('brand', b, `${brandName(b)} ${inBrand(b)}`, filters.brands.has(b), badge({ brand: b }, true))).join('')}</div>
+    <p class="label">${t('機種')}</p>
+    <div class="chips-toggle">${families.map(f => chip('machine', f, t('{f}系すべて', { f }), filters.machines.has(f))).join('')}</div>
+    <details class="models" ${modelsOpen || pickedModels ? 'open' : ''}><summary>${t('機種を選ぶ（{n}）', { n: models.length })}${pickedModels ? ` · ${t('{n}件選択中', { n: pickedModels })}` : ''}</summary>
+      <div class="chips-toggle">${models.map(m => chip('machine', m, m, filters.machines.has(m))).join('')}</div></details>
     <p class="label">${t('上限料金')} <span class="meta">${t('いまの30分・{me}', { me: esc(meLabel()) })}</span></p>
-    <div class="range-row"><input type="range" min="${lo}" max="${hi}" step="10" value="${filters.maxYen ?? hi}" aria-label="${t('上限料金')}">
-      <output>${filters.maxYen != null ? t('{yen}以下', { yen: yenText(filters.maxYen) }) : t('指定なし')}</output></div>
+    <div class="chips-toggle">${PRICE_CAPS.map(y => chip('cap', y ?? '', y == null ? t('指定なし') : t('{yen}以下', { yen: yenText(y) }), filters.maxYen === y)).join('')}</div>
     ${filters.maxYen != null ? `<p class="meta">${t('いま30分料金のない店舗（営業時間外など）は除外されます')}</p>` : ''}
-    <div class="popover-foot"><span class="meta">${t('{n}店が該当', { n: shown.length })}</span><button class="reset">${t('リセット')}</button></div>`;
-}
-filterBtn.onclick = () => {
-  const p = popover('filter-panel', renderFilters, (e, p) => {
+    <div class="sheet-foot"><button class="btn-primary" data-done ${shown.length ? '' : 'disabled'}>${t('{n}店を表示', { n: shown.length })}</button></div>`;
+  panel.querySelector('.models').ontoggle = e => (modelsOpen = e.target.open);
+  panel.onclick = e => {
     const b = e.target.closest('button');
-    if (!b) return;
-    if (b.classList.contains('reset')) { filters.brands.clear(); filters.machines.clear(); filters.maxYen = null; }
-    const set = b.dataset.brand ? filters.brands : b.dataset.machine ? filters.machines : null;
-    const v = b.dataset.brand ?? b.dataset.machine;
-    if (set) set.has(v) ? set.delete(v) : set.add(v);
+    if (!b || b.classList.contains('close')) return;
+    if (b.dataset.done !== undefined) return closePanel();
+    if (b.dataset.reset !== undefined) { filters.brands.clear(); filters.machines.clear(); filters.maxYen = null; }
+    else if (b.dataset.cap !== undefined) filters.maxYen = b.dataset.cap ? +b.dataset.cap : null;
+    else {
+      const set = b.dataset.brand ? filters.brands : b.dataset.machine ? filters.machines : null;
+      if (!set) return;
+      const v = b.dataset.brand ?? b.dataset.machine;
+      set.has(v) ? set.delete(v) : set.add(v);
+    }
     refresh();
-    p.innerHTML = renderFilters();
-  });
-  p?.addEventListener('input', e => {
-    if (e.target.type !== 'range') return;
-    filters.maxYen = +e.target.value >= +e.target.max ? null : +e.target.value; // far right = 指定なし
-    refresh();
-    p.querySelector('output').textContent = filters.maxYen != null ? t('{yen}以下', { yen: yenText(filters.maxYen) }) : t('指定なし');
-    p.querySelector('.popover-foot .meta').textContent = t('{n}店が該当', { n: shown.length });
-  });
-  p?.addEventListener('change', () => (p.innerHTML = renderFilters())); // redraw the exclusion note once the slider is let go
-};
+    openFilters();
+  };
+  wirePanel();
+}
+filterBtn.onclick = () => (view?.type === 'filters' ? closePanel() : openFilters());
 
 // ---- Plan: the footer card is always there; tap it to edit ----
 // Total for the chosen plan at a shop: { e, total } — total is null when some part has no listed price.
@@ -614,7 +621,7 @@ compareBtn.onclick = () => (view?.type === 'compare' ? closePanel() : openCompar
 
 // ---- Panel plumbing ----
 function wirePanel() {
-  if (view.type !== 'plan') panel.onclick = null; // the plan editor uses one delegated handler
+  if (view.type !== 'plan' && view.type !== 'filters') panel.onclick = null; // these sheets use one delegated handler
   panel.querySelector('.close').onclick = closePanel;
   const back = panel.querySelector('.back');
   if (back) back.onclick = openCompare;

@@ -92,7 +92,6 @@ button { font: inherit; color: inherit; }
   max-height: calc(100vh - 140px); overflow-y: auto;
 }
 .popover .label { margin: 8px 0 4px; font-weight: 600; }
-#filter-panel { width: min(340px, calc(100vw - 16px)); }
 .lang-list { display: flex; flex-direction: column; gap: 6px; }
 .lang-list button { border: 1px solid var(--line); background: none; border-radius: 10px; padding: 0 12px; min-height: var(--tap); text-align: left; cursor: pointer; }
 .lang-list button[aria-pressed="true"] { border: 2px solid var(--accent); font-weight: 700; }
@@ -101,11 +100,6 @@ button { font: inherit; color: inherit; }
 .chips-toggle button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--btn-line); background: var(--bg); border-radius: 999px; padding: 0 14px; min-height: var(--tap); cursor: pointer; font-size: 14px; font-weight: 600; }
 .chips-toggle button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .chips-toggle .badge.sm { margin-right: 0; }
-.range-row { display: flex; align-items: center; gap: 10px; }
-.range-row input { flex: 1; accent-color: var(--accent); min-height: var(--tap); }
-.range-row output { min-width: 6.5em; text-align: right; font-weight: 600; }
-.popover-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
-.reset { border: 1px solid var(--line); background: none; border-radius: 10px; padding: 0 14px; min-height: var(--tap); cursor: pointer; }
 #toast {
   position: fixed; z-index: 1200; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom)); transform: translateX(-50%); max-width: calc(100vw - 32px);
   background: #333; color: #fff; padding: 10px 14px; border-radius: 8px; font-size: 13px;
@@ -252,3 +246,14 @@ button { font: inherit; color: inherit; }
 .btn-primary { border: 0; background: var(--accent); color: var(--on-accent); }
 .btn-secondary { border: 1.5px solid var(--accent); background: var(--bg); color: var(--fg); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* Filters sheet */
+#panel .label { margin: 14px 0 8px; font-weight: 700; }
+.reset-link { border: 0; background: none; min-height: var(--tap); padding: 0 8px; color: var(--muted); font-size: 14px; cursor: pointer; }
+.models summary { min-height: var(--tap); display: flex; align-items: center; font-weight: 700; font-size: 13px; cursor: pointer; }
+.models .chips-toggle button { font-size: 13px; }
+.btn-primary:disabled { opacity: .45; cursor: default; }
+/* Folding rows (machine models, shop notes, shops without a price): the flex layout drops the browser's marker */
+.models > summary::after, .notes-fold > summary::after, .none-list > summary::after { content: "▾"; margin-left: 6px; }
+.models[open] > summary::after, .notes-fold[open] > summary::after, .none-list[open] > summary::after { content: "▴"; }
+.models > summary::-webkit-details-marker, .notes-fold > summary::-webkit-details-marker, .none-list > summary::-webkit-details-marker { display: none; }

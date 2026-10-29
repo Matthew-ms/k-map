@@ -48,9 +48,11 @@ export async function get(url, file, { offline, headers = {}, method = 'GET', bo
   return text;
 }
 
-// One spelling per machine across chains: "LIVEDAM Ai" → "LIVE DAM Ai", "JOYSOUND MAXGO" → "JOYSOUND MAX GO".
+// One spelling per machine across chains: "LIVEDAM Ai" → "LIVE DAM Ai", "JOYSOUND MAXGO" → "JOYSOUND MAX GO",
+// "LIVE DAM WAO" → "LIVE DAM WAO!" (the product's own name; Manekineko drops the "!").
 export const normalizeMachine = m => stripMachine(m)
   .replace(/^LIVE\s*DAM/i, 'LIVE DAM').replace(/MAX\s*GO/i, 'MAX GO').replace(/\bStadium\b/i, 'STADIUM').replace(/\bStage\b/i, 'STAGE')
+  .replace(/\bWAO\b(?!!)/i, 'WAO!')
   .replace(/\s+/g, ' ').trim();
 // Karaoke machines only (drops e.g. "E-bo", a song-search remote).
 export const isMachine = m => /^(JOYSOUND|LIVE DAM|Premier DAM|CYBER DAM|DAM)\b/.test(m);

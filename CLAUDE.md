@@ -56,6 +56,12 @@ architecture, commands, data format and day-type rules; read it first.
   used to be last, at 680–822 px on an 812 px phone). The visit is a sentence of chips; the phone's own date/time
   picker lies invisible over each chip at 16 px (the browser's 13 px boxes made iPhones zoom in). Word order
   follows the language ("From Thu 10/29 22:00" in English). Its pinned button opens the comparison at the plan's time.
+- Filters are a sheet, not a popover (the popover was 672 px tall and still scrolled). Machines start as the two
+  families; single models fold behind 機種を選ぶ. The price limit is four chips (the 13 px slider was hard to set).
+  Filters apply as you tap; the pinned button says how many shops are left ("12店を表示") and closes the sheet.
+- Folding rows (details/summary) carry their own ▾ / ▴, because the 44 px flex layout drops the browser's marker.
+- Machine names have one spelling across chains (crawler/common.js `normalizeMachine`): "LIVE DAM WAO" → "LIVE DAM
+  WAO!", otherwise the filter showed the same machine twice.
 
 ## Checking UI changes yourself
 - After changing anything the owner sees, check it yourself in a phone-sized browser before asking them to test on
