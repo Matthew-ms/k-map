@@ -557,48 +557,53 @@ function openCard(s, from = view?.type === 'compare' ? 'compare' : null) {
   if (Math.abs(offset.x) > 1 || Math.abs(offset.y) > 1) quietly(() => map.panBy(offset));
 }
 
-// ---- Comparison: what you could pay right now, cheapest first ----
-const cmp = { mode: '30min', brand: null };
+// ---- Comparison: what you could pay at a moment (right now, or the plan's start), cheapest first ----
+// One list: each chain's cheapest carries a チェーン最安 tag (a separate per-chain section repeated the same rows:
+// 31 rows for 24 shops, 4.2 screens). The controls stay at the top while the list scrolls.
+const cmp = { mode: '30min', brand: null, at: 'now' };
 function openCompare() {
   view = { type: 'compare' };
-  const now = new Date();
-  const { ranked, none } = rankNow(shown, { mode: cmp.mode, party: party(), customer: me.customer, now, holidays });
-  // Same price: the nearer shop first (when the location is known).
-  ranked.sort((a, b) => a.main.row.yen - b.main.row.yen || (walkMeters(a.shop) ?? 0) - (walkMeters(b.shop) ?? 0));
-  const inBrand = x => !cmp.brand || x.shop.brand === cmp.brand;
-  const list = ranked.filter(inBrand);
+  const atPlan = cmp.at === 'plan', at = atPlan ? planStart() : new Date();
+  const rank = mode => {
+    const r = rankNow(shown, { mode, party: party(), customer: me.customer, now: at, holidays });
+    // Same price: the nearer shop first (when the location is known).
+    r.ranked.sort((a, b) => a.main.row.yen - b.main.row.yen || (walkMeters(a.shop) ?? 0) - (walkMeters(b.shop) ?? 0));
+    return r;
+  };
+  const { ranked, none } = rank(cmp.mode);
+  const total = { '30min': cmp.mode === '30min' ? ranked.length : rank('30min').ranked.length, free: cmp.mode === 'free' ? ranked.length : rank('free').ranked.length };
+  const list = ranked.filter(x => !cmp.brand || x.shop.brand === cmp.brand);
   const counts = Object.fromEntries(brands.map(b => [b, ranked.filter(x => x.shop.brand === b).length]));
-  // Each brand's two cheapest, kept together; brands ordered by their cheapest shop (list is already cheapest first).
-  const perBrand = [...new Set(list.map(x => x.shop.brand))].flatMap(b => list.filter(x => x.shop.brand === b).slice(0, 2));
-  const marks = marksOf(list.flatMap(x => [x.main.row, ...x.others.map(o => o.row)]));
+  const seen = new Set();
+  const best = x => !cmp.brand && !seen.has(x.shop.brand) && seen.add(x.shop.brand); // first row of each chain
+  const marks = marksOf(list.map(x => x.main.row));
   const win = o => (cmp.mode === '30min' ? slotText(o.entry.slot)
     : `〜${slotText(o.entry.slot).split('–')[1]}${o.last ? ` ${t('受付〜{time}', { time: slotText(o.last) })}` : ''}`);
   const unit = cmp.mode === '30min' ? t('/30分') : t('/人');
   const row = (x, i) => `<button class="rank-row" data-id="${esc(x.shop.id)}">
-      ${i != null ? `<span class="rank">${i + 1}</span>` : ''}${badge(x.shop)}
-      <span class="rr-main"><b>${esc(x.shop.name)}</b>${plan.shopId === x.shop.id ? ` <span class="now-badge">${t('選択中')}</span>` : ''}
-        <span class="meta">${[walk(x.shop), `${esc(sName(x.main.entry))} ${win(x.main)}`].filter(Boolean).join(' · ')}</span>
-        ${x.others.length ? `<span class="meta others">${t('他')}: ${x.others.slice(0, 3).map(o => `${esc(sName(o.entry))} ${cell(o.row, true)}`).join(' · ')}</span>` : ''}</span>
+      <span class="rank">${i + 1}</span>${badge(x.shop)}
+      <span class="rr-main"><b>${esc(x.shop.name)}</b>
+        <span class="meta">${[walk(x.shop), `${esc(sName(x.main.entry))} ${win(x.main)}`].filter(Boolean).join(' · ')}${best(x) ? ` · <span class="tag">${t('チェーン最安')}</span>` : ''}${plan.shopId === x.shop.id ? ` · <span class="tag">${t('選択中')}</span>` : ''}</span></span>
       <span class="rr-price">${cell(x.main.row, true)}<span class="meta">${unit}</span></span>
     </button>`;
   const noneShown = none.filter(x => !cmp.brand || x.shop.brand === cmp.brand);
-  const j = jst(now);
+  const planAt = t('{date} {time}', { date: dateText(plan.date), time: hm(planStart()) });
   panel.innerHTML = `
-    <div class="panel-head"><button class="close" aria-label="${t('閉じる')}">×</button></div>
-    <h2>${t('料金比較')}</h2>
-    <p class="meta">${t('いま {date} {time} · {me} · 1人あたり（円・税込）', { date: dateText(j.ymd), time: hm(now), me: esc(meLabel()) })}</p>
-    <div class="toggle" role="group" aria-label="${t('プラン')}">${[['30min', t('30分')], ['free', t('フリータイム')]].map(([k, v]) => `<button data-mode="${k}" aria-pressed="${cmp.mode === k}">${v}</button>`).join('')}</div>
-    <div class="chips-toggle brand-chips">
-      <button data-brand="" aria-pressed="${!cmp.brand}">${t('全て')} ${ranked.length}</button>
-      ${brands.filter(b => counts[b]).map(b => `<button data-brand="${b}" aria-pressed="${cmp.brand === b}">${badge({ brand: b }, true)}${esc(brandName(b))} ${counts[b]}</button>`).join('')}
+    <div class="cmp-head">
+      <div class="panel-head"><h2>${atPlan ? t('{when}の最安', { when: planAt }) : t('いまの最安')}</h2><button class="close" aria-label="${t('閉じる')}">×</button></div>
+      <div class="toggle when" role="group" aria-label="${t('いつの料金')}">${[['now', t('いま {time}', { time: hm(new Date()) })], ['plan', t('プランの時刻')]].map(([k, v]) => `<button data-at="${k}" aria-pressed="${cmp.at === k}">${v}</button>`).join('')}</div>
+      <div class="toggle modes" role="group" aria-label="${t('プラン')}">${[['30min', t('30分')], ['free', t('フリータイム')]].map(([k, v]) => `<button data-mode="${k}" aria-pressed="${cmp.mode === k}">${v} · ${t('{n}店', { n: total[k] })}</button>`).join('')}</div>
+      <div class="chips-toggle brand-chips">
+        <button data-brand="" aria-pressed="${!cmp.brand}">${t('全て')} ${ranked.length}</button>
+        ${brands.filter(b => counts[b]).map(b => `<button data-brand="${b}" aria-pressed="${cmp.brand === b}">${badge({ brand: b }, true)}${esc(brandName(b))} ${counts[b]}</button>`).join('')}
+      </div>
     </div>
-    ${list.length ? `
-      ${!cmp.brand && perBrand.length > 1 ? `<h3>${t('ブランド別の最安')}</h3><div class="rank-list">${perBrand.map(x => row(x)).join('')}</div>` : ''}
-      <h3>${t('すべて（安い順）')}</h3><div class="rank-list">${list.map((x, i) => row(x, i)).join('')}</div>`
-    : `<p class="meta">${shown.length ? t('いま使えるこのプランの料金がありません。') : t('条件に合う店舗がありません。')}</p>`}
-    ${noneShown.length ? `<details class="none-list"><summary>${t('いま料金のない店舗（{n}）', { n: noneShown.length })}</summary><ul class="no-price">${noneShown.map(x => `<li>${badge(x.shop, true)}<button class="shop-link" data-id="${esc(x.shop.id)}">${esc(x.shop.name)}</button>
+    ${list.length ? `<div class="rank-list">${list.map((x, i) => row(x, i)).join('')}</div>`
+    : `<p class="meta">${shown.length ? (atPlan ? t('この時間に使えるこのプランの料金がありません。') : t('いま使えるこのプランの料金がありません。')) : t('条件に合う店舗がありません。')}</p>`}
+    ${noneShown.length ? `<details class="none-list"><summary>${atPlan ? t('この時間に料金のない店舗（{n}）', { n: noneShown.length }) : t('いま料金のない店舗（{n}）', { n: noneShown.length })}</summary><ul class="no-price">${noneShown.map(x => `<li>${badge(x.shop, true)}<button class="shop-link" data-id="${esc(x.shop.id)}">${esc(x.shop.name)}</button>
         <span class="meta">${x.reason === 'no_prices' ? t('料金は公式サイトで') : cmp.mode === '30min' ? t('営業時間外など') : t('受付時間外など')}</span></li>`).join('')}</ul></details>` : ''}
-    <ul class="notes">${markNotes(marks)}<li>${t('対象は「このエリアで検索」した範囲の店舗。地図を動かして検索し直すと変わります')}</li></ul>`;
+    <ul class="notes"><li>${esc(meLabel())} · ${t('1人あたり（円・税込）')}</li>${markNotes(marks)}<li>${t('対象は「このエリアで検索」した範囲の店舗。地図を動かして検索し直すと変わります')}</li></ul>`;
+  panel.querySelectorAll('[data-at]').forEach(b => b.onclick = () => { cmp.at = b.dataset.at; openCompare(); });
   panel.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { cmp.mode = b.dataset.mode; openCompare(); });
   panel.querySelectorAll('[data-brand]').forEach(b => b.onclick = () => { cmp.brand = b.dataset.brand || null; openCompare(); });
   panel.querySelectorAll('.rank-row, .shop-link').forEach(b => b.onclick = () => openCard(byId(b.dataset.id), 'compare'));

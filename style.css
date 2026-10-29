@@ -189,24 +189,29 @@ button { font: inherit; color: inherit; }
 .now-badge { display: inline-block; color: var(--fg); box-shadow: inset 0 0 0 1.5px var(--fg); border-radius: 999px; padding: 0 6px; font-size: 10px; font-weight: 800; vertical-align: 1px; }
 .prices td.now { outline: 2px solid var(--fg); outline-offset: -3px; }
 
-/* Comparison: ranked rows */
-.brand-chips { margin: 4px 0 4px; }
-.rank-list { display: flex; flex-direction: column; gap: 6px; }
+/* Comparison: controls stay at the top, one ranked list scrolls under them */
+.cmp-head { position: sticky; top: -8px; z-index: 3; background: var(--bg); margin: -8px -16px 0; padding: 8px 16px 8px; border-bottom: 1px solid var(--line); }
+.cmp-head .panel-head h2 { margin: 0; flex: 1; }
+.cmp-head .toggle { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); width: 100%; box-sizing: border-box; margin: 6px 0 0; }
+.cmp-head .toggle button { padding: 0 6px; overflow: hidden; text-overflow: ellipsis; }
+.brand-chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-top: 8px; }
+.brand-chips button { flex: none; white-space: nowrap; }
+.tag { font-weight: 700; color: var(--fg); white-space: nowrap; display: inline-block; }
+.rank-list { display: flex; flex-direction: column; }
 .rank-row {
-  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; cursor: pointer;
-  border: 1px solid var(--line); background: var(--bg); border-radius: 12px; padding: 8px 10px;
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 60px; text-align: left; cursor: pointer;
+  border: 0; border-bottom: 1px solid var(--line); background: var(--bg); padding: 6px 2px;
 }
 .rank { width: 1.6em; text-align: center; font-weight: 700; color: var(--muted); flex: none; font-variant-numeric: tabular-nums; }
 .rr-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .rr-main b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rr-main .others { font-size: 11px; }
 .rr-price { flex: none; text-align: right; font-weight: 800; font-size: 17px; color: var(--fg); display: flex; flex-direction: column; align-items: flex-end; }
 .rr-price .meta { font-weight: 500; font-size: 11px; }
 .none-list { margin-top: 14px; }
-.none-list summary { cursor: pointer; font-weight: 600; }
+.none-list summary { cursor: pointer; font-weight: 600; min-height: var(--tap); display: flex; align-items: center; }
 .no-price { list-style: none; padding: 0; margin: 6px 0; display: flex; flex-direction: column; gap: 6px; }
 .no-price li { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
-.shop-link { border: 0; background: none; padding: 0; text-align: left; font-weight: 600; text-decoration: underline; cursor: pointer; }
+.shop-link { border: 0; background: none; padding: 0; min-height: var(--tap); text-align: left; font-weight: 600; text-decoration: underline; cursor: pointer; }
 
 /* Plan editor */
 .field-row { display: flex; gap: 10px; margin: 8px 0 12px; align-items: flex-end; flex-wrap: wrap; }

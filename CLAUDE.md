@@ -48,6 +48,10 @@ architecture, commands, data format and day-type rules; read it first.
   foot (`.sheet-foot`), always on screen. Shop page and Google Maps are 44 px icon buttons beside the name. Long
   opening hours fold to one line and notes fold behind a row that says how many there are, so official text never
   sits above the prices.
+- Comparison: one ranked list, one row per shop; each chain's cheapest carries a チェーン最安 tag (a separate
+  per-chain section repeated rows: 31 rows for 24 shops, 4.2 screens). It ranks at いま or at the plan's start
+  (owner's choice, 2026-10); the title says which. Its controls stay at the top while the list scrolls, so keep
+  that block short: who is going and "per person" live in the notes, not in it.
 
 ## Checking UI changes yourself
 - After changing anything the owner sees, check it yourself in a phone-sized browser before asking them to test on
