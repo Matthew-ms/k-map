@@ -90,11 +90,26 @@ for (const lang of langs) {
   };
   await page.goto(url, { waitUntil: 'networkidle' });
   await shot('map');
-  await shot('card', () => page.locator(`.leaflet-marker-icon[title="${shop.name}"]`).first().dispatchEvent('click', {}, { timeout: 5000 })); // pins overlap in busy areas: a real tap could land on a neighbour
   await shot('compare', () => page.click('#compare-btn'));
   await shot('plan', () => page.click('#plan-card'));
   await shot('filter', () => page.click('#filter-btn'));
   await shot('me', () => page.click('#me-btn'));
+  // Last, because it re-centres the map: pins that overlap merge into count bubbles, so open the map zoomed in on
+  // the shop, and if its pin is still in a bubble (same building), open the bubble nearest the centre.
+  await shot('card', async () => {
+    await page.evaluate(([lat, lng]) => localStorage.setItem('kmap.view', JSON.stringify({ center: { lat, lng }, zoom: 18 })), [shop.lat, shop.lng]);
+    await page.reload({ waitUntil: 'networkidle' });
+    const pin = page.locator(`.leaflet-marker-icon[title="${shop.name}"]`);
+    for (let i = 0; i < 3 && !(await pin.count()); i++) {
+      await page.evaluate(() => {
+        const m = document.querySelector('#map').getBoundingClientRect(), cx = m.x + m.width / 2, cy = m.y + m.height / 2;
+        const d = el => { const b = el.getBoundingClientRect(); return Math.hypot(b.x + b.width / 2 - cx, b.y + b.height / 2 - cy); };
+        [...document.querySelectorAll('.cluster')].map(c => c.closest('.leaflet-marker-icon')).sort((a, b) => d(a) - d(b))[0]?.click();
+      });
+      await page.waitForTimeout(700);
+    }
+    await pin.first().dispatchEvent('click', {}, { timeout: 5000 }); // a real tap could land on a neighbouring pin
+  });
   await ctx.close();
 }
 await browser.close();

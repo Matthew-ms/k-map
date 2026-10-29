@@ -29,6 +29,20 @@ architecture, commands, data format and day-type rules; read it first.
 - UI work (index.html, app.js, style.css, i18n.js, price.js) needs no network beyond the defaults, except that
   screenshots need cdnjs.cloudflare.com (Leaflet) and tile.openstreetmap.org (map tiles) allowed too.
 
+## UI rules (redesign 2026-10, each with its reason)
+- Colour channels never mix: chain colours (Jankara red, Big Echo blue, Manekineko amber, Karaoke-kan green) appear
+  only on pins and chain badges; actions, prices and いま are ink (`--accent`, inverted in dark mode); warnings are
+  amber and always written out. Reason: Jankara's red used to also be the action, price and いま colour, so a red
+  thing could mean four things.
+- Every tap target is at least 44 px (`--tap`), every text input at least 16 px. Reason: the audit found pins at
+  30 px and header buttons at 38 px; under 16 px iPhones zoom in on focus.
+- Pins that would overlap merge into an ink count bubble (Leaflet.markercluster, 32 px radius); tapping zooms in and
+  shops in one building fan out. Without the add-on the map falls back to plain pins. Reason: 24 Namba pins stacked
+  and taps landed on the wrong shop.
+- Primary buttons name their result ("25店の料金を比較"), with the line break set per language in i18n.js.
+- The language button is a globe (its word took 86 px of the header); the footer plan card says what the plan is
+  ("今日 20:30〜 2時間"), not an instruction.
+
 ## Checking UI changes yourself
 - After changing anything the owner sees, check it yourself in a phone-sized browser before asking them to test on
   the phone, and show them the screenshots you checked.

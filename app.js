@@ -1,5 +1,5 @@
 import { slotTable, currentPrice, whichDay, jst, estimate, slotName, nameNote, lastEntry, CUSTOMER_SUBS, rankNow, daySet } from './price.js';
-import { t, LANGS, LANG_SHORT, getLang, setLang, trWords, dayText, dateText, yenText, walkText } from './i18n.js';
+import { t, LANGS, getLang, setLang, trWords, dayText, dateText, yenText, walkText } from './i18n.js';
 
 const BRAND_COLORS = { jankara: '#e60012', bigecho: '#2563eb', manekineko: '#f59e0b', karaokekan: '#16a34a' };
 const BRAND_MARKS = { jankara: 'ジ', bigecho: 'BE', manekineko: 'ま', karaokekan: '館' }; // pin badges
@@ -77,6 +77,8 @@ if (!plan.date || plan.date < jst(new Date()).ymd) Object.assign(plan, nowParts(
 const savePlan = () => storage.set(PLAN_KEY, plan);
 const planStart = () => new Date(`${plan.date}T${plan.start}:00+09:00`);
 const durationLabel = b => (b === 1 ? t('30分') : t('{h}時間', { h: b / 2 }));
+// Footer card: "今日 20:30〜 2時間" (the full date range didn't fit a phone's footer).
+const planShort = () => `${plan.date === jst(new Date()).ymd ? t('今日') : dateText(plan.date)} ${hm(planStart())}〜 ${plan.mode === 'free' ? t('フリータイム') : durationLabel(plan.blocks)}`;
 const planSummary = () => {
   const s = planStart();
   return plan.mode === 'free'
@@ -97,10 +99,15 @@ const $ = id => document.getElementById(id);
 const panel = $('panel'), compareBtn = $('compare-btn'), areaBtn = $('area-btn'), meBtn = $('me-btn'),
   filterBtn = $('filter-btn'), langBtn = $('lang-btn'), planCard = $('plan-card'), toast = $('toast');
 
-// Badge pins: the chain's mark on its colour inside a white ring. The planned shop's pin is bigger.
-const pinIcon = (s, big) => L.divIcon({ className: 'pin-wrap', iconSize: big ? [40, 40] : [30, 30],
+// Badge pins: the chain's mark on its colour inside a white ring, in a 44 px tap box. The planned shop's pin is bigger.
+const pinIcon = (s, big) => L.divIcon({ className: 'pin-wrap', iconSize: [44, 44],
   html: `<span class="pin${big ? ' big' : ''}" style="--c:${BRAND_COLORS[s.brand] ?? '#666'}">${BRAND_MARKS[s.brand] ?? '?'}</span>` });
 for (const s of shops) s.pin = L.marker([s.lat, s.lng], { icon: pinIcon(s, false), title: s.name, keyboard: false }).on('click', () => openCard(s));
+// Pins closer than a fingertip merge into a count bubble; tapping it zooms in, and shops in one building fan out.
+// Without the clustering add-on (CDN blocked), plain pins: overlapping, but the map still works.
+const pins = (L.markerClusterGroup ? L.markerClusterGroup({ maxClusterRadius: 40, showCoverageOnHover: false, spiderfyOnMaxZoom: true,
+  iconCreateFunction: c => L.divIcon({ className: 'pin-wrap', iconSize: [48, 48],
+    html: `<span class="cluster" aria-label="${t('{n}店舗（拡大）', { n: c.getChildCount() })}">${c.getChildCount()}</span>` }) }) : L.layerGroup()).addTo(map);
 let bigPin = null;
 function markPlannedPin() {
   const s = plan.shopId && byId(plan.shopId);
@@ -130,22 +137,23 @@ function passes(s) {
 let area, inArea = [], shown = [], userPos = null, view = null, quietUntil = 0;
 function refresh() {
   shown = inArea.filter(passes);
-  for (const s of shops) shown.includes(s) ? s.pin.addTo(map) : s.pin.remove();
+  pins.clearLayers();
+  pins.addLayers ? pins.addLayers(shown.map(s => s.pin)) : shown.forEach(s => pins.addLayer(s.pin));
   markPlannedPin();
   renderChrome();
   if (view?.type === 'compare') openCompare();
 }
 // Header and footer texts (also redrawn when the language changes)
 function renderChrome() {
-  compareBtn.textContent = t('料金比較 {n}店', { n: shown.length });
+  compareBtn.textContent = t('{n}店の\n料金を比較', { n: shown.length }); // names its result; the line break is set per language
   compareBtn.disabled = !shown.length;
   const active = filters.brands.size + filters.machines.size + (filters.maxYen != null);
   filterBtn.textContent = active ? t('絞り込み（{n}）', { n: active }) : t('絞り込み');
   filterBtn.classList.toggle('on', !!active);
   meBtn.textContent = meLabel();
   meBtn.setAttribute('aria-label', t('人数と区分を変更'));
-  langBtn.textContent = LANG_SHORT[getLang()];
-  langBtn.setAttribute('aria-label', t('言語'));
+  langBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>';
+  langBtn.setAttribute('aria-label', `${t('言語')}: ${LANGS[getLang()]}`);
   areaBtn.textContent = t('このエリアで検索');
   renderPlanBar();
 }
@@ -316,10 +324,12 @@ function planTotal(s) {
 function renderPlanBar() {
   const s = plan.shopId && byId(plan.shopId);
   const total = s && hasPrices(s) ? planTotal(s).total : null;
-  planCard.innerHTML = `
-    <span class="pc-main"><b>${s ? `${badge(s, true)}${esc(s.name)}` : `${t('プラン')} <span class="meta">${t('店舗を選ぶと金額を表示')}</span>`}</b><span class="meta">${esc(planSummary())} · ${esc(meLabel())}</span></span>
-    <span class="pc-total">${s ? (total != null ? t('約{yen}', { yen: yenText(total) }) : t('料金を確認')) : '<span class="pc-chev">›</span>'}</span>
-    ${s ? `<button class="pc-clear" aria-label="${t('店舗の選択を解除')}">×</button>` : ''}`;
+  // What the plan is, in one glance (who is going is already on the header button).
+  planCard.innerHTML = s
+    ? `<span class="pc-main"><b>${badge(s, true)}${esc(s.name)}</b><span class="meta">${esc(planShort())}</span></span>
+      <span class="pc-total">${total != null ? t('約{yen}', { yen: yenText(total) }) : t('料金を確認')}</span>
+      <button class="pc-clear" aria-label="${t('店舗の選択を解除')}">×</button>`
+    : `<span class="pc-main"><span class="pc-label">${t('プラン')} · ${t('店舗未選択')}</span><b>${esc(planShort())}</b></span>`;
   planCard.setAttribute('aria-label', t('プランを開く'));
 }
 planCard.onclick = e => {
