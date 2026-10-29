@@ -39,6 +39,16 @@ const hasPrices = s => s.prices.length > 0;
 const badge = (s, small) => `<span class="badge${small ? ' sm' : ''}" style="--c:${BRAND_COLORS[s.brand] ?? '#666'}" aria-hidden="true">${BRAND_MARKS[s.brand] ?? '?'}</span>`;
 const officialLink = s => `<a class="official-btn" href="${esc(s.price_url ?? s.source_url)}" target="_blank" rel="noopener">${t('公式サイトで料金を見る')} ↗</a>`;
 const shopLink = s => `<a class="shop-page" href="${esc(s.source_url)}" target="_blank" rel="noopener">${t('店舗ページを開く')} ↗</a>`;
+// Live availability isn't public: link to the chain's own booking (or the shop's phone), and to Google Maps
+// (reviews, photos, directions; its "popular times" chart was missing for the shops checked on 2026-10-27).
+const bookLink = s => (s.booking_url ? `<a class="shop-page" href="${esc(s.booking_url)}" target="_blank" rel="noopener">${t('空き状況・予約')} ↗</a>`
+  : s.tel ? `<a class="shop-page" href="tel:${esc(s.tel)}">${t('電話で空き確認')} ☎</a>` : '');
+const mapsLink = s => {
+  const name = s.name.includes(BRAND_NAMES[s.brand]) ? s.name : `${BRAND_NAMES[s.brand]} ${s.name}`;
+  // Street address only: the building and floor ("…ビル3〜4階") make Google show a list instead of the shop.
+  const q = encodeURIComponent(`${name} ${s.address?.split(/\s+/)[0] ?? `${s.lat},${s.lng}`}`);
+  return `<a class="shop-page sub" href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">${t('Googleマップ')} ↗</a>`;
+};
 // Hand-entered prices: say where they came from and when, and warn once they're old.
 const manualNote = s => {
   const days = Math.floor((Date.now() - Date.parse(s.manual.checked_on)) / 864e5);
@@ -435,8 +445,10 @@ function holidayLine(rows) {
   const names = rows.map(r => sName(r));
   const plan = r => (names.filter(n => n === sName(r)).length > 1 ? `${sName(r)} ${slotText(r.slot).split('–')[0]}〜` : sName(r)); // same name twice: add the start
   const [main, ...rest] = [...groups].sort((a, b) => b[1].length - a[1].length);
-  const more = rest.map(([l, rs]) => t('{plans}は{days}', { plans: [...new Set(rs.map(plan))].join('・'), days: l }));
-  return `<p class="meta day-legend">${t('休日')}＝${esc(main[0])}${more.length ? `（${esc(more.join('、'))}）` : ''}</p>`;
+  // Day labels contain commas in English, so plans are joined with " / " and groups with "; " there.
+  const p = getLang() === 'en' ? { plans: ' / ', groups: '; ', eq: ' = ', open: ' (', close: ')' } : { plans: '・', groups: '、', eq: '＝', open: '（', close: '）' };
+  const more = rest.map(([l, rs]) => t('{plans}は{days}', { plans: [...new Set(rs.map(plan))].join(p.plans), days: l }));
+  return `<p class="meta day-legend">${t('休日')}${p.eq}${esc(main[0])}${more.length ? `${p.open}${esc(more.join(p.groups))}${p.close}` : ''}</p>`;
 }
 // Compact table for my type (平日 / 休日 per slot), or the full table for every type.
 // A slot with a third day column (月～木 / 金・祝前 / 土日祝) gets an extra line for it.
@@ -500,13 +512,13 @@ function openCard(s, from = view?.type === 'compare' ? 'compare' : null) {
         <p class="brand">${badge(s, true)}${esc(brandName(s.brand))}</p>
         <h2>${esc(s.name)}</h2>
         <p class="meta">${esc(hoursText(s.hours))}${w ? ` · ${w}` : ''}</p>
-        ${shopLink(s)}
       </div>
       <div class="ch-side">
         <button class="choose" aria-pressed="${chosen}">${chosen ? `✓ ${t('選択中')}` : t('この店にする')}</button>
         ${hasSolo ? `<div class="toggle party-toggle" role="group" aria-label="${t('料金表の人数')}">${[['solo', t('1名')], ['group', t('2名以上')]].map(([k, v]) => `<button data-party="${k}" aria-pressed="${p === k}">${v}</button>`).join('')}</div>` : ''}
       </div>
     </div>
+    <div class="card-links">${shopLink(s)}${bookLink(s)}${mapsLink(s)}</div>
     ${!hasPrices(s) ? `<p class="meta">${t('この店舗の料金表は公式サイトで画像・PDFとして公開されているため、アプリには掲載していません。')}</p>${s.price_url && s.price_url !== s.source_url ? officialLink(s) : ''}` : `
     <p class="price-cap">${t('料金（円・税込）')}${s.prices.every(x => x.drinks_included) ? ` · ${t('ドリンク飲み放題')}` : ''}</p>
     <div class="price-area">${cardTable(s, p, full)}</div>

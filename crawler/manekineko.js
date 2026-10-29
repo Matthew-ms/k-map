@@ -18,6 +18,8 @@ export function parseShopPage(html) {
     lng: m ? +m[2] : null,
     machines: [...new Set(machines)],
     price_url: $('a').filter((_, a) => text($(a)).includes('料金表をみる')).first().attr('href') ?? null,
+    // This shop's web booking; a few pages only have the menu's general one (pick the shop there).
+    booking_url: $('a[href*="reservation.karaokemanekineko.jp/?storeId="]').first().attr('href') ?? 'https://reservation.karaokemanekineko.jp/',
   };
 }
 
@@ -58,6 +60,7 @@ export async function crawl({ offline = false } = {}) {
           lng: page.lng,
           hours: text(card.find('.content__unit-openTime')).replace('24時間営業', '24h') || null,
           tel: null,
+          booking_url: page.booking_url,
           machines: page.machines,
           rooms: null,
           amenities: null,

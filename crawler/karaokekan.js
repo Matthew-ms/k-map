@@ -35,7 +35,10 @@ export function parseShopPage(html) {
     lat: map ? +map[2] : null,
     lng: map ? +map[1] : null,
     machines,
-    price_images: [...new Set(html.match(/https?:\/\/[^"'\s]+\/shop2price\/image\/[\w/]+/g) ?? [])],
+    // The shop's own phone button and LINE booking (a page also shows other numbers, e.g. head office).
+    tel: $('a.btn-tel[href^="tel:"]').first().attr('href')?.slice(4) ?? null,
+    booking_url: $('a[href*="liff.line.me/"][href*="/book/"]').first().attr('href') ?? null,
+    price_images:[...new Set(html.match(/https?:\/\/[^"'\s]+\/shop2price\/image\/[\w/]+/g) ?? [])],
   };
 }
 
@@ -56,7 +59,8 @@ export async function crawl({ offline = false } = {}) {
         lat: page.lat,
         lng: page.lng,
         hours: page.hours,
-        tel: null,
+        tel: page.tel,
+        booking_url: page.booking_url,
         machines: page.machines,
         rooms: null,
         amenities: null,

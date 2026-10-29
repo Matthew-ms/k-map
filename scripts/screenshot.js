@@ -90,7 +90,7 @@ for (const lang of langs) {
   };
   await page.goto(url, { waitUntil: 'networkidle' });
   await shot('map');
-  await shot('card', () => page.locator(`.leaflet-marker-icon[title="${shop.name}"]`).first().click({ timeout: 5000 }));
+  await shot('card', () => page.locator(`.leaflet-marker-icon[title="${shop.name}"]`).first().dispatchEvent('click', {}, { timeout: 5000 })); // pins overlap in busy areas: a real tap could land on a neighbour
   await shot('compare', () => page.click('#compare-btn'));
   await shot('plan', () => page.click('#plan-card'));
   await shot('filter', () => page.click('#filter-btn'));

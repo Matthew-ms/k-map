@@ -3,7 +3,7 @@
 //   --brands      only these chains; the others keep their shops from the last run
 //   --areas       Jankara only: these area ids (writes only those Jankara shops!)
 //   --allow-drop  write even if many shops of a chain disappeared since the last run
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { UA, isMachine } from './common.js';
 import * as jankara from './jankara.js';
 import * as bigecho from './bigecho.js';
@@ -32,6 +32,25 @@ if (!offline || !existsSync(HOLIDAYS)) {
 
 // Chains run side by side; each site still gets one request per 3 seconds.
 const brands = list('brands') ?? Object.keys(CHAINS);
+
+// --offline re-reads crawler/cache/. If the weekly GitHub crawl fetched newer pages since (data newer than this
+// machine's saved pages), re-reading them would quietly bring old prices back: refuse.
+if (offline === true) {
+  const CACHE = new URL('./cache/', import.meta.url);
+  const saved = existsSync(CACHE) ? readdirSync(CACHE) : [];
+  for (const b of brands) {
+    const cacheDay = saved.filter(f => f.startsWith(`${b}-`)).reduce((d, f) => {
+      const m = statSync(new URL(f, CACHE)).mtime.toISOString().slice(0, 10);
+      return m > d ? m : d;
+    }, '');
+    const dataDay = prev.filter(s => s.brand === b).reduce((d, s) => (s.fetched_at > d ? s.fetched_at : d), '');
+    if (dataDay > cacheDay) {
+      console.error(`${b}: saved pages (${cacheDay || 'none'}) are older than the data (${dataDay}) — the weekly crawl ran since. ` +
+        `Re-reading them would bring old prices back. Run without --offline to fetch fresh pages.`);
+      process.exit(1);
+    }
+  }
+}
 const results = await Promise.all(brands.map(async b => {
   try { return [b, await CHAINS[b].crawl({ offline, areas: b === 'jankara' ? list('areas')?.map(Number) : undefined })]; }
   catch (e) { return [b, { shops: [], errors: [`${b}: ${e.message}`] }]; }

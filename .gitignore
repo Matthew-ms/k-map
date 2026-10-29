@@ -5,3 +5,4 @@ manual/*.png
 manual/*.jpg
 manual/*.html
 screenshots/
+.playwright-mcp/

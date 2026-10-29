@@ -163,8 +163,8 @@ export async function crawlArea(area, { offline = false } = {}) {
     // listed hours; the page's own "※土日祝は…" remarks are kept as slot_note, and the card shows the full text.
     const hours = s.shopOpen === '24時間営業' ? '24h' : s.shopOpen.replace(/〜/g, '-').replace(/\|/g, ' / ');
     const slotHours = s.shopOpen === '24時間営業' ? '24h' : s.shopOpen.split('|')[0].split('…').pop().replace(/（.*?）/g, '').replace('〜', '-'); // "11:00〜5:00（土日祝8:00〜）" → 11:00-5:00
-    let page;
-    try { page = parseShopPage(await get(url, `jankara-${s.shopId}.html`, { offline }), slotHours); }
+    let page, html;
+    try { html = await get(url, `jankara-${s.shopId}.html`, { offline }); page = parseShopPage(html, slotHours); }
     catch (e) { errors.push(`${url} (${s.shopName}): ${e.message}`); continue; }
     shops.push({
       id: `jankara-${s.shopId}`,
@@ -175,6 +175,7 @@ export async function crawlArea(area, { offline = false } = {}) {
       lng: +s.shopLongitude,
       hours,
       tel: s.shopTel || null,
+      booking_url: html.match(/https:\/\/jankara\.me\/reservation\/[^"']+/)?.[0] ?? null, // the page's 空室状況 link (opens the app)
       machines: s.machines.map(m => stripMachine(m.machineName)),
       rooms: { ...page.rooms, total: page.rooms.total ?? (+s.shopRoom || null) },
       // kids_room from the page: the JSON's shopKidsRoom disagrees with it

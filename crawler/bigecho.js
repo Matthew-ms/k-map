@@ -159,7 +159,8 @@ export async function crawl({ offline = false } = {}) {
       const base = {
         id: `bigecho-${s.key}`, brand: 'bigecho', name: s.name.replace(/^カラオケ\s*/, ''),
         address: s.address.replace(/\s+/g, ' ').trim(), lat: s.latitude, lng: s.longitude,
-        tel: null, rooms: null, amenities: null, source_url: url, price_url: url, fetched_at: today(),
+        tel: html.match(/href="tel:([\d-]+)"/)?.[1] ?? null, // one per shop page; Big Echo books by phone or app
+        rooms: null, amenities: null, source_url: url, price_url: url, fetched_at: today(),
       };
       let page;
       try {
