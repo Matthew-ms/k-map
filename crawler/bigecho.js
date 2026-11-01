@@ -17,7 +17,8 @@ const NOT_ROOM_PRICES = /パーティー|コース|学得|宴会|中高生/; // 
 // "月～金・祝前日" → Set{mon…fri, eve}; "日～木・祝日" → Set{sun…thu, hol}. Not a day label → null.
 export function dayTokens(label) {
   // "(平日)" is a remark; other brackets list days: "金～日（祝日・祝前日）"
-  let s = label.replace(/[\s　]/g, '').replace(/[（(]平日[)）]/g, '').replace(/[（()）]/g, '・').replace(/[･·]/g, '・').replace(/[〜~\-－]/g, '～')
+  // A 平日 / 週末 word in front of the days is a label too: "【週末】土・日・祝", "週末（土・日・祝日）"
+  let s = label.replace(/[\s　]/g, '').replace(/^【?(平日|週末)】?(?=[（(]?[日月火水木金土])/, '').replace(/[（(]平日[)）]/g, '').replace(/[（()）]/g, '・').replace(/[･·]/g, '・').replace(/[〜~\-－]/g, '～')
     .replace(/曜日?/g, '').replace(/祝祭日/g, '祝日').replace(/平日/g, '月～金');
   if (/^(全日|毎日)$/.test(s)) return new Set(DOW);
   const set = new Set();
@@ -49,16 +50,25 @@ export function parseShopPage(html, hours) {
     const t = $(el), heading = title || section;
     title = '';
     if (NOT_ROOM_PRICES.test(heading)) return;
-    const range = heading.replace(/：/g, ':').match(TIME_RANGE);
+    // A price that needs something extra ("（学生パスポート利用時）") would show as the ordinary price: skip it.
+    if (/パスポート|利用時/.test(heading)) return skipped.push(`${heading}（条件付きの料金）`);
+    // The time range sits in the heading, or else opens the first row of a 30分 table ("昼【30分室料】" over
+    // "【OPEN～18:00】1ドリンクオーダー制"). Only there: "受付時間10：00～11：59" is an entry window, and plan tables
+    // with the time in the first row ("学生限定プラン", "♪昼3時間パック♪") are special offers, not the room price.
+    const range = heading.replace(/：/g, ':').match(TIME_RANGE)
+      ?? (/30分/.test(heading) ? text(t.find('tr').first()).replace(/：/g, ':').replace(/^【/, '').match(new RegExp(`^${TIME_RANGE.source}`, 'i')) : null);
     if (!range) return skipped.push(`${heading}（時間帯なし）`);
     const [nameText, ...remarks] = heading.replace(/：/g, ':').replace(range[0], '').split('※').map(x => x.trim());
     let name = nameText.replace(/[【】（）()「」]/g, ' ').replace(/料金|税込|室料|お一人様|通常/g, '').replace(/\s+/g, ' ').trim();
     // The table's first row sometimes names the plan when headings don't ("昼30分 ドリンクバー無料").
     const firstRow = text(t.find('tr').first());
     const where = `${heading} ${section} ${firstRow}`;
+    // "2時間…プラン" under a 30分 section is not a 30-minute price.
     const plan = /ナイトパック/.test(where) ? 'night_pack' : /パック/.test(name) ? 'pack' : /フリータイム/.test(name) ? 'free_time'
-      : /30分/.test(section + name + firstRow) ? '30min' : /フリータイム|パック/.test(section + firstRow) ? 'free_time' : null;
+      : /30分/.test(name) || (/30分/.test(section + firstRow) && !/\d時間/.test(name)) ? '30min' : /フリータイム|パック/.test(section + firstRow) ? 'free_time' : null;
     if (!plan) return skipped.push(`${heading}（30分かフリータイムか不明）`);
+    // A 30分 table only some customers may use would show as everyone's 30-minute price (the name becomes "30分").
+    if (plan === '30min' && /限定/.test(heading)) return skipped.push(`${heading}（条件付きの料金）`);
     if (plan === '30min') name = '30分';
     else if (!name || /^(昼|夜|朝|深夜)$/.test(name)) name = `${name}${plan === 'pack' ? '3時間パック' : 'フリータイム'}`.trim();
     let period = name.match(/^(朝|昼|夜|深夜)/)?.[1] ?? null;
@@ -82,7 +92,7 @@ export function parseShopPage(html, hours) {
       return skipped.push(`${heading}（曜日の列が3つ以上）`);
     }
     const tableText = text(t);
-    const oneDrink = /[1１]ドリンク/.test(tableText);
+    const oneDrink = /[1１]ドリンク/.test(heading + tableText); // "昼30分料金(1ドリンクオーダー制)" beside "(ドリンクバー付き)"
     const noteText = rows.map(r => text(r.find('td.charge_info_notes'))).join(' ');
     // 最終受付 can sit in the heading itself ("3時間パック 最終受付16:00", "15:00受付終了"); a remark below the table wins.
     const inName = nameText.replace(/：/g, ':').match(/最終受付\s*:?\s*(\d{1,2})(?:時|:(\d{2}))|(\d{1,2})(?:時|:(\d{2}))\s*受付終了/);
@@ -96,10 +106,12 @@ export function parseShopPage(html, hours) {
     }
     const drinkBar = c => /学生、?シニアはドリンクバー付/.test(tableText) && (c === 'student' || c === 'senior');
 
+    let dropped = 0;
     for (const r of rows.slice(dayIdx + 1)) {
       const label = text(r.find('th'));
       const cells = r.find('td').toArray();
-      if (!label || cells.length !== days.length) continue; // sub-headers, note rows
+      if (!label) continue; // note rows
+      if (cells.length !== days.length) { dropped++; continue; } // a day column the reader didn't recognise
       const who = customerOf(label);
       cells.forEach((td, i) => {
         const raw = text($(td));
@@ -114,6 +126,7 @@ export function parseShopPage(html, hours) {
         prices.push(row);
       });
     }
+    if (dropped) skipped.push(`${heading}（列の数が合わない行 ${dropped}）`);
   });
 
   const info = label => $('dt').filter((_, e) => text($(e)) === label).first().next();
@@ -168,7 +181,7 @@ export async function crawl({ offline = false } = {}) {
         if (!page.prices.some(r => r.party === 'group' && r.plan === '30min' && r.customer === 'general')) throw new Error('no 30分 一般 price found');
       } catch (e) {
         // Can't read this page reliably: keep the shop as a pin with a link (missing beats wrong).
-        warnings.push(`${url} (${s.name}): prices not read — ${e.message}`);
+        warnings.push(`${url} (${s.name}): prices not read — ${e.message}${page?.skipped.length ? `; skipped ${page.skipped.join(' / ')}` : ''}`);
         shops.push({ ...base, hours: hoursText(html), machines: [], prices: [], notes: [], prices_as_of: null, price_error: e.message });
         continue;
       }
