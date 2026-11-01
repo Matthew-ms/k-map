@@ -15,7 +15,6 @@
   ~800 live rows were showing one-drink prices as drinks included, or the reverse.
 
 ## Next
-- Push the member-only and one-drink change before the Monday 2026-11-02 03:00 JST crawl, so that crawl uses it too.
 - After that crawl: check that about 70 more Big Echo shops have prices (18 from steps 1–2, 52 member-only), 0613, 1168,
   1213, 1361 lost their wrong "30分" rows, and the one-drink fix moved ~800 rows to +1D or 込 as their notes say.
 - Big Echo: about 25 more pages with one-off layouts (spaced "O P E N", times that change by day); left as pins.
