@@ -4,7 +4,7 @@
 //   node scripts/screenshot.js --url=https://matthew-ms.github.io/k-map/
 // Options: --url (default: serve this folder on a free local port), --device (Playwright device name, default
 // "iPhone 13"), --lang=ja,en,zh-Hant, --time (fake clock, ISO with offset), --shop (part of a shop name for the
-// card; default the Jankara nearest Namba), --out (default screenshots/), --leaflet=<dir with leaflet.js and
+// card; default the Jankara nearest Namba), --customer (saved price type, e.g. general; default the app's own), --out (default screenshots/), --leaflet=<dir with leaflet.js and
 // leaflet.css> (when cdnjs is blocked). Exits 1 on a page error or a failed request other than map tiles.
 // Needs Playwright with Chromium: preinstalled in cloud sessions; locally `npm i --no-save playwright` and
 // `npx playwright install chromium`.
@@ -28,6 +28,7 @@ if (!device) { console.error(`Unknown device; try e.g. "iPhone 13", "Pixel 7"`);
 const langs = arg('lang', 'ja,en,zh-Hant').split(',');
 const out = resolve(arg('out', join(ROOT, 'screenshots')));
 const time = arg('time');
+const customer = arg('customer');
 const leaflet = arg('leaflet');
 const NAMBA = [34.6695, 135.5015];
 
@@ -67,6 +68,7 @@ for (const lang of langs) {
   const ctx = await browser.newContext({ ...device, locale: 'ja-JP', timezoneId: 'Asia/Tokyo',
     geolocation: { latitude: NAMBA[0], longitude: NAMBA[1] }, permissions: ['geolocation'] });
   await ctx.addInitScript(l => localStorage.setItem('kmap.lang', l), lang);
+  if (customer) await ctx.addInitScript(c => localStorage.setItem('kmap.identity', JSON.stringify({ count: 1, customer: c })), customer);
   const page = await ctx.newPage();
   if (time) await page.clock.setFixedTime(new Date(time));
   if (leaflet) {

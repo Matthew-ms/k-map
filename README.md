@@ -26,7 +26,7 @@ MVP: Jankara, Osaka Namba/Shinsaibashi.
 | Chain | Shop list | Prices |
 |---|---|---|
 | Jankara (212) | `jankara.ne.jp/shop/ajax/?a={area}` JSON | shop page tables, incl. Super Jankara grid |
-| Big Echo | `shop.big-echo.jp/api/point?b=24,122,46,154` (all shops, with coordinates) | shop page tables; 学割→student; ひとりカラオケ(会員の場合) = 1名 member price; 1ドリンクオーダー制 → `drinks_included: false` (+1D) except 学生/シニア (drink bar) |
+| Big Echo | `shop.big-echo.jp/api/point?b=24,122,46,154` (all shops, with coordinates) | shop page tables; 学割→student; ひとりカラオケ(会員の場合) = 1名 member price; 1ドリンクオーダー制 / ワンドリンク / ワンオーダー / 1オーダー制 → `drinks_included: false` (+1D) except whom the notes spare (学生/シニア drink bar, "一般のお客様は…" only 一般); shops listing only 会員 prices are kept (一般 then has no price there) |
 | Manekineko | admin-ajax `loc_load_more` per prefecture (nonce from /locations/) | **not read**: per-shop PDF under /wp-content/uploads/, which robots.txt disallows → pin + link |
 | Karaoke-kan | sitemap `/shop/detail/{id}` | **not read**: price images → pin + link (hand-entered for all shops, see below) |
 

@@ -10,9 +10,12 @@
   `data/shops.json` is not rebuilt: the saved pages are older than the data, so the next weekly crawl applies it.
 - Big Echo parser step 2 (2026-11-01): 30分 tables with the days in the heading and one column per drink plan.
   On the saved pages: 7 more shops priced (0585, 0916, 0926, 1221, 1344, 1428, 1449), 0667 gains its 日・祝 night rows.
+- Big Echo member-only shops (2026-11-01): shops listing only 会員 prices keep them (52 on the saved pages; 一般 sees no
+  price there). One-drink rule now read in all its spellings (ワンドリンク, ワンオーダー, 1オーダー) with who the notes spare:
+  ~800 live rows were showing one-drink prices as drinks included, or the reverse.
 
 ## Next
-- Push step 2 before the Monday 2026-11-02 03:00 JST crawl, so that crawl uses it too.
-- After that crawl: check that the 18 Big Echo shops got prices and 0613, 1168, 1213, 1361 lost their wrong "30分" rows.
-- Big Echo: owner to decide on the 66 shops that list only 会員 prices, and the 4 that give 一般 as "会員 + ¥50" in words.
+- Push the member-only and one-drink change before the Monday 2026-11-02 03:00 JST crawl, so that crawl uses it too.
+- After that crawl: check that about 70 more Big Echo shops have prices (18 from steps 1–2, 52 member-only), 0613, 1168,
+  1213, 1361 lost their wrong "30分" rows, and the one-drink fix moved ~800 rows to +1D or 込 as their notes say.
 - Big Echo: about 25 more pages with one-off layouts (spaced "O P E N", times that change by day); left as pins.

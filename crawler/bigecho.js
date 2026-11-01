@@ -12,6 +12,9 @@ const text = el => rawText(el).normalize('NFKC');
 const DOW = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const JDOW = '日月火水木金土';
 const TIME_RANGE = /(OPEN|開店|\d{1,2}(?:時|[:：]\d{2}))\s*[〜～~\-－]\s*(CLOSE|閉店|翌?\d{1,2}(?:時|[:：]\d{2}))/i;
+// The room price needs one drink ordered: "1ドリンクオーダー制", "ワンドリンクオーダー制", "ワンオーダー制", "1オーダー制"
+// (not "ワンドリンク不要", which says the opposite).
+const ONE_DRINK = /[1１]ドリンク|ワンドリンク(?!不要)|ワンオーダー|[1１]オーダー/;
 const NOT_ROOM_PRICES = /パーティー|コース|学得|宴会|中高生/; // party courses, school-student packs: not room-time prices
 
 // "月～金・祝前日" → Set{mon…fri, eve}; "日～木・祝日" → Set{sun…thu, hol}. Not a day label → null.
@@ -97,7 +100,7 @@ export function parseShopPage(html, hours) {
       // which are drink plans ("1ドリンクオーダー制 / ドリンクバー付") or a single price.
       dayIdx = rows.findIndex(r => text(r.find('th'))) - 1;
       const cols = dayIdx < 0 ? [] : rows[dayIdx].find('td').toArray().map(c => text($(c))).filter(Boolean);
-      colDrinks = cols.map(c => /ドリンクバー/.test(c) ? true : /[1１]ドリンク|[1１]オーダー|ワンドリンク/.test(c) ? false : null);
+      colDrinks = cols.map(c => /ドリンクバー/.test(c) ? true : ONE_DRINK.test(c) ? false : null);
       if (cols.length > 1 && colDrinks.includes(null)) return skipped.push(`${heading}（列の意味が不明）`);
       days = (cols.length ? cols : ['']).map(() => dayColumn(headDays));
     } else {
@@ -109,7 +112,7 @@ export function parseShopPage(html, hours) {
       return skipped.push(`${heading}（曜日の列が3つ以上）`);
     }
     const tableText = text(t);
-    const oneDrink = /[1１]ドリンク/.test(heading + tableText); // "昼30分料金(1ドリンクオーダー制)" beside "(ドリンクバー付き)"
+    const oneDrink = ONE_DRINK.test(heading + tableText); // "昼30分料金(1ドリンクオーダー制)" beside "(ドリンクバー付き)"
     const noteText = rows.map(r => text(r.find('td.charge_info_notes'))).join(' ');
     // 最終受付 can sit in the heading itself ("3時間パック 最終受付16:00", "15:00受付終了"); a remark below the table wins.
     const inName = nameText.replace(/：/g, ':').match(/最終受付\s*:?\s*(\d{1,2})(?:時|:(\d{2}))|(\d{1,2})(?:時|:(\d{2}))\s*受付終了/);
@@ -121,7 +124,12 @@ export function parseShopPage(html, hours) {
       else if (/ドリンクバー付|小学生|未就学|持ち込み|税込/.test(n)) notes.add(`※${n}`);
       else own.push(`※${n}`);
     }
-    const drinkBar = c => /学生、?シニアはドリンクバー付/.test(tableText) && (c === 'student' || c === 'senior');
+    // Who is spared the drink order, in the table's notes: "学生、シニアはドリンクバー付", "学割はドリンクバー付き",
+    // "学生会員様、シニア会員様はワンドリンク不要", or only 一般 orders one ("※一般のお客様はワンドリンクオーダー制").
+    // No digits in between, so price cells ("学割 100円 … ドリンクバー付") never count.
+    const spared = c => (c === 'student' && /(学生|学割)[^。※\d]{0,15}は(ソフト)?(ドリンクバー付|ワンドリンク不要)/.test(tableText))
+      || (c === 'senior' && /シニア[^。※\d]{0,10}は(ソフト)?(ドリンクバー付|ワンドリンク不要)/.test(tableText))
+      || (c !== 'general' && /一般(のお客様|料金)は(ワン|[1１])ドリンク/.test(tableText));
 
     let dropped = 0;
     for (const r of rows.slice(dayIdx + 1)) {
@@ -133,7 +141,7 @@ export function parseShopPage(html, hours) {
       cells.forEach((td, i) => {
         const raw = text($(td));
         const yen = parseInt(raw.replace(/[,，円]/g, ''), 10);
-        const row = { ...who, period, name, plan, slot, day: days[i].day, yen: Number.isNaN(yen) ? null : yen, drinks_included: colDrinks[i] ?? (!oneDrink || drinkBar(who.customer)) };
+        const row = { ...who, period, name, plan, slot, day: days[i].day, yen: Number.isNaN(yen) ? null : yen, drinks_included: spared(who.customer) || (colDrinks[i] ?? !oneDrink) };
         if (days[i].day !== 'weekday') row.day_label = days[i].label;
         else if (days[i].only) row.weekday_days = days[i].only;
         if (row.yen === null) row.text = raw || null; // keep the site's own words
@@ -195,7 +203,8 @@ export async function crawl({ offline = false } = {}) {
       let page;
       try {
         page = parseShopPage(html, mondayHours(hoursText(html)));
-        if (!page.prices.some(r => r.party === 'group' && r.plan === '30min' && r.customer === 'general')) throw new Error('no 30分 一般 price found');
+        // Some shops list only 会員 prices (owner's choice, 2026-11: show them; 一般 then simply has no price there).
+        if (!page.prices.some(r => r.party === 'group' && r.plan === '30min' && ['general', 'member'].includes(r.customer))) throw new Error('no 30分 一般 or 会員 price found');
       } catch (e) {
         // Can't read this page reliably: keep the shop as a pin with a link (missing beats wrong).
         warnings.push(`${url} (${s.name}): prices not read — ${e.message}${page?.skipped.length ? `; skipped ${page.skipped.join(' / ')}` : ''}`);

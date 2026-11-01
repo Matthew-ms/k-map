@@ -88,7 +88,8 @@ const problems = [...errors, ...[...shops, ...kept.filter(s => s.manual)].flatMa
     if (!s.price_url) p.push('no link to official prices');
   } else {
     if (!s.prices_as_of) p.push('no price date');
-    if (!s.prices.some(r => r.party === 'group' && r.plan === '30min' && r.customer === 'general')) p.push('no group 30min general price');
+    // 会員 alone is enough: some Big Echo shops list only member prices (owner's choice, 2026-11: show them).
+    if (!s.prices.some(r => r.party === 'group' && r.plan === '30min' && ['general', 'member'].includes(r.customer))) p.push('no group 30min general or member price');
     for (const r of s.prices) {
       if (!r.slot) p.push(`unparsed slot in ${r.plan} ${r.name}`);
       if (r.yen === null && !r.text) p.push(`empty price cell (${r.party} ${r.plan} ${r.slot} ${r.day} ${r.customer})`);

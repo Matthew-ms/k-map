@@ -66,3 +66,16 @@ test('Big Echo: days in the heading, columns by drink plan (武蔵新城店, 札
   ]);
   assert.equal(prices[0].weekday_days, 'mon+tue+wed+thu+fri'); // a lone 月〜金 table has no Saturday price
 });
+
+test('Big Echo: every spelling of the one-drink rule, and who the notes spare from it (高知中央公園店, 天神西通り店, 阪急東通り店)', () => {
+  const read = (firstRow, note) => parseShopPage(page('30分料金 OPEN〜18:00', firstRow, ['月～金', '土・日・祝日'],
+    [['学割', '100円', '150円'], ['シニア', '120円', '170円'], ['会員', '150円', '200円'], ['一般', '200円', '250円']]).replace('</tbody>', `<tr><td>${note}</td></tr></tbody>`), '10:00-5:00')
+    .prices.filter(p => p.day === 'weekday').map(p => [p.customer, p.drinks_included]);
+  for (const rule of ['ワンドリンクオーダー制', 'ワンオーダー制', '1オーダー制', '1ドリンクオーダー制']) {
+    assert.deepEqual(read(rule, ''), [['student', false], ['senior', false], ['member', false], ['general', false]], rule);
+  }
+  assert.deepEqual(read('ワンドリンクオーダー制', '・学生会員様、シニア会員様はワンドリンク不要。ドリンクバー付となっております。'),
+    [['student', true], ['senior', true], ['member', false], ['general', false]]);
+  assert.deepEqual(read('', '※一般のお客様はワンドリンクオーダー制となります。'), [['student', true], ['senior', true], ['member', true], ['general', false]]);
+  assert.deepEqual(read('ドリンクバー付', '※ワンドリンク不要'), [['student', true], ['senior', true], ['member', true], ['general', true]]);
+});
