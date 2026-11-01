@@ -1,27 +1,37 @@
-# K-map — notes for Claude sessions (local and cloud)
+# K-map
 
-Phone map comparing karaoke shops (ジャンカラ, ビッグエコー, まねきねこ, カラオケ館) by price. README.md explains the
-architecture, commands, data format and day-type rules; read it first.
+Goal: a phone map that compares karaoke shops (ジャンカラ, ビッグエコー, まねきねこ, カラオケ館) by price.
+Platform and stack: static phone web app (vanilla JS + Leaflet/OpenStreetMap, PWA) on GitHub Pages; Node crawler
+(cheerio) run weekly by GitHub Actions writes `data/shops.json`.
 
-## Data rules (from the owner, strict)
+README.md explains the architecture, commands, data format and day-type rules; read it first.
+
+## Status
+See PROGRESS.md (what is done, what is next).
+See DECISIONS.md (why things are the way they are).
+
+## Project-only rules
+
+### Data rules (from the owner, strict)
 - Wrong data is worse than missing data. Never invent or guess a price; when unsure, skip and leave a pin + link.
 - Keep the site's own text for cells without a number (`yen: null, text: "-"`); mark inferences (＊ † +1D, notes).
 - Hand-entered prices (`data/manual-prices.json`) are published only after the owner checked them and said OK.
 
-## Crawling etiquette
+### Crawling etiquette
 - User-Agent `K-map/0.1 (+https://github.com/Matthew-ms/k-map)`, at most one request per 3 s per host (crawler/common.js).
 - Respect robots.txt: Manekineko's price PDFs (/wp-content/uploads/) are disallowed — never fetch them; the owner
   downloads them by hand into `manual/`.
 - Never send the owner's email address to any site (not in headers, not in URLs).
 - `manual/` PDFs, images and HTML and `crawler/cache/` are git-ignored: never commit them.
 
-## Workflow
-- Commit/push only when the owner asks (push to `main` deploys GitHub Pages: https://matthew-ms.github.io/k-map/).
+### Workflow
+- Commit after each step that runs, but push only when the owner asks (push to `main` deploys GitHub Pages:
+  https://matthew-ms.github.io/k-map/).
 - The owner tests on the phone via that Pages URL, not a LAN server.
 - `npm test` before every commit; `node crawler/run.js --offline …` re-parses saved pages without fetching.
 - The weekly GitHub Actions crawl (.github/workflows/crawl.yml, Mon 03:00 JST) commits `data/` by itself — pull first.
 
-## Cloud sessions
+### Cloud sessions
 - Run `npm ci` first. Node 22 (cloud default) is fine; CI uses 24.
 - `crawler/cache/` and `manual/` don't exist there, so `--offline` has nothing to read. Fetching needs the
   environment's network access set to **Custom** with: jankara.ne.jp, big-echo.jp, shop.big-echo.jp,
@@ -29,7 +39,7 @@ architecture, commands, data format and day-type rules; read it first.
 - UI work (index.html, app.js, style.css, i18n.js, price.js) needs no network beyond the defaults, except that
   screenshots need cdnjs.cloudflare.com (Leaflet) and tile.openstreetmap.org (map tiles) allowed too.
 
-## UI rules (redesign 2026-10, each with its reason)
+### UI rules (redesign 2026-10, each with its reason)
 - Colour channels never mix: chain colours (Jankara red, Big Echo blue, Manekineko amber, Karaoke-kan green) appear
   only on pins and chain badges; actions, prices and いま are ink (`--accent`, inverted in dark mode); warnings are
   amber and always written out. Reason: Jankara's red used to also be the action, price and いま colour, so a red
@@ -63,7 +73,7 @@ architecture, commands, data format and day-type rules; read it first.
 - Machine names have one spelling across chains (crawler/common.js `normalizeMachine`): "LIVE DAM WAO" → "LIVE DAM
   WAO!", otherwise the filter showed the same machine twice.
 
-## Checking UI changes yourself
+### Checking UI changes yourself
 - After changing anything the owner sees, check it yourself in a phone-sized browser before asking them to test on
   the phone, and show them the screenshots you checked.
 - Tool: Playwright with Chromium. In cloud sessions it is preinstalled (`require('playwright')`, `chromium.launch()`);
