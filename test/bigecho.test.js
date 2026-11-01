@@ -49,3 +49,20 @@ test('Big Echo: limited plans under a 30分 section are not 30-minute prices (�
   // No time in the heading: the first row's time is only trusted for a 30分 table, not for a plan like this one.
   assert.equal(parseShopPage(html('学生限定プラン', 'OPEN～22:00まで※小中学生は18時まで'), '10:00-5:00').prices.length, 0);
 });
+
+test('Big Echo: days in the heading, columns by drink plan (武蔵新城店, 札幌山鼻店 layouts)', () => {
+  const table = (h4, firstRow, cols, rows) => `<h4>${h4}</h4><table><thead><tr><td>${firstRow}</td></tr></thead><tbody>
+    <tr><td></td>${cols.map(c => `<td>${c}</td>`).join('')}</tr>${rows.map(([th, ...tds]) => `<tr><th>${th}</th>${tds.map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  const html = `<div class="shop-detail"><div class="price"><h3>お一人様30分室料</h3>
+    ${table('月〜金', 'OPEN〜18:00', ['1ドリンクオーダー制', 'ドリンクバー付'], [['一般', '170円', '270円']])}
+    ${table('18:00~CLOSE(土・日・祝前日)', '', ['1ドリンクオーダー制', 'ドリンクバー付き'], [['学割', '-', '385円']])}
+    ${table('土・日・祝日', 'OPEN〜18:00', ['ドリンクバー付'], [['一般', '410円']])}</div></div>`;
+  const { prices, skipped } = parseShopPage(html, '10:00-5:00');
+  assert.deepEqual(skipped, []);
+  assert.deepEqual(prices.map(p => [p.customer, p.slot, p.day, p.yen ?? p.text, p.drinks_included]), [
+    ['general', '10:00-18:00', 'weekday', 170, false], ['general', '10:00-18:00', 'weekday', 270, true],
+    ['student', '18:00-05:00', 'sun+sat+eve', '-', false], ['student', '18:00-05:00', 'sun+sat+eve', 385, true],
+    ['general', '10:00-18:00', 'sun+sat+hol', 410, true],
+  ]);
+  assert.equal(prices[0].weekday_days, 'mon+tue+wed+thu+fri'); // a lone 月〜金 table has no Saturday price
+});

@@ -31,6 +31,18 @@ export function dayTokens(label) {
 }
 const isWeekdaySide = set => ['mon', 'tue', 'wed', 'thu'].every(d => set.has(d)); // the "平日" column; the other one defines the special days
 
+// "土・日・祝日※…" → the row fields for that day column.
+function dayColumn(label) {
+  const [d, note] = label.split('※');
+  const set = dayTokens(d);
+  // The 平日 column also keeps its own days unless it is every day: a lone 月～金 column has no Saturday price.
+  return isWeekdaySide(set)
+    ? { day: 'weekday', label: d, note: note ? `${d}は${note}` : null, only: DOW.every(x => set.has(x)) ? null : DOW.concat('hol', 'eve').filter(x => set.has(x)).join('+') }
+    : { day: DOW.concat('hol', 'eve').filter(x => set.has(x)).join('+'), label: d, note: note ? `${d}は${note}` : null };
+}
+// A heading that names only days ("月~金・祝前日", "平日料金 月~金", "(土・日・祝日)") → that day label, else null.
+const onlyDays = h => { const d = h.replace(/平日料金|週末料金|[()（）【】]/g, '').trim(); return dayTokens(d) ? d : null; };
+
 function customerOf(label) {
   if (/ひとり|お一人|1名/.test(label)) return { party: 'solo', customer: 'member' }; // ひとりカラオケ(会員の場合)
   const c = /学割|学生/.test(label) ? 'student' : /シニア/.test(label) ? 'senior' : /会員/.test(label) ? 'member' : /一般/.test(label) ? 'general' : null;
@@ -56,7 +68,7 @@ export function parseShopPage(html, hours) {
     // "【OPEN～18:00】1ドリンクオーダー制"). Only there: "受付時間10：00～11：59" is an entry window, and plan tables
     // with the time in the first row ("学生限定プラン", "♪昼3時間パック♪") are special offers, not the room price.
     const range = heading.replace(/：/g, ':').match(TIME_RANGE)
-      ?? (/30分/.test(heading) ? text(t.find('tr').first()).replace(/：/g, ':').replace(/^【/, '').match(new RegExp(`^${TIME_RANGE.source}`, 'i')) : null);
+      ?? (/30分/.test(heading) || onlyDays(heading) ? text(t.find('tr').first()).replace(/：/g, ':').replace(/^【/, '').match(new RegExp(`^${TIME_RANGE.source}`, 'i')) : null);
     if (!range) return skipped.push(`${heading}（時間帯なし）`);
     const [nameText, ...remarks] = heading.replace(/：/g, ':').replace(range[0], '').split('※').map(x => x.trim());
     let name = nameText.replace(/[【】（）()「」]/g, ' ').replace(/料金|税込|室料|お一人様|通常/g, '').replace(/\s+/g, ' ').trim();
@@ -78,17 +90,22 @@ export function parseShopPage(html, hours) {
     period ??= t.parent().hasClass('night') ? '夜' : t.parent().hasClass('noon') ? '昼' : periodOf(slot);
 
     const rows = t.find('tr').toArray().map(tr => $(tr));
-    const dayIdx = rows.findIndex(r => r.find('td, th').toArray().some(c => dayTokens(text($(c)).split('※')[0])));
-    if (dayIdx < 0) return skipped.push(`${heading}（曜日の列なし）`);
-    const days = rows[dayIdx].find('td, th').toArray().map(c => text($(c))).filter(l => dayTokens(l.split('※')[0])).map(label => {
-      const [d, note] = label.split('※');
-      const set = dayTokens(d);
-      // The 平日 column also keeps its own days unless it is every day: a lone 月～金 column has no Saturday price.
-      return isWeekdaySide(set)
-        ? { day: 'weekday', label: d, note: note ? `${d}は${note}` : null, only: DOW.every(x => set.has(x)) ? null : DOW.concat('hol', 'eve').filter(x => set.has(x)).join('+') }
-        : { day: DOW.concat('hol', 'eve').filter(x => set.has(x)).join('+'), label: d, note: note ? `${d}は${note}` : null };
-    });
-    if (days.filter(d => d.day !== 'weekday').length > 1 || days.filter(d => d.day === 'weekday').length > 1) {
+    const headDays = plan === '30min' ? onlyDays(nameText) : null;
+    let dayIdx, days, colDrinks = [];
+    if (headDays) {
+      // Days in the heading ("月~金・祝前日" over "OPEN〜18:00"): the row above the first price row names the columns,
+      // which are drink plans ("1ドリンクオーダー制 / ドリンクバー付") or a single price.
+      dayIdx = rows.findIndex(r => text(r.find('th'))) - 1;
+      const cols = dayIdx < 0 ? [] : rows[dayIdx].find('td').toArray().map(c => text($(c))).filter(Boolean);
+      colDrinks = cols.map(c => /ドリンクバー/.test(c) ? true : /[1１]ドリンク|[1１]オーダー|ワンドリンク/.test(c) ? false : null);
+      if (cols.length > 1 && colDrinks.includes(null)) return skipped.push(`${heading}（列の意味が不明）`);
+      days = (cols.length ? cols : ['']).map(() => dayColumn(headDays));
+    } else {
+      dayIdx = rows.findIndex(r => r.find('td, th').toArray().some(c => dayTokens(text($(c)).split('※')[0])));
+      if (dayIdx < 0) return skipped.push(`${heading}（曜日の列なし）`);
+      days = rows[dayIdx].find('td, th').toArray().map(c => text($(c))).filter(l => dayTokens(l.split('※')[0])).map(dayColumn);
+    }
+    if (!headDays && (days.filter(d => d.day !== 'weekday').length > 1 || days.filter(d => d.day === 'weekday').length > 1)) {
       return skipped.push(`${heading}（曜日の列が3つ以上）`);
     }
     const tableText = text(t);
@@ -116,7 +133,7 @@ export function parseShopPage(html, hours) {
       cells.forEach((td, i) => {
         const raw = text($(td));
         const yen = parseInt(raw.replace(/[,，円]/g, ''), 10);
-        const row = { ...who, period, name, plan, slot, day: days[i].day, yen: Number.isNaN(yen) ? null : yen, drinks_included: !oneDrink || drinkBar(who.customer) };
+        const row = { ...who, period, name, plan, slot, day: days[i].day, yen: Number.isNaN(yen) ? null : yen, drinks_included: colDrinks[i] ?? (!oneDrink || drinkBar(who.customer)) };
         if (days[i].day !== 'weekday') row.day_label = days[i].label;
         else if (days[i].only) row.weekday_days = days[i].only;
         if (row.yen === null) row.text = raw || null; // keep the site's own words
