@@ -6,7 +6,7 @@
 - Manekineko: 7 Namba shops hand-entered from their PDFs; the other 719 are pins with a link. 千日前2号店 is hand-entered
   too but left the official site in the 2026-11 crawl, so it no longer shows.
 - Manekineko one-click round (2026-11-08): `node scripts/manekineko-pdfs.js` moves the PDFs the owner clicked from Downloads
-  into `manual/` and writes the list of what is left (`manual/manekineko-download-list.html`). Real downloads not tried yet.
+  into `manual/` and writes the list of what is left (`manual/manekineko-download-list.html`). Tried on real downloads 2026-11-08: file names match.
 - Big Echo parser step 1 (2026-11-01, pushed): reads "週末（土・日・祝日）" / "【平日】" day labels and the time in a
   30分 table's first row; reads the drink rule from the heading; skips conditional 30分 tables (限定, 学生パスポート);
   reports rows it drops. On the saved pages: 11 more shops priced, wrong "30分" rows removed at 0613, 1168, 1213, 1361.
@@ -18,7 +18,7 @@
   ~800 live rows were showing one-drink prices as drinks included, or the reverse.
 
 ## Next
-- Manekineko: owner clicks the first 3 links to prove the file names match, then the rest of Osaka (22) and Tokyo (136);
+- Manekineko: owner clicks the remaining 156 links (Osaka, then Tokyo); 茨木園田店 and 京阪守口店 are already saved;
   then read each PDF twice, as with Karaoke-kan, for the owner's OK.
 - Manekineko: 287 of 726 price links changed in the 2026-11 crawl. See after the next monthly crawl (2026-12-07) whether
   that repeats, and how many of the hand-entered shops are warned about.
