@@ -1,10 +1,10 @@
 // Manekineko's price PDFs sit in a folder robots.txt closes to scripts, so a person clicks each link. This does the rest:
 //   node scripts/manekineko-pdfs.js                    # Osaka and Tokyo
 //   node scripts/manekineko-pdfs.js --pref=神奈川県,埼玉県
-// It moves the PDFs clicked so far from Downloads into manual/ as <shop>.pdf, then writes the list of what is still
-// to click, manual/manekineko-download-list.html. It never fetches a PDF. Shops whose hand-entered sheet was replaced
+// It moves the PDFs clicked so far from Downloads into manual/ as <shop>.pdf, deletes any identical copies left in
+// Downloads, then writes the list of what is still to click, manual/manekineko-download-list.html. It never fetches a PDF. Shops whose hand-entered sheet was replaced
 // (the crawl saw a new link) are listed too, whatever the prefecture. Other options: --from (default ~/Downloads).
-import { existsSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,6 +18,7 @@ const savedDay = (dir, s) => { const f = join(dir, `${slug(s)}.pdf`); return exi
 
 // The name a browser saves a link under.
 export const fileName = url => decodeURIComponent(url.split('/').pop()).normalize('NFC');
+const clickedName = f => f.normalize('NFC').replace(/ \(\d+\)(?=\.pdf$)/i, ''); // a second click saves "x (1).pdf"
 
 // Still to click: shops in these prefectures with neither prices nor a saved PDF, and hand-entered shops whose link
 // changed and whose new PDF hasn't been saved since the prices were checked.
@@ -34,7 +35,7 @@ export function collect(wanted, from, to, now = Date.now()) {
   const byName = Map.groupBy(wanted, s => fileName(s.price_url));
   const moved = [], unclear = [];
   for (const f of readdirSync(from)) {
-    const name = f.normalize('NFC').replace(/ \(\d+\)(?=\.pdf$)/i, ''); // a second click saves "x (1).pdf"
+    const name = clickedName(f);
     const shops = byName.get(name), path = join(from, f);
     if (!shops || now - statSync(path).mtimeMs > MAX_AGE_DAYS * 864e5) continue;
     if (shops.length > 1 || readFileSync(path).subarray(0, 5).toString() !== '%PDF-') { unclear.push(f); continue; }
@@ -45,6 +46,18 @@ export function collect(wanted, from, to, now = Date.now()) {
     moved.push(shops[0]);
   }
   return { moved, unclear };
+}
+
+// Deletes what is left in Downloads of PDFs already in manual/: only byte-identical copies, so nothing is lost.
+export function removeCopies(shops, from, to) {
+  const byName = Map.groupBy(shops, s => fileName(s.price_url));
+  const removed = [];
+  for (const f of readdirSync(from)) {
+    const path = join(from, f);
+    const saved = (byName.get(clickedName(f)) ?? []).map(s => join(to, `${slug(s)}.pdf`)).filter(existsSync);
+    if (saved.some(p => readFileSync(p).equals(readFileSync(path)))) { rmSync(path); removed.push(f); }
+  }
+  return removed;
 }
 
 const esc = s => String(s).replace(/[&<>"]/g, c => `&#${c.charCodeAt(0)};`);
@@ -77,12 +90,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const shops = JSON.parse(readFileSync(join(ROOT, 'data/shops.json'), 'utf8'));
 
   const { moved, unclear } = collect(toDownload(shops, to, prefs), from, to);
+  const copies = removeCopies(shops.filter(s => s.brand === 'manekineko'), from, to);
   const left = toDownload(shops, to, prefs);
   const out = join(to, 'manekineko-download-list.html');
   const waiting = shops.filter(s => s.brand === 'manekineko' && !s.manual && savedDay(to, s)).length;
   writeFileSync(out, page(left, prefs, waiting));
 
-  console.log(`Moved ${moved.length} PDFs into manual/. ${waiting} saved PDFs are waiting to be read. ${left.length} still to click.`);
+  console.log(`Moved ${moved.length} PDFs into manual/. Deleted ${copies.length} extra copies from Downloads. ${waiting} saved PDFs are waiting to be read. ${left.length} still to click.`);
+  if (copies.length) console.log(`  ${copies.join('\n  ')}`);
   if (unclear.length) console.log(`Left in Downloads, not moved (not a PDF, or the name fits two shops):\n  ${unclear.join('\n  ')}`);
   console.log(out);
 }

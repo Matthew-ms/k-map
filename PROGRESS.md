@@ -18,7 +18,7 @@
   ~800 live rows were showing one-drink prices as drinks included, or the reverse.
 
 ## Next
-- Manekineko: owner clicks the remaining 156 links (Osaka, then Tokyo); 茨木園田店 and 京阪守口店 are already saved;
+- Manekineko: owner clicks the links left on the list (2026-11-08: all 22 Osaka and 40 Tokyo PDFs saved, 96 Tokyo to go);
   then read each PDF twice, as with Karaoke-kan, for the owner's OK.
 - Manekineko: 287 of 726 price links changed in the 2026-11 crawl. See after the next monthly crawl (2026-12-07) whether
   that repeats, and how many of the hand-entered shops are warned about.

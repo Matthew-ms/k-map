@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdtempSync, mkdirSync, readFileSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { collect, fileName, toDownload } from '../scripts/manekineko-pdfs.js';
+import { collect, fileName, removeCopies, toDownload } from '../scripts/manekineko-pdfs.js';
 import { applyManual } from '../crawler/manual.js';
 
 const U = 'https://www.karaokemanekineko.jp/wp-content/uploads/2025/11/05135719/';
@@ -32,6 +32,18 @@ test('leaves everything else in Downloads', () => {
   assert.deepEqual(r.moved, []);
   assert.deepEqual(r.unclear.sort(), ['1024.pdf', 'fake.pdf']); // not a PDF; fits two shops
   for (const f of ['unrelated.pdf', 'fake.pdf', 'old.pdf', '1024.pdf']) assert.ok(existsSync(join(dl, f)));
+});
+
+test('deletes only identical copies of PDFs already saved', () => {
+  const [dl, manual] = dirs();
+  writeFileSync(join(manual, 'a.pdf'), PDF);
+  writeFileSync(join(dl, '769-11.pdf'), PDF);
+  writeFileSync(join(dl, '769-11 (1).pdf'), PDF);
+  writeFileSync(join(dl, '769-11 (2).pdf'), `${PDF} different`);
+  writeFileSync(join(dl, 'unrelated.pdf'), PDF);
+  const removed = removeCopies([shop('a', '769-11.pdf')], dl, manual);
+  assert.deepEqual(removed.sort(), ['769-11 (1).pdf', '769-11.pdf']);
+  assert.ok(existsSync(join(dl, '769-11 (2).pdf')) && existsSync(join(dl, 'unrelated.pdf')) && existsSync(join(manual, 'a.pdf')));
 });
 
 test('a replaced sheet keeps the old copy', () => {
