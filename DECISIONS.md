@@ -2,6 +2,9 @@
 
 One line per decision and why.
 
+- 2026-11-08 Manekineko PDFs: no script, robot browser or "open all" button fetches them — robots.txt closes that folder to automated visitors; the owner clicks each link and a script handles the files afterwards.
+- 2026-11-08 Hand-entered shops keep the live price link, with `manual.source` as the one typed from — when the two differ the sheet was replaced, and the crawl warns.
+- 2026-11-08 Moving PDFs from Downloads needs an exact listed name, a PDF header and a file under 30 days old — names like "最終.pdf" are generic and Downloads holds the owner's other PDFs.
 - 2026-11-01 Big Echo: skip 30分 tables marked 限定 or 学生パスポート — the name becomes "30分", so a conditional price would show as everyone's price.
 - 2026-11-01 Big Echo: take the time from a table's first row only for 30分 tables, and only when the row starts with it — elsewhere it was an entry window or a special plan ("受付時間10:00～11:59", "♪昼3時間パック♪").
 - 2026-11-01 Big Echo: a page whose 祝前日 sits in both day columns (石橋店), or Sunday in both and Friday in neither (札幌山鼻店 nights), is kept as written — the contradiction is the shop's, and guessing a side would be inventing.

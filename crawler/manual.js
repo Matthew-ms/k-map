@@ -46,9 +46,10 @@ export function applyManual(shops) {
       prices: expandManual(entry),
       notes: entry.notes ?? [],
       prices_as_of: entry.checked_on,
-      price_url: entry.source ?? shop.price_url,
+      price_url: shop.price_url ?? entry.source, // the live link: if it differs from manual.source, the sheet was replaced
       manual: { checked_on: entry.checked_on, source: entry.source },
     });
+    if (shop.price_url !== entry.source) warnings.push(`${shop.name} (${id}): price sheet link changed — re-read ${shop.price_url}`);
     const age = (Date.now() - Date.parse(entry.checked_on)) / 864e5;
     if (age > STALE_DAYS) warnings.push(`${shop.name} (${id}): hand-entered prices are ${Math.floor(age)} days old — re-check ${entry.source}`);
   }

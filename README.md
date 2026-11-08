@@ -34,7 +34,10 @@ Hand-entered prices: `data/manual-prices.json` (8 Manekineko shops near Namba, t
 Karaoke-kan shops typed from their price images: 8 in Osaka, Kobe and Kyoto, checked 2026-10-18; all 84 in Tokyo, checked 2026-10-19 to 2026-10-20; all 20 in Saitama, checked 2026-10-22; all 15 in Chiba and all 12 in Kanagawa, checked 2026-10-26; 17 in Kyushu (Fukuoka, Kumamoto, Kagoshima, Miyazaki), checked 2026-10-28; 21 in Hokkaido, Tohoku (Miyagi, Iwate) and northern Kanto (Ibaraki, Gunma, Tochigi), checked 2026-10-29; the last 18 in Chubu (Aichi, Shizuoka, Nagano, Toyama, Gifu), Chugoku and Shikoku (Hiroshima, Tottori, Yamaguchi, Kochi), checked 2026-11-01, so all 195 shops are hand-entered. All but the Kansai 8 were each read twice independently and compared cell by cell). Karaoke-kan entries keep each
 image's SHA-1: the monthly Karaoke-kan crawl warns when an image is new, gone or changed, so the entry gets re-read.
 Merged on every run and validated like crawled data; the weekly log warns after 90 days. To refresh: save the shop's PDF / images into
-`manual/` (git-ignored) and update the entry.
+`manual/` (git-ignored) and update the entry. A warning also appears when a hand-entered shop's price link differs from the one it was typed from.
+
+Manekineko PDFs: `node scripts/manekineko-pdfs.js [--pref=東京都,大阪府]` moves the ones clicked in a browser from Downloads into `manual/` as `<shop>.pdf`
+and writes `manual/manekineko-download-list.html`, the links still to click. With Chrome set to download PDFs, each shop is one click.
 
 Machine names are normalised across chains (`LIVEDAM Ai` → `LIVE DAM Ai`). A customer type a chain lacks falls back to the closest
 (学生会員 → student), marked † in the app.
