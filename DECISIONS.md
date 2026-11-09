@@ -12,3 +12,8 @@ One line per decision and why.
 - 2026-11-01 Big Echo: shops that list only 会員 prices are shown with them (owner's choice) — nothing is invented; 一般 simply has no price there, like Manekineko's missing types.
 - 2026-11-01 Big Echo: "会員 + ¥50" written in words (水戸, 鉾田, 那珂, 水戸駅南口) is not turned into a 一般 price — it would be a calculated number, not one on the page.
 - 2026-11-01 Big Echo: when a note spares only some days ("月～金/学生・シニア料金 土日祝/学生料金はドリンクバー付"), seniors keep +1D on weekdays — it overstates their price, never understates it.
+- 2026-11-09 Hand-entered prices: a slot with nothing in the other column doesn't run on those days (`weekday_not`) — showing the weekday price on a weekend is a price the sheet never gave.
+- 2026-11-09 Manekineko: small print like "金・祝前は表記より30分＋110円" stays as the sheet's words (owner's choice) — a calculated number is not one on the page, so those days don't rank.
+- 2026-11-09 Manekineko: sheets with no 一般 column, only "+330円 / +550円" for non-members, keep that in the notes (owner's choice) — same reason as Big Echo's "会員 + ¥50".
+- 2026-11-09 Manekineko: a plain printed 0円 stays 0; a 0円 with a condition (3 hours, 2-hour minimum, app members) is text, so it can't rank as free (owner's choice).
+- 2026-11-09 Manekineko: 一般 columns labelled with a solo price are entered as 一般 with a note (owner's choice).

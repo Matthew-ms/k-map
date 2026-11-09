@@ -10,11 +10,13 @@ const CUSTOMERS = ['student_member', 'student', 'member', 'senior', 'general'];
 // One slot { slot, days, member: [weekday, other], … } → price rows like the crawlers produce.
 // A cell is a number, null (not listed) or the sheet's own text ("-"). `last` (最終受付) and `drinks` may be set per
 // slot; `last` may also be [weekday, other] when the two columns differ.
+// A slot with no cell at all in the other column doesn't run on those days (`weekday_not`).
 export function expandManual(entry) {
   const rows = [];
   for (const s of entry.slots) {
     const [other, label] = entry.days[s.days] ?? [];
     if (!other) throw new Error(`slot ${s.name} ${s.slot}: unknown days "${s.days}"`);
+    const weekdayOnly = !CUSTOMERS.some(c => s[c]?.[1] != null);
     for (const customer of CUSTOMERS) {
       (s[customer] ?? []).forEach((cell, i) => {
         if (cell == null) return;
@@ -22,6 +24,7 @@ export function expandManual(entry) {
           customer, yen: typeof cell === 'number' ? cell : null, drinks_included: s.drinks ?? entry.drinks_included };
         if (typeof cell === 'string') row.text = cell;
         if (i) row.day_label = label;
+        else if (weekdayOnly) row.weekday_not = other;
         const last = Array.isArray(s.last) ? s.last[i] : s.last;
         if (last) row.last_entry = last;
         if (s.note) row.slot_note = s.note;

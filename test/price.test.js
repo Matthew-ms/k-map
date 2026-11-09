@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { whichDay, currentPrice, estimate } from '../price.js';
+import { expandManual } from '../crawler/manual.js';
 import { parseShopPage } from '../crawler/jankara.js';
 import { parseShopPage as parseBigEcho } from '../crawler/bigecho.js';
 
@@ -9,6 +10,20 @@ import { parseShopPage as parseBigEcho } from '../crawler/bigecho.js';
 const holidays = { '2026-11-03': '文化の日' };
 const at = (ymd, hhmm) => new Date(`${ymd}T${hhmm}:00+09:00`);
 const day = (slot, otherDay, ymd, hhmm) => whichDay({ slot, otherDay }, at(ymd, hhmm), holidays);
+
+test('a hand-entered row priced only in the 平日 column is not offered on the other days', () => {
+  const days = { night: ['fri+sat+sun+hol+eve', '金・祝前・土・日・祝'] };
+  const shop = { prices: expandManual({ days, drinks_included: false, slots: [
+    { period: '夜', name: '30分', plan: '30min', slot: '18:00-03:00', days: 'night', member: [539, null] },
+    { period: '夜', name: '30分', plan: '30min', slot: '18:00-07:00', days: 'night', member: [null, 616] },
+  ] }) };
+  const yen = (ymd, hhmm) => currentPrice(shop, { plan: '30min', party: 'group', customer: 'member', now: at(ymd, hhmm), holidays })?.row.yen ?? null;
+  assert.equal(yen('2026-10-15', '20:00'), 539); // Thu
+  assert.equal(yen('2026-10-17', '20:00'), 616); // Sat: the weekend row, not the weekday one
+  assert.equal(yen('2026-11-02', '20:00'), 616); // Mon, eve of 文化の日
+  assert.equal(yen('2026-11-03', '20:00'), 616); // Tue, 文化の日
+  assert.equal(yen('2026-10-16', '04:00'), null); // Fri 04:00 = Thursday night: only the weekend row runs that late
+});
 
 test('night slot 19:00–8:00 (休日=金土日祝祝前): the day type belongs to the evening it started', () => {
   assert.equal(day('19:00-08:00', 'fri_sun_hol_eve', '2026-10-15', '20:00'), 'weekday'); // Thu evening

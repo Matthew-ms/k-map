@@ -63,9 +63,9 @@ export function slotTable(shop, party) {
   const slots = new Map();
   for (const p of rowsFor(shop, party)) {
     const k = `${p.period}|${p.name}|${p.slot}`;
-    if (!slots.has(k)) slots.set(k, { period: p.period, name: p.name, plan: p.plan, slot: p.slot, otherDay: null, otherDayLabel: null, weekday: {}, other: {}, otherCols: [], weekdayDays: null });
+    if (!slots.has(k)) slots.set(k, { period: p.period, name: p.name, plan: p.plan, slot: p.slot, otherDay: null, otherDayLabel: null, weekday: {}, other: {}, otherCols: [], weekdayDays: null, weekdayNot: null });
     const s = slots.get(k);
-    if (p.day === 'weekday') { s.weekday[p.customer] = p; s.weekdayDays ??= p.weekday_days ?? null; continue; }
+    if (p.day === 'weekday') { s.weekday[p.customer] = p; s.weekdayDays ??= p.weekday_days ?? null; s.weekdayNot ??= p.weekday_not ?? null; continue; }
     let col = s.otherCols.find(c => c.day === p.day);
     if (!col) {
       col = { key: s.otherCols.length ? `other${s.otherCols.length + 1}` : 'other', day: p.day, label: p.day_label ?? null };
@@ -134,6 +134,7 @@ export function whichDay(entry, now, holidays) {
   const col = cols.find(c => isDayType(c.day, day, holidays));
   if (col) return col.key;
   if (entry.weekdayDays && !isDayType(entry.weekdayDays, day, holidays)) return null; // e.g. a 月～金-only slot on Saturday
+  if (entry.weekdayNot && isDayType(entry.weekdayNot, day, holidays)) return null; // hand-entered slot with nothing in the other column
   // A Saturday the special column leaves out while the slot's other column is 平日 (e.g. 日祝 tables): no price
   // (shop note: 土曜日の夕方フリータイムは実施しておりません).
   if (entry.otherDay === 'sun_holiday' && dow(day) === 6) return null;

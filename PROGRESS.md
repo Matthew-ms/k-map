@@ -22,8 +22,8 @@
   `manual/manekineko-check.html`. Do not commit them before that.
 - Manekineko Tokyo: 129 of 130 saved PDFs read 2026-11-09, uncommitted in `data/manual-prices.json`, waiting for the owner's OK on
   `manual/manekineko-check-tokyo.html`. 経堂農大通り店 stays a pin (its prices are per room). 6 links still to click.
-- Before publishing Manekineko: a row priced only in the 平日 column is still offered on weekends (小平北口店 Saturday shows the weekday 539円;
-  35 new rows, 51 published Karaoke-kan rows). Needs a small fix in `crawler/manual.js` and `price.js`, waiting for the owner's OK.
+- Weekday-only hand-entered rows no longer show on weekends (fixed and pushed 2026-11-09). The 51 live Karaoke-kan rows change at the next crawl
+  (2026-11-16): check one, e.g. karaokekan-17 昼 フリータイム on a Saturday shows no price.
 - Manekineko: 287 of 726 price links changed in the 2026-11 crawl. See after the next monthly crawl (2026-12-07) whether
   that repeats, and how many of the hand-entered shops are warned about.
 - After that crawl: check that about 70 more Big Echo shops have prices (18 from steps 1–2, 52 member-only), 0613, 1168,

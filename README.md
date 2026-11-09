@@ -71,7 +71,7 @@ tests → full crawl → commit `data/` if changed → Pages rebuild. If any sho
 - Night slots belong to the evening they start: 02:00 Saturday uses Friday night's row.
 - A slot can have several special-day columns (Big Echo: 月～木 / 金・祝前 / 土日祝); `slotTable` keeps them as `other`, `other2`…
 - Big Echo rows keep the 平日 column's own days in `weekday_days` when it doesn't cover the whole week: a lone 月～金
-  column has no Saturday price.
+  column has no Saturday price. Hand-entered rows with nothing in the other column carry those days in `weekday_not`.
 
 ## Plan names
 The chains' headings mix the plan with times, days, last entry and slogans. `slotName` (price.js) shows a short name
