@@ -18,8 +18,9 @@
   ~800 live rows were showing one-drink prices as drinks included, or the reverse.
 
 ## Next
-- Manekineko: owner clicks the links left on the list (2026-11-08: all 22 Osaka and 40 Tokyo PDFs saved, 96 Tokyo to go);
-  then read each PDF twice, as with Karaoke-kan, for the owner's OK.
+- Manekineko Osaka: all 22 read 2026-11-09, uncommitted in `data/manual-prices.json`, waiting for the owner's OK on
+  `manual/manekineko-check.html`. Do not commit them before that.
+- Manekineko Tokyo: 67 PDFs saved and unread, 69 links left to click (2026-11-09); then read each PDF twice, as with Karaoke-kan, for the owner's OK.
 - Manekineko: 287 of 726 price links changed in the 2026-11 crawl. See after the next monthly crawl (2026-12-07) whether
   that repeats, and how many of the hand-entered shops are warned about.
 - After that crawl: check that about 70 more Big Echo shops have prices (18 from steps 1–2, 52 member-only), 0613, 1168,
