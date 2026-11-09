@@ -18,7 +18,8 @@
   ~800 live rows were showing one-drink prices as drinks included, or the reverse.
 
 ## Next
-- Manekineko Tokyo: 6 links still to click; 経堂農大通り店 stays a pin (its prices are per room). 新小岩駅前店's sheet is only valid to 11/19: re-read it after that.
+- Manekineko Tokyo: the last 6 shops read 2026-11-09, uncommitted in `data/manual-prices.json`, waiting for the owner's OK on
+  `manual/manekineko-check-tokyo-last6.html`. 経堂農大通り店 stays a pin (its prices are per room). 新小岩駅前店's sheet is only valid to 11/19: re-read it after that.
 - Manekineko: 287 of 726 price links changed in the 2026-11 crawl. See after the next monthly crawl (2026-12-07) whether
   that repeats, and how many of the hand-entered shops are warned about.
 - After that crawl: check that about 70 more Big Echo shops have prices (18 from steps 1–2, 52 member-only), 0613, 1168,
