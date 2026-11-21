@@ -79,3 +79,22 @@ test('Big Echo: every spelling of the one-drink rule, and who the notes spare fr
   assert.deepEqual(read('', '※一般のお客様はワンドリンクオーダー制となります。'), [['student', true], ['senior', true], ['member', true], ['general', false]]);
   assert.deepEqual(read('ドリンクバー付', '※ワンドリンク不要'), [['student', true], ['senior', true], ['member', true], ['general', true]]);
 });
+
+test('Big Echo: a pack named only in the first row is a pack, not a 30-minute price (白河店)', () => {
+  const html = page('OPEN〜18:00', 'ドリンクバー付', ['月〜金・祝前日', '土・日・祝日'], [['学割', '160円', '210円']])
+    + page('OPEN〜18:00', 'ドリンクバー付き３Hパック', ['土・日・祝日'], [['学割', '1,160円']])
+    + page('OPEN〜18:00', 'ドリンクバー付き5Hパック', ['土・日・祝日'], [['学割', '2,000円']]);
+  assert.deepEqual(parseShopPage(html, '10:00-5:00').prices.map(p => [p.plan, p.name, p.day, p.yen]), [
+    ['30min', '30分', 'weekday', 160], ['30min', '30分', 'sun+sat+hol', 210],
+    ['pack', '3時間パック', 'sun+sat+hol', 1160], ['pack', '5時間パック', 'sun+sat+hol', 2000]]);
+});
+
+test('Big Echo: a ドリンクバー付 table includes drinks despite the footnote explaining 1ドリンクオーダー制 (国際通り店)', () => {
+  const read = (firstRow, note) => parseShopPage(page('18:00〜CLOSE', firstRow, ['日～木・祝日', '金・土・祝前日'], [['会員', '460円', '550円'], ['一般', '550円', '680円']])
+    .replace('</tbody>', `<tr><td>${note}</td></tr></tbody>`), '10:00-5:00').prices.filter(p => p.day === 'weekday').map(p => [p.customer, p.drinks_included]);
+  const footnote = '※1ドリンクオーダー制とは、室料とは別料金でお一人様一品以上のドリンクのご注文をいただく制度です。';
+  assert.deepEqual(read('ドリンクバー付', footnote), [['member', true], ['general', true]]);
+  assert.deepEqual(read('1ドリンクオーダー制', footnote), [['member', false], ['general', false]]);
+  // only 一般 orders one (阪急東通り店 夕方フリータイム)
+  assert.deepEqual(read('ドリンクバー付', '※一般のお客様はワンドリンクオーダー制となります。'), [['member', true], ['general', false]]);
+});

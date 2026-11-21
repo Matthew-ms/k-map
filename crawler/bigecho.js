@@ -78,9 +78,13 @@ export function parseShopPage(html, hours) {
     // The table's first row sometimes names the plan when headings don't ("昼30分 ドリンクバー無料").
     const firstRow = text(t.find('tr').first());
     const where = `${heading} ${section} ${firstRow}`;
-    // "2時間…プラン" under a 30分 section is not a 30-minute price.
+    // "2時間…プラン" under a 30分 section is not a 30-minute price; nor is a table whose first row names a pack
+    // ("ドリンクバー付き3Hパック" under a heading that is only "OPEN〜18:00").
+    const firstPack = firstRow.match(/(\d+)\s*(?:H|時間)\s*パック/);
     const plan = /ナイトパック/.test(where) ? 'night_pack' : /パック/.test(name) ? 'pack' : /フリータイム/.test(name) ? 'free_time'
-      : /30分/.test(name) || (/30分/.test(section + firstRow) && !/\d時間/.test(name)) ? '30min' : /フリータイム|パック/.test(section + firstRow) ? 'free_time' : null;
+      : /30分/.test(name) ? '30min' : firstPack ? 'pack'
+      : /30分/.test(section + firstRow) && !/\d時間/.test(name) ? '30min' : /フリータイム|パック/.test(section + firstRow) ? 'free_time' : null;
+    if (plan === 'pack' && firstPack && !/パック/.test(name)) name = `${name} ${firstPack[1]}時間パック`.trim();
     if (!plan) return skipped.push(`${heading}（30分かフリータイムか不明）`);
     // A 30分 table only some customers may use would show as everyone's 30-minute price (the name becomes "30分").
     if (plan === '30min' && /限定/.test(heading)) return skipped.push(`${heading}（条件付きの料金）`);
@@ -112,7 +116,12 @@ export function parseShopPage(html, hours) {
       return skipped.push(`${heading}（曜日の列が3つ以上）`);
     }
     const tableText = text(t);
-    const oneDrink = ONE_DRINK.test(heading + tableText); // "昼30分料金(1ドリンクオーダー制)" beside "(ドリンクバー付き)"
+    // "昼30分料金(1ドリンクオーダー制)" beside "(ドリンクバー付き)". A table whose own heading or first row says
+    // ドリンクバー付 includes drinks, even when its footnote explains "※1ドリンクオーダー制とは…".
+    const ownWords = `${heading} ${firstRow}`;
+    // ("※一般のお客様はワンドリンクオーダー制" under a ドリンクバー付 heading keeps the old reading: only 一般 orders one.)
+    const drinkBarTable = /ドリンクバー(付|無料|込)/.test(ownWords) && !ONE_DRINK.test(ownWords) && !/一般(のお客様|料金)は(ワン|[1１])ドリンク/.test(tableText);
+    const oneDrink = drinkBarTable ? false : ONE_DRINK.test(heading + tableText);
     const noteText = rows.map(r => text(r.find('td.charge_info_notes'))).join(' ');
     // 最終受付 can sit in the heading itself ("3時間パック 最終受付16:00", "15:00受付終了"); a remark below the table wins.
     const inName = nameText.replace(/：/g, ':').match(/最終受付\s*:?\s*(\d{1,2})(?:時|:(\d{2}))|(\d{1,2})(?:時|:(\d{2}))\s*受付終了/);
