@@ -17,7 +17,13 @@
   price there). One-drink rule now read in all its spellings (ワンドリンク, ワンオーダー, 1オーダー) with who the notes spare:
   ~800 live rows were showing one-drink prices as drinks included, or the reverse.
 
+- Weekly crawl fix (2026-11-21): the 2026-11-09 and 2026-11-16 runs failed (Jankara answered 403 on its shop list, then
+  429 on 2 shop pages), so data stayed at 2026-11-02. Now refused pages are retried longer and a still-refused shop keeps
+  last run's record. Checked: tests (incl. one that failed with the logic broken on purpose) and the retry / give-up
+  timing against a local test server. Not verified: a real run on GitHub, and whether Jankara's refusals stop.
+
 ## Next
+- Weekly crawl: after the next run (by hand or Mon 2026-11-23), check it passed and how many shops the log says were kept.
 - Manekineko Tokyo: the last 6 shops read 2026-11-09, uncommitted in `data/manual-prices.json`, waiting for the owner's OK on
   `manual/manekineko-check-tokyo-last6.html`. 経堂農大通り店 stays a pin (its prices are per room). 新小岩駅前店's sheet is only valid to 11/19: re-read it after that.
 - Manekineko: 287 of 726 price links changed in the 2026-11 crawl. See after the next monthly crawl (2026-12-07) whether

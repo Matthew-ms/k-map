@@ -24,7 +24,7 @@ export function parseSlot(s, hours) {
 
 // Fetch with a raw cache so parser fixes can re-run without hitting the site (offline = cache only).
 // The delay is per host, so different chains can be crawled at the same time without hurrying any one site.
-const lastFetch = new Map();
+const lastFetch = new Map(), refusedInRow = new Map();
 export async function get(url, file, { offline, headers = {}, method = 'GET', body, binary = false } = {}) {
   const path = new URL(file, CACHE);
   if (offline === true || (offline === 'cached' && existsSync(path))) return readFileSync(path, binary ? undefined : 'utf8'); // 'cached': fetch only what's missing
@@ -34,13 +34,20 @@ export async function get(url, file, { offline, headers = {}, method = 'GET', bo
     if (wait <= 0) break;
     await new Promise(r => setTimeout(r, wait));
   }
+  // A site refusing page after page is turning us away: stop asking (and don't sit out the job's time limit).
+  if ((refusedInRow.get(host) ?? 0) >= 5) throw new Error(`${url}: not fetched, ${host} refused 5 pages in a row`);
   lastFetch.set(host, Date.now());
   let res;
-  for (let attempt = 1; ; attempt++) { // one retry after a network blip or a server error
-    try { res = await fetch(url, { method, body, headers: { 'User-Agent': UA, ...headers } }); } catch (e) { if (attempt > 1) throw e; }
-    if (res?.ok || attempt > 1) break;
-    await new Promise(r => setTimeout(r, DELAY_MS * 3));
+  for (let attempt = 1; ; attempt++) { // up to two retries after a network blip, a refusal (403, 429) or a server error
+    try { res = await fetch(url, { method, body, headers: { 'User-Agent': UA, ...headers } }); }
+    catch (e) { if (attempt > 2) { refusedInRow.set(host, (refusedInRow.get(host) ?? 0) + 1); throw e; } res = null; }
+    if (res?.ok || attempt > 2 || (res && ![403, 429].includes(res.status) && res.status < 500)) break;
+    // Wait as long as the site asks (Retry-After in seconds, at most 5 min), else a minute; this host's queue waits too.
+    const wait = Math.min(+res?.headers.get('retry-after') || 60, 300) * 1000;
+    lastFetch.set(host, Date.now() + wait);
+    await new Promise(r => setTimeout(r, wait));
   }
+  refusedInRow.set(host, res.ok || res.status === 404 ? 0 : (refusedInRow.get(host) ?? 0) + 1);
   if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
   const text = binary ? Buffer.from(await res.arrayBuffer()) : await res.text(); // binary: a Buffer (images)
   if (!existsSync(CACHE)) mkdirSync(CACHE);
@@ -56,3 +63,25 @@ export const normalizeMachine = m => stripMachine(m)
   .replace(/\s+/g, ' ').trim();
 // Karaoke machines only (drops e.g. "E-bo", a song-search remote).
 export const isMachine = m => /^(JOYSOUND|LIVE DAM|Premier DAM|CYBER DAM|DAM)\b/.test(m);
+
+// A page the site refused or failed to serve, even after the retries, keeps the shop's record from the last good run
+// (its fetched_at stays that day), so one refused page no longer blocks the whole week's update. It stays a problem
+// when the record is over 28 days old, or when more than 10% of a chain's shop pages were refused. When the shop
+// list itself was refused, the whole chain keeps last run's shops.
+const REFUSED = /: HTTP (403|429|5\d\d)$|fetch failed$/;
+export function keepLastGood(brand, r, prev, now = today()) {
+  const was = prev.filter(s => s.brand === brand);
+  const oldest = new Date(Date.parse(now) - 28 * 864e5).toISOString().slice(0, 10);
+  const errors = [], warnings = [...(r.warnings ?? [])], kept = [];
+  let pages = 0; // single shop pages refused
+  for (const e of r.errors) {
+    const whole = e.startsWith(`${brand}: `); // the chain's crawl failed before any shop (its shop list)
+    const lost = whole ? (r.shops.length ? [] : was) : was.filter(s => e.startsWith(`${s.source_url} (`));
+    if (!REFUSED.test(e) || !lost.length || lost.some(s => s.fetched_at < oldest)) { errors.push(e); continue; }
+    if (!whole) pages++;
+    kept.push(...lost);
+    warnings.push(`${e} — kept ${whole ? `all ${lost.length} shops` : 'the record'} from the last good run (${lost[0].fetched_at})`);
+  }
+  if (pages > was.length * 0.1) return { ...r, errors: [...r.errors, `${brand}: ${pages} of ${was.length} shop pages refused`] };
+  return { shops: [...r.shops, ...kept], errors, warnings, kept: kept.length };
+}

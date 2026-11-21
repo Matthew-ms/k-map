@@ -4,7 +4,7 @@
 //   --areas       Jankara only: these area ids (writes only those Jankara shops!)
 //   --allow-drop  write even if many shops of a chain disappeared since the last run
 import { existsSync, readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
-import { UA, isMachine } from './common.js';
+import { UA, isMachine, keepLastGood } from './common.js';
 import * as jankara from './jankara.js';
 import * as bigecho from './bigecho.js';
 import * as manekineko from './manekineko.js';
@@ -54,14 +54,16 @@ if (offline === true) {
 const results = await Promise.all(brands.map(async b => {
   try { return [b, await CHAINS[b].crawl({ offline, areas: b === 'jankara' ? list('areas')?.map(Number) : undefined })]; }
   catch (e) { return [b, { shops: [], errors: [`${b}: ${e.message}`] }]; }
-}));
+})).then(rs => (offline || arg('areas') ? rs : rs.map(([b, r]) => [b, keepLastGood(b, r, prev)])));
 const byId = new Map(), errors = [], warnings = [];
 for (const [b, r] of results) {
+  // Shows on the GitHub run page, so a chain living on last week's records gets noticed.
+  if (r.kept && process.env.GITHUB_ACTIONS) console.log(`::warning::${b}: ${r.kept} shop(s) kept from the last good run (site refused their pages)`);
   for (const s of r.shops) byId.set(s.id, s); // a shop listed twice is kept once
   errors.push(...r.errors);
   warnings.push(...(r.warnings ?? []));
   const priced = r.shops.filter(s => s.prices.length).length;
-  console.log(`${b}: ${r.shops.length} shops${WITH_PRICES.has(b) ? ` (${priced} with prices)` : ''}${r.errors.length ? `, ${r.errors.length} failed` : ''}`);
+  console.log(`${b}: ${r.shops.length} shops${WITH_PRICES.has(b) ? ` (${priced} with prices)` : ''}${r.kept ? `, ${r.kept} kept from the last good run` : ''}${r.errors.length ? `, ${r.errors.length} failed` : ''}`);
 }
 const shops = [...byId.values()];
 // --offline re-parses saved pages: nothing was fetched today, so keep the dates from when the page was really fetched.

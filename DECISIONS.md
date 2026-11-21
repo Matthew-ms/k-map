@@ -17,3 +17,5 @@ One line per decision and why.
 - 2026-11-09 Manekineko: sheets with no 一般 column, only "+330円 / +550円" for non-members, keep that in the notes (owner's choice) — same reason as Big Echo's "会員 + ¥50".
 - 2026-11-09 Manekineko: a plain printed 0円 stays 0; a 0円 with a condition (3 hours, 2-hour minimum, app members) is text, so it can't rank as free (owner's choice).
 - 2026-11-09 Manekineko: 一般 columns labelled with a solo price are entered as 一般 with a note (owner's choice).
+- 2026-11-21 Weekly crawl: a shop page the site refuses keeps last run's record (up to 28 days old; more than 10% refused still fails) — Jankara turned away 2 of ~1,000 requests from GitHub's servers and that blocked two whole weeks of updates, Big Echo included; last week's real price with its date is not a guess (owner's OK).
+- 2026-11-21 Crawler retries 403/429/server errors twice, waiting Retry-After or 60 s, and stops asking a site after 5 refused pages in a row — the old single 9 s retry was too quick for a rate limit, and a site refusing everything would otherwise run past the job's 60-minute limit.

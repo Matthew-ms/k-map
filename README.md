@@ -48,6 +48,10 @@ Jankara and Big Echo every week (~20 min); Manekineko and Karaoke-kan (pins, plu
 or when "Also refresh Manekineko and Karaoke-kan" is ticked on a manual run. Each run:
 tests → full crawl → commit `data/` if changed → Pages rebuild. If any shop fails to parse or validate, or more than
 10% of shops disappear, the run fails, nothing is committed, and GitHub emails the repo owner.
+A page the site refuses (403, 429, server error) is retried twice, waiting the site's Retry-After or 60 s; after 5 refused
+pages in a row the crawler stops asking that site. A shop whose page is still refused keeps its record from the last good
+run (its `fetched_at` stays that day) with a warning on the run page; a refused shop list keeps the whole chain. That stays
+a failure when the kept record is over 28 days old or more than 10% of a chain's shop pages were refused.
 
 ## Data rules
 - Missing values are `null`, never a guess.
