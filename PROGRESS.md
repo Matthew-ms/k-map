@@ -25,8 +25,14 @@
 ## Next
 - Weekly crawl: the run by hand on 2026-11-21 passed (nothing refused, so keeping last run's records is still untried on
   GitHub). It logged >20% price moves at 3 Jankara shops (JR奈良店, 大街道店, 大街道二番町通り店) and 64 Big Echo shops, and
-  4 Big Echo shops lost their prices (銀座数寄屋橋, 有楽町, 新有楽町, 四条烏丸); no parser changed since 2026-11-02, so
-  probably the sites' own changes. Not compared with the live pages yet.
+  4 Big Echo shops lost their prices (銀座数寄屋橋, 有楽町, 新有楽町, 四条烏丸). Compared with 8 live pages (2026-11-21):
+  - JR奈良店 and 大街道店: real price changes, data matches the pages.
+  - Big Echo ">20%" list is mostly false: run.js matches rows without plan and drink rule (国際通り店, 白河店 unchanged).
+  - The 4 lost shops switched to 年末料金 priced by calendar date (from 11/20): correctly left as pins.
+  - Jankara pages now have date tabs "12/3までの料金" and "12/4〜12/18の料金"; the parser reads both as one (15,578
+    duplicate rows, identical today). price.js keeps the last row per slot, so differing December prices would show early.
+  - Pre-existing wrong rows at 10 Big Echo shops (two different 30分 prices for one slot): pack tables read as 30分
+    (白河店 3H/5H パック), ドリンクバー付 marked +1D because of the footnote (国際通り店 evening).
 - Manekineko Tokyo: 経堂農大通り店 stays a pin (its prices are per room). 新小岩駅前店's sheet was only valid to 11/19: re-read it.
 - Manekineko: 287 of 726 price links changed in the 2026-11 crawl. See after the next monthly crawl (2026-12-07) whether
   that repeats, and how many of the hand-entered shops are warned about.
