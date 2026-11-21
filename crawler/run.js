@@ -110,7 +110,9 @@ if (problems.length) {
 
 // Compare with the last run so big changes get a human look before they go live.
 const before = new Map(prev.map(s => [s.id, s]));
-const key = r => `${r.party}|${r.period}|${r.name}|${r.slot}|${r.day}|${r.customer}`;
+// Plan and drink rule too: a shop's 1ドリンク and ドリンクバー付 tables share every other field, and matching them
+// to each other listed unchanged shops as "price changes" (650 on 2026-11-21, most of them false).
+const key = r => `${r.party}|${r.plan}|${r.period}|${r.name}|${r.slot}|${r.day}|${r.customer}|${r.drinks_included}`;
 for (const b of brands) {
   const was = prev.filter(s => s.brand === b), now = shops.filter(s => s.brand === b);
   const removed = was.filter(s => !byId.has(s.id));

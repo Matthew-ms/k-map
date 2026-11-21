@@ -33,6 +33,11 @@
     duplicate rows, identical today). price.js keeps the last row per slot, so differing December prices would show early.
   - Pre-existing wrong rows at 10 Big Echo shops (two different 30分 prices for one slot): pack tables read as 30分
     (白河店 3H/5H パック), ドリンクバー付 marked +1D because of the footnote (国際通り店 evening).
+  - Fixed 2026-11-21 (all three): Big Echo packs and drink rule (27 of 450 saved pages change, 9 checked by hand), Jankara
+    reads only the date tab the page opens on, run.js compares on plan and drink rule (650 Big Echo "moves" → 127).
+    `data/shops.json` is not rebuilt (saved pages here are older than the data): the next crawl applies them. After it,
+    check: the 10 shops have one 30分 price per slot, Jankara row counts are back to about half, the log's moves list.
+  - Not changed: when a slot has both a +1D and a 込 price (国際通り店 daytime 220 / 300), the app shows the last one read.
 - Manekineko Tokyo: 経堂農大通り店 stays a pin (its prices are per room). 新小岩駅前店's sheet was only valid to 11/19: re-read it.
 - Manekineko: 287 of 726 price links changed in the 2026-11 crawl. See after the next monthly crawl (2026-12-07) whether
   that repeats, and how many of the hand-entered shops are warned about.
