@@ -3,7 +3,7 @@
 ## Done
 - Jankara: all 213 shops priced by the crawler.
 - Karaoke-kan: all 195 shops hand-entered from their price images (last batch 2026-11-01); the monthly crawl flags changed images.
-- Manekineko: 158 shops hand-entered from their PDFs (7 Namba; 22 Osaka and 129 Tokyo published 2026-11-09); the other 568 are pins with a link. 千日前2号店 is hand-entered
+- Manekineko: 164 shops hand-entered from their PDFs (7 Namba; 22 Osaka and 129 Tokyo published 2026-11-09, the last 6 Tokyo 2026-11-21); the other 562 are pins with a link. 千日前2号店 is hand-entered
   too but left the official site in the 2026-11 crawl, so it no longer shows.
 - Manekineko one-click round (2026-11-08): `node scripts/manekineko-pdfs.js` moves the PDFs the owner clicked from Downloads
   into `manual/` and writes the list of what is left (`manual/manekineko-download-list.html`). Tried on real downloads 2026-11-08: file names match.
@@ -23,11 +23,13 @@
   timing against a local test server. Not verified: a real run on GitHub, and whether Jankara's refusals stop.
 
 ## Next
-- Weekly crawl: after the next run (by hand or Mon 2026-11-23), check it passed and how many shops the log says were kept.
-- Manekineko Tokyo: the last 6 shops read 2026-11-09, uncommitted in `data/manual-prices.json`, waiting for the owner's OK on
-  `manual/manekineko-check-tokyo-last6.html`. 経堂農大通り店 stays a pin (its prices are per room). 新小岩駅前店's sheet is only valid to 11/19: re-read it after that.
+- Weekly crawl: the run by hand on 2026-11-21 passed (nothing refused, so keeping last run's records is still untried on
+  GitHub). It logged >20% price moves at 3 Jankara shops (JR奈良店, 大街道店, 大街道二番町通り店) and 64 Big Echo shops, and
+  4 Big Echo shops lost their prices (銀座数寄屋橋, 有楽町, 新有楽町, 四条烏丸); no parser changed since 2026-11-02, so
+  probably the sites' own changes. Not compared with the live pages yet.
+- Manekineko Tokyo: 経堂農大通り店 stays a pin (its prices are per room). 新小岩駅前店's sheet was only valid to 11/19: re-read it.
 - Manekineko: 287 of 726 price links changed in the 2026-11 crawl. See after the next monthly crawl (2026-12-07) whether
   that repeats, and how many of the hand-entered shops are warned about.
-- After that crawl: check that about 70 more Big Echo shops have prices (18 from steps 1–2, 52 member-only), 0613, 1168,
-  1213, 1361 lost their wrong "30分" rows, and the one-drink fix moved ~800 rows to +1D or 込 as their notes say.
+- Big Echo: steps 1–2, member-only and the one-drink fix were already live in the 2026-11-02 crawl (396 priced then, 393
+  now). Still to spot-check on live pages: 0613, 1168, 1213, 1361 have no wrong "30分" rows, and +1D / 込 match the notes.
 - Big Echo: about 25 more pages with one-off layouts (spaced "O P E N", times that change by day); left as pins.
