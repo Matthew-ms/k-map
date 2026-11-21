@@ -71,6 +71,9 @@ export function parseShopPage(html, hours) {
   // Standard layout: <table> per period, rows per slot × day type.
   $('.price_table_area table').each((_, table) => {
     const t = $(table);
+    // Date tabs ("12/3までの料金" / "12/4〜12/18の料金"): read only the one the page opens on, the prices in force today.
+    // The other tabs hold later prices (or load them on tap); reading them too mixed December prices into November.
+    if (t.closest('.PriceTab-content, .HitokaraPriceTab-content').not('.active').length) return;
     const party = t.closest('#price-special').length ? 'solo' : 'group'; // #price-special = 1人料金表
     const title = t.find('.price_title');
     const drinks = text(title).includes('ドリンク飲み放題');
