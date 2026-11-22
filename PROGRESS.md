@@ -21,6 +21,13 @@
   429 on 2 shop pages), so data stayed at 2026-11-02. Now refused pages are retried longer and a still-refused shop keeps
   last run's record. Checked: tests (incl. one that failed with the logic broken on purpose) and the retry / give-up
   timing against a local test server. Not verified: a real run on GitHub, and whether Jankara's refusals stop.
+- Shop search and zoom to shop (2026-11-22): a magnifier button in the header searches all 1,577 shops by name, chain or
+  address (width, kana type and spaces don't matter; kana doesn't find kanji: no readings in the data). Opening any shop
+  card (pin, search, comparison, plan) zooms the map to street level (17) with that shop's pin large on top; a shop
+  outside the searched area brings up このエリアで検索. Narrow phones lose the header logo to fit the button. Checked in
+  Chromium (iPhone 13, 3 languages, screenshots; zoom/area/redraw check failed with the zoom switched off). Not verified on
+  the real phone: keyboard over the search sheet, the zoom animation, touch feel. Map tiles don't load in the local
+  headless browser, so the street view around the pin was not seen.
 
 ## Next
 - Weekly crawl: the run by hand on 2026-11-21 passed (nothing refused, so keeping last run's records is still untried on

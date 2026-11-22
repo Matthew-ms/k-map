@@ -31,8 +31,10 @@ button { font: inherit; color: inherit; }
   cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; max-width: 46vw; overflow: hidden; text-overflow: ellipsis;
 }
 #filter-btn.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 700; }
-#lang-btn { width: var(--tap); padding: 0; display: grid; place-items: center; } /* a globe: the word took 86 px of the header */
-@media (max-width: 420px) { .app-name span { display: none; } } /* icon only on narrow phones */
+#lang-btn, #search-btn { width: var(--tap); padding: 0; display: grid; place-items: center; } /* icons: the globe's word took 86 px of the header */
+#filter-btn { flex: none; } /* never cut to "Fil…"; the identity button shortens instead (its popover says it in full) */
+/* Narrow phones: no logo, the search button takes its place (with it, English cut the filter button to "Fil…") */
+@media (max-width: 420px) { .app-name { display: none; } #search-btn { margin-right: auto; } }
 
 /* Framed map */
 #map-wrap { position: relative; flex: 1; min-height: 0; margin: 0 8px; border-radius: 14px; overflow: hidden; border: 1px solid var(--btn-line); }
@@ -113,6 +115,10 @@ button { font: inherit; color: inherit; }
   padding: 8px 16px calc(16px + env(safe-area-inset-bottom)); box-sizing: border-box; font-size: 14px; line-height: 1.5;
 }
 #panel[hidden] { display: none; }
+/* Search sheet: full height on phones, so the box stays at the top above the keyboard and results don't make it jump */
+@media (max-width: 767px) { #panel:has(.search-input) { height: 78vh; } }
+.search-input { width: 100%; box-sizing: border-box; min-height: var(--tap); margin: 6px 0 0; padding: 0 14px; font-size: 16px;
+  border: 1px solid var(--btn-line); border-radius: 12px; background: var(--bg); color: var(--fg); }
 @media (min-width: 768px) {
   #panel { left: auto; top: 60px; right: 8px; bottom: 8px; width: 460px; max-height: none; border-radius: 14px; }
   body.panel-open #bottombar { padding-right: 476px; }

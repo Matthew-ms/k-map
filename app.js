@@ -101,7 +101,7 @@ const [shops, holidays] = await Promise.all(['data/shops.json', 'data/holidays.j
 const byId = id => shops.find(s => s.id === id);
 const $ = id => document.getElementById(id);
 const panel = $('panel'), compareBtn = $('compare-btn'), areaBtn = $('area-btn'), meBtn = $('me-btn'),
-  filterBtn = $('filter-btn'), langBtn = $('lang-btn'), planCard = $('plan-card'), toast = $('toast');
+  filterBtn = $('filter-btn'), langBtn = $('lang-btn'), searchBtn = $('search-btn'), planCard = $('plan-card'), toast = $('toast');
 
 // Badge pins: the chain's mark on its colour inside a white ring, in a 44 px tap box. The planned shop's pin is bigger.
 const pinIcon = (s, big) => L.divIcon({ className: 'pin-wrap', iconSize: [44, 44],
@@ -158,6 +158,8 @@ function renderChrome() {
   meBtn.setAttribute('aria-label', t('人数と区分を変更'));
   langBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>';
   langBtn.setAttribute('aria-label', `${t('言語')}: ${LANGS[getLang()]}`);
+  searchBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>';
+  searchBtn.setAttribute('aria-label', t('店舗を検索'));
   areaBtn.textContent = t('このエリアで検索');
   renderPlanBar();
 }
@@ -234,6 +236,7 @@ const rerender = () => {
   else if (view?.type === 'compare') openCompare();
   else if (view?.type === 'plan') openPlan();
   else if (view?.type === 'filters') openFilters();
+  else if (view?.type === 'search') openSearch();
 };
 
 // ---- Small popovers under the header buttons ----
@@ -325,6 +328,46 @@ function openFilters() {
   wirePanel();
 }
 filterBtn.onclick = () => (view?.type === 'filters' ? closePanel() : openFilters());
+
+// ---- Search by name: all shops in Japan, not only the searched area ----
+// Full/half width, case, katakana/hiragana and spaces don't matter. Kana doesn't find kanji (なんば ≠ 難波): the data
+// has no readings. Every word must appear in the name, chain or address; name matches come first, then the nearest.
+const fold = s => s.normalize('NFKC').toLowerCase().replace(/\s+/g, '').replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
+const SEARCH_MAX = 30;
+let searchQ = '';
+function openSearch() {
+  view = { type: 'search' };
+  panel.innerHTML = `
+    <div class="cmp-head">
+      <div class="panel-head"><h2>${t('店舗を検索')}</h2><button class="close" aria-label="${t('閉じる')}">×</button></div>
+      <input type="search" class="search-input" value="${esc(searchQ)}" placeholder="${t('店名・地名・チェーン名')}" aria-label="${t('店舗を検索')}" enterkeyhint="search" autocomplete="off">
+    </div>
+    <div class="search-results"></div>`;
+  const input = panel.querySelector('.search-input'), results = panel.querySelector('.search-results');
+  const city = s => s.address?.split(/\s+/)[0].replace(/[0-9０-９].*$/, ''); // up to the street number
+  const draw = () => {
+    searchQ = input.value;
+    const words = searchQ.split(/\s+/).map(fold).filter(Boolean);
+    if (!words.length) return (results.innerHTML = `<p class="meta">${t('全国{n}店舗から探せます', { n: shops.length })}</p>`);
+    const hits = [];
+    for (const s of shops) {
+      const name = fold(`${s.name}${BRAND_NAMES[s.brand]}${brandName(s.brand)}`), all = name + fold(s.address ?? '');
+      if (words.every(w => all.includes(w))) hits.push({ s, rank: words.every(w => name.includes(w)) ? 0 : 1 });
+    }
+    hits.sort((a, b) => a.rank - b.rank || (walkMeters(a.s) ?? 0) - (walkMeters(b.s) ?? 0));
+    results.innerHTML = !hits.length ? `<p class="meta">${t('見つかりませんでした。漢字の地名や住所の一部（例：梅田、中央区）でも探せます')}</p>`
+      : `<div class="rank-list">${hits.slice(0, SEARCH_MAX).map(({ s }) => `<button class="rank-row" data-id="${esc(s.id)}">${badge(s)}
+          <span class="rr-main"><b>${esc(s.name)}</b><span class="meta">${[esc(brandName(s.brand)), esc(city(s)), walk(s)].filter(Boolean).join(' · ')}</span></span></button>`).join('')}</div>
+        ${hits.length > SEARCH_MAX ? `<p class="meta">${t('ほか{n}店舗。もう少し詳しく入力してください', { n: hits.length - SEARCH_MAX })}</p>` : ''}`;
+  };
+  input.oninput = draw;
+  input.onkeydown = e => e.key === 'Enter' && input.blur(); // put the keyboard away to see the results
+  results.onclick = e => { const b = e.target.closest('.rank-row'); if (b) openCard(byId(b.dataset.id)); };
+  draw();
+  wirePanel();
+  if (!searchQ) input.focus(); // coming back to earlier results: no keyboard over them
+}
+searchBtn.onclick = () => (view?.type === 'search' ? closePanel() : openSearch());
 
 // ---- Plan: the footer card is always there; tap it to edit ----
 // Total for the chosen plan at a shop: { e, total } — total is null when some part has no listed price.
@@ -503,7 +546,8 @@ function cardTable(shop, p, col) {
     <ul class="notes">${markNotes(marks)}</ul>`;
 }
 
-function openCard(s, from = view?.type === 'compare' ? 'compare' : null) {
+function openCard(s, from = ['compare', 'search'].includes(view?.type) ? view.type : null) {
+  const fresh = view?.type !== 'card' || view.shop !== s; // redrawing the same card (language, この店にする) leaves the map alone
   view = { type: 'card', shop: s, from };
   const hasSolo = s.prices.some(p => p.party === 'solo');
   const { present, mine } = myColumn(s);
@@ -517,7 +561,7 @@ function openCard(s, from = view?.type === 'compare' ? 'compare' : null) {
   const hours = [hoursText(s.hours), w].filter(Boolean).join(' · ');
   const typeChips = () => present.map(c => `<button data-col="${c}" aria-pressed="${c === col}">${esc(custLabel(s, c))}${c === mine && mine !== me.customer ? '†' : ''}${c === me.customer ? t('（あなた）') : ''}</button>`).join('');
   panel.innerHTML = `
-    <div class="panel-head">${from ? `<button class="back">← ${t('比較に戻る')}</button>` : ''}<button class="close" aria-label="${t('閉じる')}">×</button></div>
+    <div class="panel-head">${from ? `<button class="back">← ${from === 'search' ? t('検索に戻る') : t('比較に戻る')}</button>` : ''}<button class="close" aria-label="${t('閉じる')}">×</button></div>
     <div class="card-head">
       <div class="ch-main">
         <p class="brand">${badge(s, true)}${esc(brandName(s.brand))}</p>
@@ -558,11 +602,22 @@ function openCard(s, from = view?.type === 'compare' ? 'compare' : null) {
     if (!chosen) showToast(t('「{name}」をプランに設定しました', { name: s.name }));
   };
   wirePanel();
-  // Keep the tapped pin visible beside (desktop) or above (phone) the panel.
-  const size = map.getSize(), pt = map.latLngToContainerPoint([s.lat, s.lng]);
+  if (fresh) focusShop(s);
+}
+// Opening a shop (pin, search, comparison, plan) zooms the map to street level with the shop beside (desktop) or
+// above (phone) the panel, its pin drawn large on top: visible even inside a count bubble, filtered out, or outside
+// the searched area. Outside it, the comparison keeps its shops; "search this area" appears instead (owner's choice).
+const FOCUS_ZOOM = 17;
+let focusPin = null;
+const clearFocus = () => { focusPin?.remove(); focusPin = null; };
+function focusShop(s) {
+  const z = Math.max(map.getZoom(), FOCUS_ZOOM), size = map.getSize();
   const target = innerWidth >= 768 ? L.point((size.x - panel.offsetWidth) / 2, size.y / 2) : L.point(size.x / 2, Math.max(40, (size.y - panel.offsetHeight) / 2));
-  const offset = pt.subtract(target);
-  if (Math.abs(offset.x) > 1 || Math.abs(offset.y) > 1) quietly(() => map.panBy(offset));
+  const center = map.unproject(map.project([s.lat, s.lng], z).add(size.divideBy(2)).subtract(target), z); // puts the shop at target
+  clearFocus();
+  focusPin = L.marker([s.lat, s.lng], { icon: pinIcon(s, true), zIndexOffset: 2000, keyboard: false }).addTo(map);
+  quietly(() => map.setView(center, z));
+  if (area && !area.contains([s.lat, s.lng])) areaBtn.hidden = false;
 }
 
 // ---- Comparison: what you could pay at a moment (right now, or the plan's start), cheapest first ----
@@ -624,7 +679,8 @@ function wirePanel() {
   if (view.type !== 'plan' && view.type !== 'filters') panel.onclick = null; // these sheets use one delegated handler
   panel.querySelector('.close').onclick = closePanel;
   const back = panel.querySelector('.back');
-  if (back) back.onclick = openCompare;
+  if (back) back.onclick = view.from === 'search' ? openSearch : openCompare;
+  if (view.type !== 'card') clearFocus();
   const key = view.type + (view.shop?.id ?? '');
   if (panel.dataset.view !== key || panel.hidden) panel.scrollTop = 0; // redrawing the same view keeps its scroll position
   panel.dataset.view = key;
@@ -634,6 +690,7 @@ function wirePanel() {
 }
 function closePanel() {
   view = null;
+  clearFocus();
   panel.hidden = true;
   panel.onclick = null;
   document.body.classList.remove('panel-open');

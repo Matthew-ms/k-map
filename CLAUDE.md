@@ -69,6 +69,9 @@ See DECISIONS.md (why things are the way they are).
 - Filters are a sheet, not a popover (the popover was 672 px tall and still scrolled). Machines start as the two
   families; single models fold behind 機種を選ぶ. The price limit is four chips (the 13 px slider was hard to set).
   Filters apply as you tap; the pinned button says how many shops are left ("12店を表示") and closes the sheet.
+- Search (header magnifier) covers all shops in Japan, not just the searched area. Opening any shop card zooms the map to
+  it (17) with its pin large on top; a shop outside the searched area shows このエリアで検索 but doesn't change the
+  comparison (owner's choice, 2026-11). Reason: the owner wants to see where a shop is as soon as they look at it.
 - Folding rows (details/summary) carry their own ▾ / ▴, because the 44 px flex layout drops the browser's marker.
 - Machine names have one spelling across chains (crawler/common.js `normalizeMachine`): "LIVE DAM WAO" → "LIVE DAM
   WAO!", otherwise the filter showed the same machine twice.

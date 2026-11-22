@@ -96,6 +96,14 @@ for (const lang of langs) {
   await shot('plan', () => page.click('#plan-card'));
   await shot('filter', () => page.click('#filter-btn'));
   await shot('me', () => page.click('#me-btn'));
+  await shot('search', async () => { await page.click('#search-btn'); await page.fill('.search-input', '難波'); });
+  // A result opens the card and zooms the map to the shop (it may be outside the searched area).
+  await shot('search-card', async () => {
+    await page.click('#search-btn');
+    await page.fill('.search-input', shop.name);
+    await page.locator('.search-results .rank-row').first().click();
+    await page.waitForTimeout(500);
+  });
   // Last, because it re-centres the map: pins that overlap merge into count bubbles, so open the map zoomed in on
   // the shop, and if its pin is still in a bubble (same building), open the bubble nearest the centre.
   await shot('card', async () => {

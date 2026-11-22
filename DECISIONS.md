@@ -22,3 +22,7 @@ One line per decision and why.
 - 2026-11-21 Big Echo: a table whose first row names a pack ("ドリンクバー付き3Hパック") is a pack with that many hours, even under a 30分 heading — 白河店's 3H/5H packs showed as 1,160–3,400円 30-minute prices; ~20 more tables stored as フリータイム were really 3/4/6時間パック.
 - 2026-11-21 Big Echo: a table's own "ドリンクバー付/込/無料" beats the standard footnote "※1ドリンクオーダー制とは…", unless the notes say only 一般 orders one — the footnote explains the rule on every page, it doesn't put this table under it.
 - 2026-11-21 Jankara: of a page's date tabs ("12/3までの料金" / "12/4〜12/18の料金") only the one it opens on is read — the site shows that one first and loads later ones on tap; reading all of them doubled the rows, and the app keeps the last row per slot, so later prices would have shown early.
+- 2026-11-22 Opening a shop card zooms the map to it (zoom 17, large pin on top of clusters) whether or not it's chosen for the plan; redrawing the same card doesn't move the map — the owner wants to see where a shop is as soon as they look at it.
+- 2026-11-22 A shop outside the searched area: the map goes there and このエリアで検索 appears, the comparison keeps its shops (owner's choice) — the compare list changes only when the user asks.
+- 2026-11-22 Search covers all shops in Japan (name, chain, address), not only the searched area; no reading/romaji index — the data has none, and kanji place names and addresses already find shops.
+- 2026-11-22 Header logo hidden on phones ≤420 px — the new search button cut English "Filter" to "Fil…".
