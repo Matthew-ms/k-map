@@ -93,6 +93,14 @@ for (const lang of langs) {
   await page.goto(url, { waitUntil: 'networkidle' });
   await shot('map');
   await shot('compare', () => page.click('#compare-btn'));
+  // The sheet dragged small: the map shows above, the controls scroll away with the list. Then back to full.
+  const dragGrip = async dy => {
+    const g = await page.locator('#grip').boundingBox(), x = g.x + g.width / 2, y = g.y + g.height / 2;
+    await page.mouse.move(x, y); await page.mouse.down(); await page.mouse.move(x, y + dy, { steps: 8 }); await page.mouse.up();
+  };
+  await shot('compare-small', async () => { await page.click('#compare-btn'); await dragGrip(400); });
+  await page.keyboard.press('Escape');
+  await page.click('#compare-btn'); await dragGrip(-1000); // the size is saved: leave it full for the other screens
   await shot('plan', () => page.click('#plan-card'));
   await shot('filter', () => page.click('#filter-btn'));
   await shot('me', () => page.click('#me-btn'));

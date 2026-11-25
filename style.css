@@ -123,9 +123,11 @@ button { font: inherit; color: inherit; }
 #grip::before { content: ""; width: 40px; height: 5px; border-radius: 3px; background: var(--btn-line); }
 /* Phones: the size the user dragged to (set by app.js); the search sheet stays full so its box sits above the keyboard */
 @media (max-width: 767px) {
-  #panel { height: var(--sheet-h, auto); }
-  #panel:has(.search-input) { height: 78vh; }
+  #panel { max-height: var(--sheet-h, 78vh); } /* a ceiling: a short sheet (plan, filters) stays as tall as its content */
+  #panel:has(.search-input) { height: 78vh; max-height: 78vh; }
   #panel:has(.search-input) #grip { display: none; }
+  /* Under half height the comparison's ~250 px of controls would fill the sheet: they scroll away with the list */
+  #panel.small .cmp-head:not(:has(.search-input)) { position: static; }
 }
 .search-input { width: 100%; box-sizing: border-box; min-height: var(--tap); margin: 6px 0 0; padding: 0 14px; font-size: 16px;
   border: 1px solid var(--btn-line); border-radius: 12px; background: var(--bg); color: var(--fg); }

@@ -703,6 +703,7 @@ const SHEET_KEY = 'kmap.sheet', SHEET_MIN = 0.25, SHEET_MAX = 0.78, SHEET_STEPS 
 const setSheet = f => {
   f = Math.min(SHEET_MAX, Math.max(SHEET_MIN, f));
   sheet.style.setProperty('--sheet-h', `${Math.round(f * innerHeight)}px`);
+  sheet.classList.toggle('small', f < 0.5); // style.css: the comparison controls scroll away instead of filling the sheet
   return f;
 };
 const savedSheet = storage.get(SHEET_KEY);

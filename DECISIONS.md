@@ -26,3 +26,6 @@ One line per decision and why.
 - 2026-11-22 A shop outside the searched area: the map goes there and このエリアで検索 appears, the comparison keeps its shops (owner's choice) — the compare list changes only when the user asks.
 - 2026-11-22 Search covers all shops in Japan (name, chain, address), not only the searched area; no reading/romaji index — the data has none, and kanji place names and addresses already find shops.
 - 2026-11-22 Header logo hidden on phones ≤420 px — the new search button cut English "Filter" to "Fil…".
+- 2026-11-25 Phone sheets resize by dragging a grip (free, 25–78%) or tapping it (35/55/78%); every sheet but search, one shared size saved on the device (owner's choice) — the owner wants to read the map while the comparison is open; the search sheet stays full so its box sits above the keyboard.
+- 2026-11-25 The saved sheet size is a ceiling, not a height — as a height it left a blank strip under the plan and filter sheets.
+- 2026-11-25 Under half height the comparison's controls scroll away with the list — pinned, their ~250 px filled the small sheet and hid every shop.

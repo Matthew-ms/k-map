@@ -72,6 +72,9 @@ See DECISIONS.md (why things are the way they are).
 - Search (header magnifier) covers all shops in Japan, not just the searched area. Opening any shop card zooms the map to
   it (17) with its pin large on top; a shop outside the searched area shows このエリアで検索 but doesn't change the
   comparison (owner's choice, 2026-11). Reason: the owner wants to see where a shop is as soon as they look at it.
+- Phone sheets have a grip: drag (25–78%) or tap (35/55/78%) to resize; one size for every sheet but search, saved
+  as a ceiling; under half height the comparison controls stop sticking (owner's choice, 2026-11). Reason: the owner wants
+  to read the map while comparing; pinned controls filled a small sheet.
 - Folding rows (details/summary) carry their own ▾ / ▴, because the 44 px flex layout drops the browser's marker.
 - Machine names have one spelling across chains (crawler/common.js `normalizeMachine`): "LIVE DAM WAO" → "LIVE DAM
   WAO!", otherwise the filter showed the same machine twice.

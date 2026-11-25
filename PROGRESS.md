@@ -28,6 +28,11 @@
   Chromium (iPhone 13, 3 languages, screenshots; zoom/area/redraw check failed with the zoom switched off). Not verified on
   the real phone: keyboard over the search sheet, the zoom animation, touch feel. Map tiles don't load in the local
   headless browser, so the street view around the pin was not seen.
+- Resizable sheets (2026-11-25): on phones every sheet but search has a grip; drag it (25–78% of the screen) or tap it
+  to step 35/55/78%. The size is a ceiling saved on the device, shared by all sheets; under half height the comparison's
+  controls scroll with the list. Checked in Chromium (iPhone 13): drag, clamp, tap steps, saved after reload, list scrolls,
+  pin stays above the sheet after a resize (check failed with dragging broken on purpose); screenshots in 3 languages.
+  Not verified on the real phone: touch drag feel, iOS pull-to-refresh near the grip, home-screen mode.
 
 ## Next
 - Weekly crawl: the run by hand on 2026-11-21 passed (nothing refused, so keeping last run's records is still untried on
