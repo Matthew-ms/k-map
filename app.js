@@ -100,7 +100,7 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const [shops, holidays] = await Promise.all(['data/shops.json', 'data/holidays.json'].map(u => fetch(u).then(r => r.json())));
 const byId = id => shops.find(s => s.id === id);
 const $ = id => document.getElementById(id);
-const panel = $('panel'), compareBtn = $('compare-btn'), areaBtn = $('area-btn'), meBtn = $('me-btn'),
+const sheet = $('panel'), panel = $('panel-body'), grip = $('grip'), compareBtn = $('compare-btn'), areaBtn = $('area-btn'), meBtn = $('me-btn'),
   filterBtn = $('filter-btn'), langBtn = $('lang-btn'), searchBtn = $('search-btn'), planCard = $('plan-card'), toast = $('toast');
 
 // Badge pins: the chain's mark on its colour inside a white ring, in a 44 px tap box. The planned shop's pin is bigger.
@@ -160,6 +160,7 @@ function renderChrome() {
   langBtn.setAttribute('aria-label', `${t('言語')}: ${LANGS[getLang()]}`);
   searchBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>';
   searchBtn.setAttribute('aria-label', t('店舗を検索'));
+  grip.setAttribute('aria-label', t('シートの大きさを変える'));
   areaBtn.textContent = t('このエリアで検索');
   renderPlanBar();
 }
@@ -612,7 +613,7 @@ let focusPin = null;
 const clearFocus = () => { focusPin?.remove(); focusPin = null; };
 function focusShop(s) {
   const z = Math.max(map.getZoom(), FOCUS_ZOOM), size = map.getSize();
-  const target = innerWidth >= 768 ? L.point((size.x - panel.offsetWidth) / 2, size.y / 2) : L.point(size.x / 2, Math.max(40, (size.y - panel.offsetHeight) / 2));
+  const target = innerWidth >= 768 ? L.point((size.x - sheet.offsetWidth) / 2, size.y / 2) : L.point(size.x / 2, Math.max(40, (size.y - sheet.offsetHeight) / 2));
   const center = map.unproject(map.project([s.lat, s.lng], z).add(size.divideBy(2)).subtract(target), z); // puts the shop at target
   clearFocus();
   focusPin = L.marker([s.lat, s.lng], { icon: pinIcon(s, true), zIndexOffset: 2000, keyboard: false }).addTo(map);
@@ -682,19 +683,47 @@ function wirePanel() {
   if (back) back.onclick = view.from === 'search' ? openSearch : openCompare;
   if (view.type !== 'card') clearFocus();
   const key = view.type + (view.shop?.id ?? '');
-  if (panel.dataset.view !== key || panel.hidden) panel.scrollTop = 0; // redrawing the same view keeps its scroll position
+  if (panel.dataset.view !== key || sheet.hidden) panel.scrollTop = 0; // redrawing the same view keeps its scroll position
   panel.dataset.view = key;
-  panel.hidden = false;
+  sheet.hidden = false;
   document.body.classList.add('panel-open');
   document.querySelectorAll('.popover').forEach(p => p.remove());
 }
 function closePanel() {
   view = null;
   clearFocus();
-  panel.hidden = true;
+  sheet.hidden = true;
   panel.onclick = null;
   document.body.classList.remove('panel-open');
 }
+
+// ---- Sheet size on phones: drag the grip, or tap it to step small → half → full (saved on this device) ----
+// Every sheet shares one size, so a shop opened from the comparison keeps it. The search sheet stays full (style.css).
+const SHEET_KEY = 'kmap.sheet', SHEET_MIN = 0.25, SHEET_MAX = 0.78, SHEET_STEPS = [0.35, 0.55, SHEET_MAX]; // of the screen height
+const setSheet = f => {
+  f = Math.min(SHEET_MAX, Math.max(SHEET_MIN, f));
+  sheet.style.setProperty('--sheet-h', `${Math.round(f * innerHeight)}px`);
+  return f;
+};
+const savedSheet = storage.get(SHEET_KEY);
+if (savedSheet) setSheet(savedSheet);
+const sheetDone = f => {
+  storage.set(SHEET_KEY, f);
+  if (view?.type === 'card') focusShop(view.shop); // keep the shop's pin above the sheet's new edge
+};
+let drag = null;
+grip.onpointerdown = e => { drag = { y: e.clientY, h: sheet.offsetHeight, f: null }; grip.setPointerCapture(e.pointerId); };
+grip.onpointermove = e => {
+  if (!drag) return;
+  const dy = drag.y - e.clientY;
+  if (drag.f != null || Math.abs(dy) > 6) drag.f = setSheet((drag.h + dy) / innerHeight); // a few px of wobble is still a tap
+};
+grip.onpointerup = grip.onpointercancel = () => { if (drag?.f != null) { sheetDone(drag.f); grip.dragged = true; } drag = null; };
+grip.onclick = () => {
+  if (grip.dragged) return (grip.dragged = false); // the click that ends a drag
+  const now = sheet.offsetHeight / innerHeight;
+  sheetDone(setSheet(SHEET_STEPS.find(s => s > now + 0.02) ?? SHEET_STEPS[0]));
+};
 map.on('click', () => { closePanel(); document.querySelectorAll('.popover').forEach(p => p.remove()); });
 document.addEventListener('keydown', e => e.key === 'Escape' && (closePanel(), document.querySelectorAll('.popover').forEach(p => p.remove())));
 labelLocate();

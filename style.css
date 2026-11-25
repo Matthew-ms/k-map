@@ -110,17 +110,28 @@ button { font: inherit; color: inherit; }
 
 /* Panel: bottom sheet on phones, side panel on desktop */
 #panel {
-  position: fixed; z-index: 1000; left: 0; right: 0; bottom: 0; max-height: 78vh; overflow-y: auto;
+  position: fixed; z-index: 1000; left: 0; right: 0; bottom: 0; max-height: 78vh; display: flex; flex-direction: column;
   background: var(--bg); border-radius: 16px 16px 0 0; box-shadow: 0 -4px 24px rgba(0,0,0,.2);
-  padding: 8px 16px calc(16px + env(safe-area-inset-bottom)); box-sizing: border-box; font-size: 14px; line-height: 1.5;
+  box-sizing: border-box; font-size: 14px; line-height: 1.5;
 }
 #panel[hidden] { display: none; }
-/* Search sheet: full height on phones, so the box stays at the top above the keyboard and results don't make it jump */
-@media (max-width: 767px) { #panel:has(.search-input) { height: 78vh; } }
+/* The grip stays put above the scrolling body: drag it to resize the sheet, tap it to step small → half → full. */
+#panel-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 8px 16px calc(16px + env(safe-area-inset-bottom)); }
+/* 44 px to tap, laid over the body's empty 8 px top padding (the sticky comparison head counts on that padding) */
+#grip { flex: none; height: var(--tap); margin-bottom: -8px; position: relative; z-index: 5; border: 0; border-radius: 16px 16px 0 0;
+  background: var(--bg); cursor: ns-resize; touch-action: none; display: grid; place-items: center; }
+#grip::before { content: ""; width: 40px; height: 5px; border-radius: 3px; background: var(--btn-line); }
+/* Phones: the size the user dragged to (set by app.js); the search sheet stays full so its box sits above the keyboard */
+@media (max-width: 767px) {
+  #panel { height: var(--sheet-h, auto); }
+  #panel:has(.search-input) { height: 78vh; }
+  #panel:has(.search-input) #grip { display: none; }
+}
 .search-input { width: 100%; box-sizing: border-box; min-height: var(--tap); margin: 6px 0 0; padding: 0 14px; font-size: 16px;
   border: 1px solid var(--btn-line); border-radius: 12px; background: var(--bg); color: var(--fg); }
 @media (min-width: 768px) {
   #panel { left: auto; top: 60px; right: 8px; bottom: 8px; width: 460px; max-height: none; border-radius: 14px; }
+  #grip { display: none; } /* a side panel already shows the map beside it */
   body.panel-open #bottombar { padding-right: 476px; }
   body.panel-open .popover { right: 476px; }
   body.panel-open .leaflet-right { right: 468px; } /* keep the OSM credit beside the panel */
@@ -247,7 +258,7 @@ button { font: inherit; color: inherit; }
 /* Pinned sheet foot: the sheet's primary action stays on screen */
 .sheet-foot { position: sticky; bottom: 0; display: flex; gap: 8px; margin: 12px -16px 0;
   padding: 10px 16px calc(14px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--line); z-index: 4; }
-#panel:has(.sheet-foot) { padding-bottom: 0; } /* the foot carries the bottom padding, so it sits flush at the bottom */
+#panel-body:has(.sheet-foot) { padding-bottom: 0; } /* the foot carries the bottom padding, so it sits flush at the bottom */
 .sheet-foot > * { flex: 1; min-height: 50px; padding: 0 10px; text-align: center; line-height: 1.25; border-radius: 14px; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 4px; text-decoration: none; cursor: pointer; }
 .btn-primary { border: 0; background: var(--accent); color: var(--on-accent); }
 .btn-secondary { border: 1.5px solid var(--accent); background: var(--bg); color: var(--fg); }
